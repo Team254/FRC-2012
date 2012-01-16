@@ -8,6 +8,7 @@ ConcurrentCommand::ConcurrentCommand(int numCommands, ...)
   va_start(vl, numCommands);
   for (int i = 0; i < numCommands; i++) {
     AutoCommand* command = va_arg(vl, AutoCommand*);
+    // CommandPairs are initialized with the bool as false because the command hasn't been run yet
     CommandPair cPair(command, false);
     commands_.push_back(cPair);
   }
