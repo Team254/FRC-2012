@@ -10,8 +10,8 @@
  */
 
 
-#ifndef SEQUENTIAL_COMMAND_H_
-#define SEQUENTIAL_COMMAND_H_
+#ifndef SRC_AUTO_SEQUENTIAL_COMMAND_H_
+#define SRC_AUTO_SEQUENTIAL_COMMAND_H_
 
 class SequentialCommand : public AutoCommand {
  public:
@@ -46,4 +46,4 @@ class SequentialCommand : public AutoCommand {
   int commandIndex_; // the index of the current command being executed
 };
 
-#endif // SEQUENTIAL_COMMAND_H_
+#endif // SRC_AUTO_SEQUENTIAL_COMMAND_H_

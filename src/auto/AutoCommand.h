@@ -5,8 +5,8 @@
  * Is the base class for all other Autonomous Commands (driving, shooting, etc.)
  */
 
-#ifndef AUTO_COMMAND_H_
-#define AUTO_COMMAND_H_
+#ifndef SRC_AUTO_AUTO_COMMAND_H_
+#define SRC_AUTO_AUTO_COMMAND_H_
 
 class AutoCommand {
  public:
@@ -31,5 +31,5 @@ class AutoCommand {
   virtual ~AutoCommand();
 };
 
-#endif // AUTO_COMMAND_H_
+#endif // SRC_AUTO_AUTO_COMMAND_H_
 
