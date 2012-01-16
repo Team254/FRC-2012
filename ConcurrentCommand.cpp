@@ -13,6 +13,12 @@ ConcurrentCommand::ConcurrentCommand(int numCommands, ...) {
 }
 
 ConcurrentCommand::~ConcurrentCommand() {
+  std::vector<commandPair>::iterator it;
+  for(it = commands_.begin(); it < commands_.end(); it++) {
+    commandPair cPair = *it;
+    delete cPair.first;
+    cPair.first=NULL;
+  }
 }
 
 void ConcurrentCommand::Initialize() {
