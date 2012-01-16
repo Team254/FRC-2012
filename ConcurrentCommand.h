@@ -2,7 +2,7 @@
 #include <vector>
 #include <utility>
 
-class ConcurrentCommand {
+class ConcurrentCommand  : virtual AutoCommand {
  public:
   ConcurrentCommand(int numCommands, ...);
   virtual ~ConcurrentCommand();
