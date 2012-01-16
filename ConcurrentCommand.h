@@ -1,13 +1,18 @@
-#include <vector>
 #include "AutoCommand.h"
+#include <vector>
+#include <utility>
 
 class ConcurrentCommand {
  public:
-  ConcurrentCommand(...);
+  ConcurrentCommand(int numCommands, ...);
+  virtual ~ConcurrentCommand();
   virtual void Initialize();
   virtual bool Run();
-  virtual ~ConcurrentCommand();
  private:
-  std::vector<pair<AutoCommand*, bool> > commands_;
+  // vector of pairs of each command and its completion status
+  // these are initialized as false and updated to true as
+  // commands are completed
+  typedef std::pair<AutoCommand*, bool> commandPair;
+  std::vector<commandPair> commands_;
 };
 
