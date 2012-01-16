@@ -23,7 +23,6 @@ ConcurrentCommand::~ConcurrentCommand() {
 }
 
 void ConcurrentCommand::Initialize() {
-  std::vector<CommandPair>::iterator it;
   for (std::vector<CommandPair>::const_iterator it = commands_.begin(); it < commands_.end(); ++it) {
     CommandPair cPair = *it;
     cPair.first->Initialize();
@@ -31,7 +30,6 @@ void ConcurrentCommand::Initialize() {
 }
 
 bool ConcurrentCommand::Run() {
-  std::vector<CommandPair>::iterator it;
   bool done = true;
   for (std::vector<CommandPair>::const_iterator it = commands_.begin(); it < commands_.end(); ++it) {
     CommandPair cPair = *it;
