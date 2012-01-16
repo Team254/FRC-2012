@@ -1,8 +1,9 @@
-#include "AutoCommand.h"
 #include <vector>
 #include <utility>
 
-class SequentialCommand : virtual AutoCommand {
+#include "AutoCommand.h"
+
+class SequentialCommand : public AutoCommand {
  public:
   SequentialCommand(int numCommands, ...);
   virtual ~SequentialCommand();
