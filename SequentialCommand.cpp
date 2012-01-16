@@ -9,6 +9,7 @@ SequentialCommand::SequentialCommand(int numCommands, ...)
     commands_.push_back(command);
   }
   va_end(vl);
+  // start at the first command
   commandIndex_ = 0;
 }
 
@@ -19,6 +20,7 @@ SequentialCommand::~SequentialCommand() {
 }
 
 void SequentialCommand::Initialize() {
+  // only initialize the first command
   commands_[0]->Initialize();
 }
 
@@ -26,10 +28,9 @@ bool SequentialCommand::Run() {
   // If the current command is done
   if (commands_[commandIndex_]->Run()) {
     commandIndex_++;
-
-    if(commandIndex_ == commands_.size()) {
+    if(commandIndex_ == commands_.size()) { // No more commands, SequentialCommand is done
       return true;
-    } else {
+    } else { // More commands to process, Initialize the next one
       commands_[commandIndex_]->Initialize();
     }
   }
