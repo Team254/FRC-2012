@@ -1,12 +1,13 @@
-#include <vector>
 #include "AutoCommand.h"
+#include <vector>
+#include <utility>
 
-class SequentialCommand {
+class SequentialCommand : virtual AutoCommand {
  public:
-  SequentialCommand(...);
+  SequentialCommand(int numCommands, ...);
+  virtual ~SequentialCommand();
   virtual void Initialize();
   virtual bool Run();
-  virtual ~SequentialCommand();
  private:
   std::vector<AutoCommand*> commands_;
   int commandIndex_;
