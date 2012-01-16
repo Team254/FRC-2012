@@ -9,7 +9,7 @@ SequentialCommand::SequentialCommand(int numCommands, ...)
     commands_.push_back(command);
   }
   va_end(vl);
-  // start at the first command
+  // Start at the first command
   commandIndex_ = 0;
 }
 
@@ -20,12 +20,12 @@ SequentialCommand::~SequentialCommand() {
 }
 
 void SequentialCommand::Initialize() {
-  // only initialize the first command
+  // Only initialize the first command
   commands_[0]->Initialize();
 }
 
 bool SequentialCommand::Run() {
-  // If all the command are done, the SequentialCommand is done
+  // If all the commands are done, the SequentialCommand is done
   if (command_Index->Run() == commands_.size()) {
     return true;
   } else if (commands_[commandIndex_]->Run()) {
@@ -36,6 +36,6 @@ bool SequentialCommand::Run() {
       commands_[commandIndex_]->Initialize();
     }
   }
-
+  // The current command isn't finished yet
   return false;
 }
