@@ -4,5 +4,8 @@
 // as member variables in Constants. Use it by including it in the macro definition of the functions
 // used below.
 
-DECLARE_DOUBLE(numberOfMotors, 14.0);
-DECLARE_DOUBLE(elevatorUpP, 2);
+DECLARE_DOUBLE(leftMotorPort, 1)
+DECLARE_DOUBLE(rightMotorPort, 2)
+
+DECLARE_DOUBLE(leftJoystickPort, 1)
+DECLARE_DOUBLE(rightJoystickPort, 2)

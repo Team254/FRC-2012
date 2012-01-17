@@ -1,4 +1,4 @@
-#include "ControlBoard.h"
+#include "subsystems/ControlBoard.h"
 
 ControlBoard::ControlBoard(Joystick* left, Joystick* right) {
   leftJoystick_ = left;
@@ -22,5 +22,4 @@ double ControlBoard::GetJoystickValue(BoardJoystick stick) {
 }
 
 double ControlBoard::GetButtonValue(BoardButton button) {
-	
 }

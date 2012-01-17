@@ -1,12 +1,12 @@
-#ifndef MAIN_H_INCLUDED
-#define MAIN_H_INCLUDED
+#ifndef MAIN_H_
+#define MAIN_H_
 
-#include "ControlBoard.h"
-#include "Drive.h"
 #include "WPILib.h"
 
-class MainRobot : public IterativeRobot {
+#include "subsystems/ControlBoard.h"
+#include "subsystems/Drive.h"
 
+class MainRobot : public IterativeRobot {
  public:
   MainRobot();	
 	
@@ -38,4 +38,4 @@ class MainRobot : public IterativeRobot {
   Victor* rightDriveMotors_;
 };
 
-#endif // MAIN_H_INCLUDED
+#endif  // MAIN_H_

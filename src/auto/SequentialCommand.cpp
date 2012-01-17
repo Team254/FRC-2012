@@ -1,4 +1,4 @@
-#include "SequentialCommand.h"
+#include "auto/SequentialCommand.h"
 
 SequentialCommand::SequentialCommand(int numCommands, ...)
     : commands_(numCommands) {

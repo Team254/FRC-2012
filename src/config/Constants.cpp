@@ -4,7 +4,7 @@
 // Implements the singleton style to insure that only one instance of this class exists.
 // Uses ifstream to read values from a file into a map which is then used to replace
 // the classes member variables if ones exist that correspond to the map.
-#include "Constants.h"
+#include "config/Constants.h"
 
 #include <cstdlib>
 #include <fstream>
@@ -29,7 +29,7 @@ Constants* Constants::GetInstance() {
 Constants::Constants() {
 #define DECLARE_DOUBLE(name, defaultValue) \
   name = defaultValue;
-#include "ConstantDeclarations.h"
+#include "config/ConstantDeclarations.h"
 #undef DECLARE_DOUBLE
   Constants::LoadFile();
 }
@@ -55,6 +55,6 @@ void Constants::LoadFile() {
   if(constantsMap.find(#name) != constantsMap.end()) { \
     name = atof(constantsMap[#name].c_str()); \
   }
-#include "ConstantDeclarations.h"
+#include "config/ConstantDeclarations.h"
 #undef DECLARE_DOUBLE
 }

@@ -19,7 +19,7 @@ class Constants {
  public:
 #define DECLARE_DOUBLE(name, defaultValue) \
   double name;
-#include "ConstantDeclarations.h"
+#include "config/ConstantDeclarations.h"
 #undef DECLARE_DOUBLE
   // Returns a singleton instance of this class to ensure that users don't create multiple classes with
   // references to variables that should have a single constant value.

@@ -1,8 +1,9 @@
-#ifndef DRIVE_H_INCLUDED
-#define DRIVE_H_INCLUDED
+#ifndef SUBSYSTEMS_DRIVE_H_
+#define SUBSYSTEMS_DRIVE_H_
 
-#include "Constants.h"
 #include "WPILib.h"
+
+#include "config/Constants.h"
 
 class Drive {
  public:
@@ -17,4 +18,4 @@ class Drive {
 };
 
 
-#endif // DRIVE_H_INCLUDED
+#endif  // SUBSYSTEMS_DRIVE_H_

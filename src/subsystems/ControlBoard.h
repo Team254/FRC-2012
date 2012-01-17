@@ -1,5 +1,5 @@
-#ifndef CONTROLBOARD_H_
-#define CONTROLBOARD_H_
+#ifndef SUBSYSTEMS_CONTROLBOARD_H_
+#define SUBSYSTEMS_CONTROLBOARD_H_
 
 #include "WPILib.h"
 
@@ -19,10 +19,8 @@ class ControlBoard {
   double GetButtonValue(BoardButton input);
   
  private:
-  
-  
   Joystick* leftJoystick_;
   Joystick* rightJoystick_;
 };
 
-#endif //CONTROLBOARD_H_
+#endif  // SUBSYTEMS_CONTROLBOARD_H_

@@ -2,14 +2,13 @@
 
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
-  leftDriveMotors_ = new Victor(constants_->leftMotorPort);
-  rightDriveMotors_ = new Victor(constants_->rightMotorPort);
+  leftDriveMotors_ = new Victor((int)constants_->leftMotorPort);
+  rightDriveMotors_ = new Victor((int)constants_->rightMotorPort);
   drivebase_ = new Drive(leftDriveMotors_, rightDriveMotors_);
-  leftJoystick_ = new Joystick(constants_->leftJoystickPort);
-  rightJoystick_ = new Joystick(constants_->rightJoystickPort);
+  leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
+  rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
   controls_ = new ControlBoard(leftJoystick_, rightJoystick_);
 }
 
 void MainRobot::TeleopPeriodic() {
-
 }

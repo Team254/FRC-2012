@@ -4,7 +4,7 @@
 #include <vector>
 #include <utility>
 
-#include "AutoCommand.h"
+#include "auto/AutoCommand.h"
 
 /**
  * @author Eric Bakan
