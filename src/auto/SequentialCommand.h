@@ -1,3 +1,6 @@
+#ifndef AUTO_SEQUENTIAL_COMMAND_H_
+#define AUTO_SEQUENTIAL_COMMAND_H_
+
 #include <vector>
 #include <utility>
 
@@ -8,11 +11,6 @@
  *
  * Meta-command used for running multiple commands sequentially
  */
-
-
-#ifndef SRC_AUTO_SEQUENTIAL_COMMAND_H_
-#define SRC_AUTO_SEQUENTIAL_COMMAND_H_
-
 class SequentialCommand : public AutoCommand {
  public:
   /**
@@ -46,4 +44,4 @@ class SequentialCommand : public AutoCommand {
   int commandIndex_; // the index of the current command being executed
 };
 
-#endif // SRC_AUTO_SEQUENTIAL_COMMAND_H_
+#endif  // AUTO_SEQUENTIAL_COMMAND_H_

@@ -1,3 +1,6 @@
+#ifndef AUTO_CONCURRENT_COMMAND_H_
+#define AUTO_CONCURRENT_COMMAND_H_
+
 #include <vector>
 #include <utility>
 
@@ -8,10 +11,6 @@
  *
  * Meta-command used for running multiple commands concurrently
  */
-
-#ifndef SRC_AUTO_CONCURRENT_COMMAND_H_
-#define SRC_AUTO_CONCURRENT_COMMAND_H_
-
 class ConcurrentCommand : public AutoCommand {
  public:
   /**
@@ -46,5 +45,4 @@ class ConcurrentCommand : public AutoCommand {
   std::vector<CommandPair> commands_;
 };
 
-#endif // SRC_AUTO_CONCURRENT_COMMAND_H_
-
+#endif  // AUTO_CONCURRENT_COMMAND_H_

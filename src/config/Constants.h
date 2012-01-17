@@ -5,8 +5,8 @@
 // from ConstantDeclarations.h. This file is used so that values can be quickly and easily changed and tested
 // without having to recompile code each time.
 
-#ifndef SRC_CONFIG_CONSTANTS_H_
-#define SRC_CONFIG_CONSTANTS_H_
+#ifndef CONFIG_CONSTANTS_H_
+#define CONFIG_CONSTANTS_H_
 
 // See comment at top of file for a complete description of this class.
 //
@@ -36,4 +36,4 @@ class Constants {
   static Constants* instance_;
 };
 
-#endif  // SRC_CONFIG_CONSTANTS_H_
+#endif  // CONFIG_CONSTANTS_H_

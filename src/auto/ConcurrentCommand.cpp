@@ -44,4 +44,3 @@ bool ConcurrentCommand::Run() {
 
   return done;
 }
-

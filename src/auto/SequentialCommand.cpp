@@ -26,11 +26,11 @@ void SequentialCommand::Initialize() {
 
 bool SequentialCommand::Run() {
   // If all the commands are done, the SequentialCommand is done
-  if (command_Index->Run() == commands_.size()) {
+  if (commandIndex_ == (int)commands_.size()) {
     return true;
   } else if (commands_[commandIndex_]->Run()) {
     commandIndex_++;
-    if(commandIndex_ == commands_.size()) { // No more commands, SequentialCommand is done
+    if (commandIndex_ == (int)commands_.size()) { // No more commands, SequentialCommand is done
       return true;
     } else { // More commands to process, Initialize the next one
       commands_[commandIndex_]->Initialize();

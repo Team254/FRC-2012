@@ -1,13 +1,12 @@
+#ifndef AUTO_AUTO_COMMAND_H_
+#define AUTO_AUTO_COMMAND_H_
+
 /**
  * @author Eric Bakan
  *
  * Represents a command to be executed in Autonomous Mode
  * Is the base class for all other Autonomous Commands (driving, shooting, etc.)
  */
-
-#ifndef SRC_AUTO_AUTO_COMMAND_H_
-#define SRC_AUTO_AUTO_COMMAND_H_
-
 class AutoCommand {
  public:
   /**
@@ -31,5 +30,4 @@ class AutoCommand {
   virtual ~AutoCommand();
 };
 
-#endif // SRC_AUTO_AUTO_COMMAND_H_
-
+#endif  // AUTO_AUTO_COMMAND_H_
