@@ -41,3 +41,11 @@ Thumbs.db
 ##########
 *.a
 *.swp
+
+# FRC-Specific #
+################
+.wrmakefile
+.ucpp
+Makefile
+PPC603gnu
+
