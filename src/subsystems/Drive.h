@@ -8,6 +8,7 @@
 class Drive {
  public:
   Drive(Victor* leftA, Victor* leftB, Victor* rightA, Victor* rightB);
+  void SetPower(double left, double right);
   void SetLeftDrivePower(double power);
   void SetRightDrivePower(double power);
  private:
