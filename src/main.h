@@ -35,4 +35,7 @@ class MainRobot : public IterativeRobot {
   Victor* rightDriveMotorB_;
 };
 
+// Start the actual program
+START_ROBOT_CLASS(MainRobot);
+
 #endif  // MAIN_H_
