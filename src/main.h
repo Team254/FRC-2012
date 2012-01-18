@@ -27,15 +27,24 @@ class MainRobot : public IterativeRobot {
   virtual void TeleopContinuous();
 
   void SetPeriod(double period);
+  double GetPeriod();
   double GetLoopsPerSec();
  private:
+
+  double period_;
+
   Constants* constants_;
+
   ControlBoard* controls_;
   Drive* drivebase_;
+
   Joystick* leftJoystick_;
   Joystick* rightJoystick_;
-  Victor* leftDriveMotors_;
-  Victor* rightDriveMotors_;
+
+  Victor* leftDriveMotorA_;
+  Victor* leftDriveMotorB_;
+  Victor* rightDriveMotorA_;
+  Victor* rightDriveMotorB_;
 };
 
 #endif  // MAIN_H_

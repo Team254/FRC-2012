@@ -1,9 +1,11 @@
 #include "subsystems/Drive.h"
 
-Drive::Drive(Victor* left, Victor* right) {
+Drive::Drive(Victor* leftA, Victor* leftB, Victor* rightA, Victor* rightB) {
   constants = Constants::GetInstance();
-  leftDriveMotors_ = left;
-  rightDriveMotors_ = right;
+  leftDriveMotorA_ = leftA;
+  leftDriveMotorA_ = leftB;
+  rightDriveMotorB_ = rightA;
+  rightDriveMotorB_ = rightB;
 }
 
 void Drive::SetLeftDrivePower(double power) {
@@ -12,7 +14,8 @@ void Drive::SetLeftDrivePower(double power) {
   } else if (power < 1.0) {
     power = -1.0;
   }
-  leftDriveMotors_->Set(power);
+  leftDriveMotorA_->Set(power);
+  leftDriveMotorB_->Set(power);
 }
 
 void Drive::SetRightDrivePower(double power) {
@@ -21,5 +24,6 @@ void Drive::SetRightDrivePower(double power) {
   } else if (power < 1.0) {
     power = -1.0;
   }
-  rightDriveMotors_->Set(-power);
+  rightDriveMotorA_->Set(-power);
+  rightDriveMotorB_->Set(-power);
 }

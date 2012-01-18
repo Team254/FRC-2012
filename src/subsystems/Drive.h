@@ -11,8 +11,10 @@ class Drive {
   void SetLeftDrivePower(double power);
   void SetRightDrivePower(double power);
  private:
-  Victor* leftDriveMotors_;
-  Victor* rightDriveMotors_;
+  Victor* leftDriveMotorA_;
+  Victor* leftDriveMotorB_;
+  Victor* rightDriveMotorA_;
+  Victor* rightDriveMotorB_;
 
   Constants* constants;
 };
