@@ -5,8 +5,8 @@
 // used below.
 
 // Motors
-DECLARE_DOUBLE(leftMotorPortA, 1)
-DECLARE_DOUBLE(leftMotorPortB, 2)
+DECLARE_DOUBLE(leftMotorPortA, 5)
+DECLARE_DOUBLE(leftMotorPortB, 6)
 DECLARE_DOUBLE(rightMotorPortA, 3)
 DECLARE_DOUBLE(rightMotorPortB, 4)
 

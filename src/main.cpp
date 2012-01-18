@@ -30,8 +30,8 @@ void MainRobot::AutonomousPeriodic() {
 
 void MainRobot::TeleopPeriodic() {
   // Drive Code
-  double straightPower = HandleDeadband(leftJoystick_->GetRawAxis(2), 0.1);
-  double turnPower = HandleDeadband(rightJoystick_->GetRawAxis(1), 0.1);
+  double straightPower = HandleDeadband(leftJoystick_->GetY(), 0.1);
+  double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
   double leftPower = straightPower + turnPower;
   double rightPower = straightPower - turnPower;
   drivebase_->SetPower(leftPower, rightPower);
