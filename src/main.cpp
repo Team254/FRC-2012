@@ -10,13 +10,6 @@ MainRobot::MainRobot()
   drivebase_ = new Drive(leftDriveMotorA_,leftDriveMotorB_,rightDriveMotorA_,rightDriveMotorB_);
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
-  controls_ = new ControlBoard(leftJoystick_, rightJoystick_);
-}
-
-void MainRobot::StartCompetition() {
-}
-
-void MainRobot::RobotInit() {
 }
 
 void MainRobot::DisabledInit() {
@@ -36,25 +29,3 @@ void MainRobot::AutonomousPeriodic() {
 
 void MainRobot::TeleopPeriodic() {
 }
-
-void MainRobot::DisabledContinuous() {
-}
-
-void MainRobot::AutonomousContinuous() {
-}
-
-void MainRobot::TeleopContinuous() {
-}
-
-void MainRobot::SetPeriod(double period) {
-    period_=period;
-}
-
-double MainRobot::GetPeriod() {
-    return period_;
-}
-
-double MainRobot::GetLoopsPerSec() {
-    return 1.0/period_;
-}
-

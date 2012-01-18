@@ -10,10 +10,6 @@ class MainRobot : public IterativeRobot {
  public:
   MainRobot();	
 	
-  static const double kDefaultPeriod = 5e-3;	/** default period for periodic functions **/
-  virtual void StartCompetition();
-
-  virtual void RobotInit();
   virtual void DisabledInit();
   virtual void AutonomousInit();
   virtual void TeleopInit();
@@ -22,20 +18,10 @@ class MainRobot : public IterativeRobot {
   virtual void AutonomousPeriodic();
   virtual void TeleopPeriodic();
 
-  virtual void DisabledContinuous();
-  virtual void AutonomousContinuous();
-  virtual void TeleopContinuous();
-
-  void SetPeriod(double period);
-  double GetPeriod();
-  double GetLoopsPerSec();
  private:
-
-  double period_;
 
   Constants* constants_;
 
-  ControlBoard* controls_;
   Drive* drivebase_;
 
   Joystick* leftJoystick_;
