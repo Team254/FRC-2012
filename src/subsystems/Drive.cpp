@@ -3,8 +3,8 @@
 Drive::Drive(Victor* leftA, Victor* leftB, Victor* rightA, Victor* rightB) {
   constants = Constants::GetInstance();
   leftDriveMotorA_ = leftA;
-  leftDriveMotorA_ = leftB;
-  rightDriveMotorB_ = rightA;
+  leftDriveMotorB_ = leftB;
+  rightDriveMotorA_ = rightA;
   rightDriveMotorB_ = rightB;
 }
 
