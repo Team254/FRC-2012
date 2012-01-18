@@ -9,8 +9,8 @@ Drive::Drive(Victor* leftA, Victor* leftB, Victor* rightA, Victor* rightB) {
 }
 
 void Drive::SetPower(double left, double right) {
-    SetLeftDrivePower(left);
-    SetRightDrivePower(right);
+  SetLeftDrivePower(left);
+  SetRightDrivePower(right);
 }
 
 void Drive::SetLeftDrivePower(double power) {
