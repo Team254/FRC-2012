@@ -3,7 +3,6 @@
 
 #include "WPILib.h"
 
-#include "subsystems/ControlBoard.h"
 #include "subsystems/Drive.h"
 
 class MainRobot : public IterativeRobot {
@@ -17,6 +16,9 @@ class MainRobot : public IterativeRobot {
   virtual void DisabledPeriodic();
   virtual void AutonomousPeriodic();
   virtual void TeleopPeriodic();
+
+  // Helper functions
+  double HandleDeadband(double val, double deadband);
 
  private:
 

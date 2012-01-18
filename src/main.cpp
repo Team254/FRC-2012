@@ -1,5 +1,7 @@
 #include "main.h"
 
+#include <math.h>
+
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
   leftDriveMotorA_ = new Victor((int)constants_->leftMotorPortA);
@@ -27,4 +29,14 @@ void MainRobot::AutonomousPeriodic() {
 }
 
 void MainRobot::TeleopPeriodic() {
+  // Drive Code
+  double straightPower = HandleDeadband(leftJoystick_->GetRawAxis(2), 0.1);
+  double turnPower = HandleDeadband(rightJoystick_->GetRawAxis(1), 0.1);
+  double leftPower = straightPower + turnPower;
+  double rightPower = straightPower - turnPower;
+  drivebase_->SetPower(leftPower, rightPower);
+}
+
+double MainRobot::HandleDeadband(double val, double deadband) {
+  return (fabs(val) > fabs(deadband)) ? val : 0.0;
 }
