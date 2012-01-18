@@ -16,7 +16,7 @@ void Drive::SetPower(double left, double right) {
 void Drive::SetLeftDrivePower(double power) {
   if (power > 1.0) {
     power = 1.0;
-  } else if (power < 1.0) {
+  } else if (power < -1.0) {
     power = -1.0;
   }
   leftDriveMotorA_->Set(power);
@@ -26,7 +26,7 @@ void Drive::SetLeftDrivePower(double power) {
 void Drive::SetRightDrivePower(double power) {
   if (power > 1.0) {
     power = 1.0;
-  } else if (power < 1.0) {
+  } else if (power < -1.0) {
     power = -1.0;
   }
   rightDriveMotorA_->Set(-power);
