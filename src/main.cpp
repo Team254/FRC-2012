@@ -1,7 +1,6 @@
 #include "main.h"
 
-MainRobot::MainRobot() 
-    : period_(kDefaultPeriod) {
+MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
   leftDriveMotorA_ = new Victor((int)constants_->leftMotorPortA);
   leftDriveMotorB_ = new Victor((int)constants_->leftMotorPortB);
