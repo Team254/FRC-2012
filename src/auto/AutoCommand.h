@@ -14,7 +14,7 @@ class AutoCommand {
    * Is called the first time the AutoCommand is processed
    * Used to set control loop goals, etc.
    */
-  virtual void Initialize();
+  virtual void Initialize() {};
 
   /**
    * Run method
@@ -27,7 +27,7 @@ class AutoCommand {
   /**
    * Destructor, doesn't do much...
    */
-  virtual ~AutoCommand();
+  virtual ~AutoCommand() {};
 };
 
 #endif  // AUTO_AUTO_COMMAND_H_
