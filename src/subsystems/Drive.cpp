@@ -1,11 +1,12 @@
 #include "subsystems/Drive.h"
 
-Drive::Drive(Victor* leftA, Victor* leftB, Victor* rightA, Victor* rightB) {
+Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB, Encoder* leftEncoder) {
   constants = Constants::GetInstance();
-  leftDriveMotorA_ = leftA;
-  leftDriveMotorB_ = leftB;
-  rightDriveMotorA_ = rightA;
-  rightDriveMotorB_ = rightB;
+  leftDriveMotorA_ = leftVictorA;
+  leftDriveMotorB_ = leftVictorB;
+  rightDriveMotorA_ = rightVictorA;
+  rightDriveMotorB_ = rightVictorB;
+  leftDriveEncoder_ = leftEncoder;
 }
 
 void Drive::SetPower(double left, double right) {
@@ -31,4 +32,12 @@ void Drive::SetRightDrivePower(double power) {
   }
   rightDriveMotorA_->Set(-power);
   rightDriveMotorB_->Set(-power);
+}
+
+double Drive::GetLeftEncoderDistance() {
+    // Number of clicks read by encoder / number of clicks per rotation *
+    // gear ratio from encoder to wheel * wheel circumference
+
+    // Don't have current specs now, just return encoder rotations
+    return leftDriveEncoder_->Get() / 256.0;
 }

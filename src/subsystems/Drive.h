@@ -16,7 +16,7 @@ class Drive {
    * Constructor
    * Accepts the Victors and Encoders to get and set values
    */
-  Drive(Victor* leftA, Victor* leftB, Victor* rightA, Victor* rightB);
+  Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB, Encoder* leftEncoder);
 
   /**
    * Sets power to the left and right sides of the drivetrain
@@ -39,6 +39,13 @@ class Drive {
    */
   void SetRightDrivePower(double power);
 
+  /**
+   * Gets the distance travelled by the left side of the robot in meters
+   * Calculated via the wheel circumference, gear ratio, and encoder return value
+   * @param power the power to set
+   */
+  double GetLeftEncoderDistance();
+
  private:
 
   // Victors
@@ -49,6 +56,7 @@ class Drive {
   Victor* rightDriveMotorB_;
 
   // Sensors
+  Encoder* leftDriveEncoder_;
 
   Constants* constants;
 };

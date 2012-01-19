@@ -1,6 +1,7 @@
 #include "main.h"
 
 #include <math.h>
+#include <stdio.h>
 
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
@@ -8,9 +9,22 @@ MainRobot::MainRobot() {
   leftDriveMotorB_ = new Victor((int)constants_->leftMotorPortB);
   rightDriveMotorA_ = new Victor((int)constants_->rightMotorPortA);
   rightDriveMotorB_ = new Victor((int)constants_->rightMotorPortB);
-  drivebase_ = new Drive(leftDriveMotorA_,leftDriveMotorB_,rightDriveMotorA_,rightDriveMotorB_);
+  leftEncoder_ = new Encoder((int)constants_->leftEncoderPortA, (int)constants_->leftEncoderPortB);
+  leftEncoder_->Start();
+  drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_, leftEncoder_);
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
+}
+
+MainRobot::~MainRobot() {
+  delete leftDriveMotorA_;
+  delete leftDriveMotorB_;
+  delete rightDriveMotorA_;
+  delete rightDriveMotorB_;
+  delete leftEncoder_;
+  delete drivebase_;
+  delete leftJoystick_;
+  delete rightJoystick_;
 }
 
 void MainRobot::DisabledInit() {
@@ -35,6 +49,8 @@ void MainRobot::TeleopPeriodic() {
   double leftPower = straightPower + turnPower;
   double rightPower = straightPower - turnPower;
   drivebase_->SetPower(leftPower, rightPower);
+  double leftDistance = drivebase_->GetLeftEncoderDistance();
+  printf("left: %f\n",leftDistance);
 }
 
 double MainRobot::HandleDeadband(double val, double deadband) {

@@ -18,7 +18,13 @@ class MainRobot : public IterativeRobot {
    * Also constructs support subsystem classes
    */
   MainRobot();	
-	
+
+  /**
+   * Destructor
+   * Deletes all the constructed subsystems, sensors, victors, etc.
+   */
+  virtual ~MainRobot();
+
   /**
    * Runs once when the robot enters Disabled mode
    */
@@ -82,6 +88,8 @@ class MainRobot : public IterativeRobot {
   Victor* rightDriveMotorB_;
 
   // Sensors
+  Encoder* leftEncoder_;
+
 };
 
 // Start the actual program
