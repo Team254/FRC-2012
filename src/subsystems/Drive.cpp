@@ -1,12 +1,14 @@
 #include "subsystems/Drive.h"
 
-Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB, Encoder* leftEncoder) {
+Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB, Encoder* leftEncoder, Gyro* gyro) {
   constants = Constants::GetInstance();
   leftDriveMotorA_ = leftVictorA;
   leftDriveMotorB_ = leftVictorB;
   rightDriveMotorA_ = rightVictorA;
   rightDriveMotorB_ = rightVictorB;
   leftDriveEncoder_ = leftEncoder;
+  gyro_ = gyro; 
+  gyro_->Reset();
 }
 
 void Drive::SetPower(double left, double right) {
@@ -40,4 +42,18 @@ double Drive::GetLeftEncoderDistance() {
 
     // Don't have current specs now, just return encoder rotations
     return leftDriveEncoder_->Get() / 256.0;
+}
+
+double Drive::GetGyroAngle() {
+	return gyro_->GetAngle();
+}
+
+void Drive::ResetGyro() {
+	gyro_->Reset();
+}
+
+void Drive::SetGyroSensitivity(double sensitivity) {
+	gyro_->SetSensitivity(sensitivity);
+}
+	
 }
