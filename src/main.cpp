@@ -5,18 +5,22 @@
 
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
-  leftDriveMotor_ = new Victor((int)constants_->leftMotorPortA);
-  rightDriveMotor_ = new Victor((int)constants_->rightMotorPortA);
+  leftDriveMotorA_ = new Victor((int)constants_->leftMotorPortA);
+  leftDriveMotorB_ = new Victor((int)constants_->leftMotorPortB);
+  rightDriveMotorA_ = new Victor((int)constants_->rightMotorPortA);
+  rightDriveMotorB_ = new Victor((int)constants_->rightMotorPortB);
   leftEncoder_ = new Encoder((int)constants_->leftEncoderPortA, (int)constants_->leftEncoderPortB);
   leftEncoder_->Start();
-  drivebase_ = new Drive(leftDriveMotor_, rightDriveMotor_, leftEncoder_);
+  drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_, leftEncoder_);
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
 }
 
 MainRobot::~MainRobot() {
-  delete leftDriveMotor_;
-  delete rightDriveMotor_;
+  delete leftDriveMotorA_;
+  delete leftDriveMotorB_;
+  delete rightDriveMotorA_;
+  delete rightDriveMotorB_;
   delete leftEncoder_;
   delete drivebase_;
   delete leftJoystick_;

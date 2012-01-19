@@ -1,9 +1,11 @@
 #include "subsystems/Drive.h"
 
-Drive::Drive(Victor* leftVictor, Victor* rightVictor, Encoder* leftEncoder) {
+Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB, Encoder* leftEncoder) {
   constants = Constants::GetInstance();
-  leftDriveMotor_ = leftVictor;
-  rightDriveMotor_ = rightVictor;
+  leftDriveMotorA_ = leftVictorA;
+  leftDriveMotorB_ = leftVictorB;
+  rightDriveMotorA_ = rightVictorA;
+  rightDriveMotorB_ = rightVictorB;
   leftDriveEncoder_ = leftEncoder;
 }
 
@@ -18,7 +20,8 @@ void Drive::SetLeftDrivePower(double power) {
   } else if (power < -1.0) {
     power = -1.0;
   }
-  leftDriveMotor_->Set(power);
+  leftDriveMotorA_->Set(power);
+  leftDriveMotorB_->Set(power);
 }
 
 void Drive::SetRightDrivePower(double power) {
@@ -27,7 +30,8 @@ void Drive::SetRightDrivePower(double power) {
   } else if (power < -1.0) {
     power = -1.0;
   }
-  rightDriveMotor_->Set(-power);
+  rightDriveMotorA_->Set(-power);
+  rightDriveMotorB_->Set(-power);
 }
 
 double Drive::GetLeftEncoderDistance() {
