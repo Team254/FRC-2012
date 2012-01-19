@@ -7,7 +7,7 @@
 
 /**
  * @author Eric Caldwell
- * 
+ * @author Bhargava Manja
  * The main robot class. Almost all of our logic outside of individual subsystems will be placed in here.
  */
 class MainRobot : public IterativeRobot {
@@ -81,11 +81,8 @@ class MainRobot : public IterativeRobot {
   Joystick* rightJoystick_;
 
   // Motors
-
-  Victor* leftDriveMotorA_;
-  Victor* leftDriveMotorB_;
-  Victor* rightDriveMotorA_;
-  Victor* rightDriveMotorB_;
+  Victor* leftDriveMotor_;
+  Victor* rightDriveMotor_;
 
   // Sensors
   Encoder* leftEncoder_;
