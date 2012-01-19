@@ -7,7 +7,7 @@
 
 /**
  * @author Eric Caldwell
- * @author Bhargava Manja
+ * 
  * Easy-access functions for drive functions: setting power, getting encoder values, etc.
  */
 class Drive {
@@ -16,7 +16,7 @@ class Drive {
    * Constructor
    * Accepts the Victors and Encoders to get and set values
    */
-  Drive(Victor* leftVictor, Victor* rightVictor, Encoder* leftEncoder);
+  Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB, Encoder* leftEncoder);
 
   /**
    * Sets power to the left and right sides of the drivetrain
@@ -49,8 +49,11 @@ class Drive {
  private:
 
   // Victors
-  Victor* leftDriveMotor_;
-  Victor* rightDriveMotor_;
+
+  Victor* leftDriveMotorA_;
+  Victor* leftDriveMotorB_;
+  Victor* rightDriveMotorA_;
+  Victor* rightDriveMotorB_;
 
   // Sensors
   Encoder* leftDriveEncoder_;
