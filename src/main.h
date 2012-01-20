@@ -89,7 +89,7 @@ class MainRobot : public IterativeRobot {
 
   // Sensors
   Encoder* leftEncoder_;
-
+  Gyro* gyro_;
 };
 
 // Start the actual program

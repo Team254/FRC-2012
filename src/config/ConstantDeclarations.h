@@ -14,7 +14,7 @@ DECLARE_DOUBLE(rightMotorPortB, 4)
 // Sensors
 DECLARE_DOUBLE(leftEncoderPortA, 2)
 DECLARE_DOUBLE(leftEncoderPortB, 3)
-
+DECLARA_DOUBLE(gyroPort, 1)
 
 // Control Board
 DECLARE_DOUBLE(leftJoystickPort, 1)

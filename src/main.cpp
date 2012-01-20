@@ -11,7 +11,8 @@ MainRobot::MainRobot() {
   rightDriveMotorB_ = new Victor((int)constants_->rightMotorPortB);
   leftEncoder_ = new Encoder((int)constants_->leftEncoderPortA, (int)constants_->leftEncoderPortB);
   leftEncoder_->Start();
-  drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_, leftEncoder_);
+  gyro_ = new Gyro((int)constants_->gyroPort);
+  drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_, leftEncoder_, gyro_);
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
 }
@@ -25,6 +26,7 @@ MainRobot::~MainRobot() {
   delete drivebase_;
   delete leftJoystick_;
   delete rightJoystick_;
+  delete gyro_;
 }
 
 void MainRobot::DisabledInit() {
