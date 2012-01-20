@@ -56,4 +56,3 @@ void Drive::SetGyroSensitivity(double sensitivity) {
 	gyro_->SetSensitivity(sensitivity);
 }
 	
-}
