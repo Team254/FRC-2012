@@ -1,6 +1,7 @@
 #include "subsystems/Drive.h"
 
-Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB, Encoder* leftEncoder, Gyro* gyro) {
+Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
+             Encoder* leftEncoder, Gyro* gyro) {
   constants = Constants::GetInstance();
   leftDriveMotorA_ = leftVictorA;
   leftDriveMotorB_ = leftVictorB;
@@ -55,4 +56,3 @@ void Drive::ResetGyro() {
 void Drive::SetGyroSensitivity(double sensitivity) {
 	gyro_->SetSensitivity(sensitivity);
 }
-	

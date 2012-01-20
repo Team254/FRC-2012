@@ -5,63 +5,77 @@
  * 
  * Functions for getting values from the buttons and switches on the control board.
  */
-
-OperatorControl::OperatorControl(Joystick* stick)
-{
+OperatorControl::OperatorControl(Joystick* stick) {
   operatorJoystick_ = stick;
   //Constants is a singleton, so GetInstance() is used rather than a constructor or a parameter
   constants_ = Constants::GetInstance();
 }
-OperatorControl::~OperatorControl()
-{
+
+OperatorControl::~OperatorControl() {
   delete operatorJoystick_;
   delete constants_;
 }
-bool OperatorControl::GetConveyorUpButton(){
+
+bool OperatorControl::GetConveyorUpButton() {
   return operatorJoystick_->GetRawButton((int)constants_->conveyorUpPort);
 }
-bool OperatorControl::GetConveyorIndexButton(){
+
+bool OperatorControl::GetConveyorIndexButton() {
   return operatorJoystick_->GetRawButton((int)constants_->conveyorIndexPort);
 }
-bool OperatorControl::GetConveyorDownButton(){
+
+bool OperatorControl::GetConveyorDownButton() {
   return operatorJoystick_->GetRawButton((int)constants_->conveyorDownPort);
 }
-bool OperatorControl::GetFineControlLeftButton(){
+
+bool OperatorControl::GetFineControlLeftButton() {
   return operatorJoystick_->GetRawButton((int)constants_->fineControlLeftPort);
 }
-bool OperatorControl::GetFineControlRightButton(){
+
+bool OperatorControl::GetFineControlRightButton() {
   return operatorJoystick_->GetRawButton((int)constants_->fineControlRightPort);
 }
-bool OperatorControl::GetIntakeDeploySwitch(){
+
+bool OperatorControl::GetIntakeDeploySwitch() {
   return operatorJoystick_->GetRawButton((int)constants_->intakeDeployPort);
 }
-bool OperatorControl::GetPresetFenderButton(){
+
+bool OperatorControl::GetPresetFenderButton() {
   return operatorJoystick_->GetRawButton((int)constants_->presetFenderPort);
 }
-bool OperatorControl::GetPresetKeyButton(){
+
+bool OperatorControl::GetPresetKeyButton() {
   return operatorJoystick_->GetRawButton((int)constants_->presetKeyPort);
 }
-bool OperatorControl::GetPresetHalfCourtButton(){
+
+bool OperatorControl::GetPresetHalfCourtButton() {
   return operatorJoystick_->GetRawButton((int)constants_->presetHalfCourtPort);
 }
-bool OperatorControl::GetPresetFullCourtButton(){
+
+bool OperatorControl::GetPresetFullCourtButton() {
   return operatorJoystick_->GetRawButton((int)constants_->presetMaxPort);
 }
-bool OperatorControl::GetShooterSwitch(){
+
+bool OperatorControl::GetShooterSwitch() {
   return operatorJoystick_->GetRawButton((int)constants_->shooterPort);
 }
-bool OperatorControl::GetHoodIncrementButton(){
+
+bool OperatorControl::GetHoodIncrementButton() {
   return operatorJoystick_->GetRawButton((int)constants_->hoodIncrementPort);
 }
-bool OperatorControl::GetHoodDecrementButton(){
+
+bool OperatorControl::GetHoodDecrementButton() {
   return operatorJoystick_->GetRawButton((int)constants_->hoodDecrementPort);
 }
-bool OperatorControl::GetBaseLockSwitch(){
+
+bool OperatorControl::GetBaseLockSwitch() {
   return operatorJoystick_->GetRawButton((int)constants_->baseLockPort);
 }
-bool OperatorControl::GetManualOverrideSwitch(){
+
+bool OperatorControl::GetManualOverrideSwitch() {
   return operatorJoystick_->GetRawButton((int)constants_->manualOverridePort);
 }
-bool OperatorControl::GetBridgeLowererButton(){
+
+bool OperatorControl::GetBridgeLowererButton() {
   return operatorJoystick_->GetRawButton((int)constants_->bridgeLowererPort);
 }
