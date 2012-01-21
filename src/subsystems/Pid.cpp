@@ -16,9 +16,10 @@ double Pid::Update(double currentValue) {
 	double error = goal_ - currentValue;
 	double p = kP_ * error;
 	errorSum_ += error;
-	double i = kI_ * errorSum;
+	double i = kI_ * errorSum_;
 	double dError = (error - lastError_)/.01;
 	double d = kD_ * dError;
 	lastError_ = error;
 	return (p + i + d);
 }
+
