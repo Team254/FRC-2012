@@ -44,3 +44,8 @@ bool ConcurrentCommand::Run() {
 
   return done;
 }
+
+void ConcurrentCommand::AddCommand(AutoCommand* command) {
+    CommandPair cPair(command, false);
+    commands_.push_back(cPair);
+}

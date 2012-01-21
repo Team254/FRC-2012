@@ -39,3 +39,7 @@ bool SequentialCommand::Run() {
   // The current command isn't finished yet
   return false;
 }
+
+void SequentialCommand::AddCommand(AutoCommand* command) {
+    commands_.push_back(command);
+}

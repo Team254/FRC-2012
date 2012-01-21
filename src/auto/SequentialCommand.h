@@ -39,6 +39,12 @@ class SequentialCommand : public AutoCommand {
    * @return true if the last command is complete, else false
    */
   virtual bool Run();
+
+  /**
+   * Adds another command to the commands_ vector
+   * @param command the command to pass in
+   */
+  void AddCommand(AutoCommand* command);
  private:
   std::vector<AutoCommand*> commands_;
   int commandIndex_; // the index of the current command being executed

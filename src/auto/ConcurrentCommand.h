@@ -38,6 +38,12 @@ class ConcurrentCommand : public AutoCommand {
    * @return true if all of the commands are complete, else false
    */
   virtual bool Run();
+
+  /**
+   * Adds another command to the commands_ vector
+   * @param command the command to pass in
+   */
+  void AddCommand(AutoCommand* command);
  private:
   // CommandPair represents a command and its completion state.
   // The completion state is initalized to false and is updated every time Run() is called.
