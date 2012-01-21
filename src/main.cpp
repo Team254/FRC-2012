@@ -53,6 +53,7 @@ void MainRobot::TeleopPeriodic() {
   drivebase_->SetPower(leftPower, rightPower);
   double leftDistance = drivebase_->GetLeftEncoderDistance();
   printf("left: %f\n",leftDistance);
+  
 }
 
 double MainRobot::HandleDeadband(double val, double deadband) {
