@@ -7,7 +7,7 @@
 
 /**
  * @author Eric Caldwell
- * 
+ *
  * The main robot class. Almost all of our logic outside of individual subsystems will be placed in here.
  */
 class MainRobot : public IterativeRobot {
@@ -17,7 +17,7 @@ class MainRobot : public IterativeRobot {
    * Initializes all motors, sensors, and control board inputs the program will use
    * Also constructs support subsystem classes
    */
-  MainRobot();	
+  MainRobot();
 
   /**
    * Destructor
@@ -89,6 +89,7 @@ class MainRobot : public IterativeRobot {
 
   // Sensors
   Encoder* leftEncoder_;
+  Encoder* rightEncoder_;
   Gyro* gyro_;
 };
 
