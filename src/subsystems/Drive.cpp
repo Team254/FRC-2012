@@ -1,14 +1,15 @@
 #include "subsystems/Drive.h"
 
 Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
-             Encoder* leftEncoder, Gyro* gyro) {
+             Encoder* leftEncoder, Encoder* rightEncoder, Gyro* gyro) {
   constants = Constants::GetInstance();
   leftDriveMotorA_ = leftVictorA;
   leftDriveMotorB_ = leftVictorB;
   rightDriveMotorA_ = rightVictorA;
   rightDriveMotorB_ = rightVictorB;
   leftDriveEncoder_ = leftEncoder;
-  gyro_ = gyro; 
+  rightDriveEncoder_ = rightEncoder;
+  gyro_ = gyro;
   gyro_->Reset();
 }
 
@@ -43,6 +44,14 @@ double Drive::GetLeftEncoderDistance() {
 
     // Don't have current specs now, just return encoder rotations
     return leftDriveEncoder_->Get() / 256.0;
+}
+
+double Drive::GetRightEncoderDistance() {
+  // Number of clicks read by encoder / number of clicks per rotation *
+  // gear ratio from encoder to wheel * wheel circumference
+
+  // Don't have current specs now, just return encoder rotations
+  return rightDriveEncoder_->Get() / 256.0;
 }
 
 double Drive::GetGyroAngle() {

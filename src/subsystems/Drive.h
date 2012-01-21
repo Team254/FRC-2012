@@ -17,7 +17,7 @@ class Drive {
    * Accepts the Victors and Encoders to get and set values
    */
   Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
-        Encoder* leftEncoder, Gyro* gyro);
+        Encoder* leftEncoder, Encoder* rightEncoder_, Gyro* gyro);
 
   /**
    * Sets power to the left and right sides of the drivetrain
@@ -46,7 +46,13 @@ class Drive {
    * @param power the power to set
    */
   double GetLeftEncoderDistance();
-  
+
+  /**
+   * Gets the distance travelled by the right side of the robot in meters
+   * Calculated via the wheel circumference, gear ratio, and encoder return value
+   */
+  double GetRightEncoderDistance();
+
   /**
    * Returns current gyro angle. Gyro is reset after instance is created
    */
@@ -59,8 +65,8 @@ class Drive {
   void SetGyroSensitivity(double sensitivity);
 
   /**
-   * Resets gyro so that current angle becomes new 0 degrees. Makes sequential turns 
-   * easier. Also required to make sensor values accurate after noise is encountered 
+   * Resets gyro so that current angle becomes new 0 degrees. Makes sequential turns
+   * easier. Also required to make sensor values accurate after noise is encountered
    */
   void ResetGyro();
  private:
@@ -74,6 +80,7 @@ class Drive {
 
   // Sensors
   Encoder* leftDriveEncoder_;
+  Encoder* rightDriveEncoder_;
   Gyro* gyro_;
   Constants* constants;
 };

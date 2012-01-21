@@ -11,8 +11,11 @@ MainRobot::MainRobot() {
   rightDriveMotorB_ = new Victor((int)constants_->rightMotorPortB);
   leftEncoder_ = new Encoder((int)constants_->leftEncoderPortA, (int)constants_->leftEncoderPortB);
   leftEncoder_->Start();
+  rightEncoder_ = new Encoder((int)constants_->rightEncoderPortA, (int)constants_->rightEncoderPortB);
+  rightEncoder_->Start();
   gyro_ = new Gyro((int)constants_->gyroPort);
-  drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_, leftEncoder_, gyro_);
+  drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_, leftEncoder_,
+                         rightEncoder_, gyro_);
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
 }
@@ -23,6 +26,7 @@ MainRobot::~MainRobot() {
   delete rightDriveMotorA_;
   delete rightDriveMotorB_;
   delete leftEncoder_;
+  delete rightEncoder_;
   delete drivebase_;
   delete leftJoystick_;
   delete rightJoystick_;
@@ -53,6 +57,8 @@ void MainRobot::TeleopPeriodic() {
   drivebase_->SetPower(leftPower, rightPower);
   double leftDistance = drivebase_->GetLeftEncoderDistance();
   printf("left: %f\n",leftDistance);
+  double rightDistance = drivebase_->GetRightEncoderDistance();
+  printf("right: %f\n",rightDistance);
 }
 
 double MainRobot::HandleDeadband(double val, double deadband) {
