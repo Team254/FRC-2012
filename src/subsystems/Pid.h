@@ -6,6 +6,7 @@
 /**
  * @author Bhargava Manja
  * @author Francisco Sanchez
+ *
  * Pid class for generic error correction: scales error to create next motor input and achieve desired value
  */
 class Pid {
@@ -33,10 +34,13 @@ class Pid {
   double kP_;
   double kI_;
   double kD_;
+
   //goal to be achieved
   double goal_;
+
   //sum of past errors used to create integral term
   double errorSum_;
+
   //last error, used to find error difference to create derivative term
   double lastError_;
 };

@@ -10,8 +10,8 @@ Pid::Pid(double kP, double kI, double kD) {
 
 void Pid::SetGoal(double goal) {
   goal_ = goal;
-  errorSum_=0.0;
-  lastError_=0.0;
+  errorSum_ = 0.0;
+  lastError_ = 0.0;
 }
 
 double Pid::Update(double currentValue) {
@@ -19,9 +19,10 @@ double Pid::Update(double currentValue) {
   double p = kP_ * error;
   errorSum_ += error;
   double i = kI_ * errorSum_;
-  double dError = (error - lastError_)/.01;
+  double dError = (error - lastError_) / .01;
   double d = kD_ * dError;
   lastError_ = error;
+
   return (p + i + d);
 }
 
