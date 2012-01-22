@@ -15,25 +15,16 @@ Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Vic
   gyro_->Reset();
 }
 
-void Drive::SetPower(double left, double right) {
-  left = SetLimit(left);
-  right = SetLimit(right);
-  leftDriveMotorA_->Set(left);
-  leftDriveMotorB_->Set(left);
-  rightDriveMotorA_->Set(right);
-  rightDriveMotorB_->Set(right);
-}
-
 void Drive::SetLinearPower(double left, double right) {
    SetPower(Linearize(left), Linearize(right));
 }
 
 double Drive::GetLeftEncoderDistance() {
-    // Number of clicks read by encoder / number of clicks per rotation *
-    // gear ratio from encoder to wheel * wheel circumference
+  // Number of clicks read by encoder / number of clicks per rotation *
+  // gear ratio from encoder to wheel * wheel circumference
 
-    // Don't have current specs now, just return encoder rotations
-    return leftDriveEncoder_->Get() / 256.0;
+  // Don't have current specs now, just return encoder rotations
+  return leftDriveEncoder_->Get() / 256.0;
 }
 
 double Drive::GetRightEncoderDistance() {
@@ -45,15 +36,24 @@ double Drive::GetRightEncoderDistance() {
 }
 
 double Drive::GetGyroAngle() {
-	return gyro_->GetAngle();
+  return gyro_->GetAngle();
 }
 
 void Drive::ResetGyro() {
-	gyro_->Reset();
+  gyro_->Reset();
 }
 
 void Drive::SetGyroSensitivity(double sensitivity) {
-	gyro_->SetSensitivity(sensitivity);
+  gyro_->SetSensitivity(sensitivity);
+}
+
+void Drive::SetPower(double left, double right) {
+  left = SetLimit(left);
+  right = SetLimit(right);
+  leftDriveMotorA_->Set(left);
+  leftDriveMotorB_->Set(left);
+  rightDriveMotorA_->Set(right);
+  rightDriveMotorB_->Set(right);
 }
 
 double Drive::Linearize(double x) {
