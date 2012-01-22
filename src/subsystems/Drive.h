@@ -8,6 +8,7 @@
 /**
  * @author Eric Caldwell
  * @author Bhargava Manja
+ * @author Art Kalb
  * Easy-access functions for drive functions: setting power, getting encoder values, etc.
  */
 class Drive {
@@ -27,6 +28,13 @@ class Drive {
   void SetPower(double left, double right);
 
   /**
+   * Makes drive power linear to input, then sets power to the respective side of the drivetrain
+   * @param left left power
+   * @param right right power
+   */
+  void SetLinearPower(double left, double right);
+
+ /**
    * Sets the power to the left wheel
    * Automatically caps the power to +1.0 or -1.0
    * @param power the power to set
@@ -69,7 +77,13 @@ class Drive {
    * easier. Also required to make sensor values accurate after noise is encountered
    */
   void ResetGyro();
+
  private:
+  /**
+   * Gets the value which will linearize input
+   * @param x the value which will be modified
+   */
+  double Linearize(double x);
 
   // Victors
 

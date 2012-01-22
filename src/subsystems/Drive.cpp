@@ -1,5 +1,7 @@
 #include "subsystems/Drive.h"
 
+#include <cmath>
+
 Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
              Encoder* leftEncoder, Encoder* rightEncoder, Gyro* gyro) {
   constants = Constants::GetInstance();
@@ -16,6 +18,10 @@ Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Vic
 void Drive::SetPower(double left, double right) {
   SetLeftDrivePower(left);
   SetRightDrivePower(right);
+}
+
+void Drive::SetLinearPower(double left, double right) {
+   SetPower(Linearize(left), Linearize(right));
 }
 
 void Drive::SetLeftDrivePower(double power) {
@@ -64,4 +70,13 @@ void Drive::ResetGyro() {
 
 void Drive::SetGyroSensitivity(double sensitivity) {
 	gyro_->SetSensitivity(sensitivity);
+}
+
+double Drive::Linearize(double x) {
+  if (x >= 0) {
+    return constants->linearCoeffA * pow(x, 4) + constants->linearCoeffB * pow(x, 3) +
+        constants->linearCoeffC * pow(x, 2) + constants->linearCoeffD * x + constants->linearCoeffE;
+  } else {
+    return -Linearize(-x);
+  }
 }
