@@ -10,10 +10,8 @@ DriveCommand::DriveCommand(Drive* drive, double distance) {
 	distanceGoal_ = distance;
 }
 
-void DistanceGoal::Initialize() {
-	drive_->ResetLeftEncoder();
-	drive_->ResetRightEncoder();
-	drive_->ResetGyro();
+void DriveCommand::Initialize() {
+	drive_->ResetEncoders();
 }
 
 bool DriveCommand::Run() {
@@ -28,7 +26,7 @@ bool DriveCommand::Run() {
 	return false;
 }
 
-DistanceGoal::~DistanceGoal() {
+DriveCommand::~DriveCommand() {
 	delete leftPid_;
 	delete rightPid_;
 	delete drive_;

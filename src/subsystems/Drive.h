@@ -41,7 +41,8 @@ class Drive {
    * @return inches travelled by the right encoder
    */
   double GetRightEncoderDistance();
-
+  
+  void ResetEncoders();
   /**
    * Returns current gyro angle. Gyro is reset after instance is created
    * @return the gyro angle in degrees

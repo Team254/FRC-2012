@@ -35,6 +35,11 @@ double Drive::GetRightEncoderDistance() {
   return rightDriveEncoder_->Get() / 256.0;
 }
 
+void Drive::ResetEncoders() {
+	leftDriveEncoder_->Reset();
+	rightDriveEncoder_->Reset();
+}
+
 double Drive::GetGyroAngle() {
   return gyro_->GetAngle();
 }
