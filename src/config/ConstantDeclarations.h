@@ -18,6 +18,15 @@ DECLARE_DOUBLE(rightEncoderPortA, 4)
 DECLARE_DOUBLE(rightEncoderPortB, 5)
 DECLARE_DOUBLE(gyroPort, 1)
 
+// Vision
+DECLARE_DOUBLE(thresholdHMin, 0)
+DECLARE_DOUBLE(thresholdHMax, 255)
+DECLARE_DOUBLE(thresholdSMin, 0)
+DECLARE_DOUBLE(thresholdSMax, 255)
+DECLARE_DOUBLE(thresholdVMin, 0)
+DECLARE_DOUBLE(thresholdVMax, 255)
+
+
 // Control Board
 DECLARE_DOUBLE(leftJoystickPort, 1)
 DECLARE_DOUBLE(rightJoystickPort, 2)

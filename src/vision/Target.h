@@ -9,6 +9,7 @@ class Target {
   double GetX();
   int GetDistance();
   bool CanSeeTarget();
+  double GetAngle();
   static void VisionTask();
   void Start();
   void Stop();

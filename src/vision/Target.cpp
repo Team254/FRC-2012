@@ -1,4 +1,5 @@
 #include "vision/Target.h"
+#include "config/Constants.h"
 
 Target::Target() {
   task = new Task("VisionTask", (FUNCPTR) Target::VisionTask);
@@ -33,9 +34,19 @@ void Target::Stop() {
 }
 
 void Target::FindTarget() {
+  Constants* constants = Constants::GetInstance();
+
+  AxisCamera &camera = AxisCamera::GetInstance("10.2.54.90");
+
+  ColorImage img(IMAQ_IMAGE_RGB);
+  camera.GetImage(&img);
+  Threshold thresh = Threshold(constants->thresholdHMin, constants->thresholdHMax,
+                               constants->thresholdSMin, constants->thresholdSMax,
+                               constants->thresholdVMin, constants->thresholdVMax);
+  BinaryImage* bimg = img.ThresholdHSV(thresh);
+
   static int i = 0;
   i++;
-  AxisCamera &camera = AxisCamera::GetInstance("10.2.54.90");
   DriverStationLCD::GetInstance()->Printf(DriverStationLCD::kUser_Line1,1,"i: %d" , i);
   DriverStationLCD::GetInstance()->UpdateLCD();
 }
@@ -51,4 +62,3 @@ int Target::GetDistance() {
 bool Target::CanSeeTarget() {
   return seesTarget_;
 }
-
