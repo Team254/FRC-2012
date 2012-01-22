@@ -8,6 +8,8 @@
 /**
  * @author Eric Caldwell
  * @author Bhargava Manja
+ * @author Art Kalb
+ * 
  * Easy-access functions for drive functions: setting power, getting encoder values, etc.
  */
 class Drive {
@@ -20,47 +22,36 @@ class Drive {
         Encoder* leftEncoder, Encoder* rightEncoder_, Gyro* gyro);
 
   /**
-   * Sets power to the left and right sides of the drivetrain
+   * Makes drive power linear to input, then sets power to the respective side of the drivetrain
    * @param left left power
    * @param right right power
    */
-  void SetPower(double left, double right);
+  void SetLinearPower(double left, double right);
 
   /**
-   * Sets the power to the left wheel
-   * Automatically caps the power to +1.0 or -1.0
-   * @param power the power to set
-   */
-  void SetLeftDrivePower(double power);
-
-  /**
-   * Sets the power to the left wheel
-   * Automatically caps the power to +1.0 or -1.0
-   * @param power the power to set
-   */
-  void SetRightDrivePower(double power);
-
-  /**
-   * Gets the distance travelled by the left side of the robot in meters
+   * Gets the distance travelled by the left side of the robot in inches
    * Calculated via the wheel circumference, gear ratio, and encoder return value
-   * @param power the power to set
+   * @return inches travelled by the left encoder
    */
   double GetLeftEncoderDistance();
 
   /**
    * Gets the distance travelled by the right side of the robot in meters
    * Calculated via the wheel circumference, gear ratio, and encoder return value
+   * @return inches travelled by the right encoder
    */
   double GetRightEncoderDistance();
 
   /**
    * Returns current gyro angle. Gyro is reset after instance is created
+   * @return the gyro angle in degrees
    */
   double GetGyroAngle();
 
   /**
    * Sets gyro's sensitivity. Input is in V/sec, so remember to divide argument
    * by 1000 if spec sheet says mV, which is most common
+   * @param sensitivity the sensitivity to set
    */
   void SetGyroSensitivity(double sensitivity);
 
@@ -69,10 +60,32 @@ class Drive {
    * easier. Also required to make sensor values accurate after noise is encountered
    */
   void ResetGyro();
+
  private:
+  /**
+   * Sets unlinearized power to the left and right sides of the drivetrain
+   * @param left left power
+   * @param right right power
+   */
+  void SetPower(double left, double right);
+
+  /**
+   * Linearizes an Victor input pwm based on the pre-calculated linearization polynomial
+   * @param pwm the desired pwm
+   * @return the de-linearized victor pwm output
+   */
+  double Linearize(double x);
+
+  /**
+   * Caps a value to plus or minus 1.0
+   * @param val the value to be limited
+   * @return the capped value
+   */
+  double SetLimit(double x);
+
+  // Data Members
 
   // Victors
-
   Victor* leftDriveMotorA_;
   Victor* leftDriveMotorB_;
   Victor* rightDriveMotorA_;
@@ -82,6 +95,8 @@ class Drive {
   Encoder* leftDriveEncoder_;
   Encoder* rightDriveEncoder_;
   Gyro* gyro_;
+
+  // Other Data Members
   Constants* constants;
 };
 

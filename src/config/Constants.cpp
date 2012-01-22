@@ -46,16 +46,16 @@ void Constants::LoadFile() {
   std::ifstream constantsFile(kConstantsFile);
   std::map<std::string, std::string> constantsMap;
   if (constantsFile.is_open()) {
-		while (!constantsFile.eof()) {
-			std::string key;
-			getline(constantsFile, key, '=');
+    while (!constantsFile.eof()) {
+    std::string key;
+    getline(constantsFile, key, '=');
 
-      std::string value;
-			getline(constantsFile, value);
-			constantsMap[key] = value;
-		}
-		constantsFile.close();
-	}
+    std::string value;
+    getline(constantsFile, value);
+    constantsMap[key] = value;
+    }
+  constantsFile.close();
+}
 #define DECLARE_DOUBLE(name, defaultValue) \
   if(constantsMap.find(#name) != constantsMap.end()) { \
     name = atof(constantsMap[#name].c_str()); \

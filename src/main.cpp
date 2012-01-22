@@ -54,7 +54,7 @@ void MainRobot::TeleopPeriodic() {
   double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
   double leftPower = straightPower + turnPower;
   double rightPower = straightPower - turnPower;
-  drivebase_->SetPower(leftPower, rightPower);
+  drivebase_->SetLinearPower(leftPower, rightPower);
   double leftDistance = drivebase_->GetLeftEncoderDistance();
   printf("left: %f\n",leftDistance);
   double rightDistance = drivebase_->GetRightEncoderDistance();

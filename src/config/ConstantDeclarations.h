@@ -48,3 +48,10 @@ DECLARE_DOUBLE(hoodDecrementPort, 16)
 DECLARE_DOUBLE(baseLockPort, 17)
 DECLARE_DOUBLE(manualOverridePort, 18)
 DECLARE_DOUBLE(bridgeLowererPort, 19)
+
+// Linearization
+DECLARE_DOUBLE(linearCoeffA, 3.7436)
+DECLARE_DOUBLE(linearCoeffB, -5.6125)
+DECLARE_DOUBLE(linearCoeffC, 2.3487)
+DECLARE_DOUBLE(linearCoeffD, -0.0827)
+DECLARE_DOUBLE(linearCoeffE, 0.0913)
