@@ -34,19 +34,6 @@ class Drive {
    */
   void SetLinearPower(double left, double right);
 
- /**
-   * Sets the power to the left wheel
-   * Automatically caps the power to +1.0 or -1.0
-   * @param power the power to set
-   */
-  void SetLeftDrivePower(double power);
-
-  /**
-   * Sets the power to the left wheel
-   * Automatically caps the power to +1.0 or -1.0
-   * @param power the power to set
-   */
-  void SetRightDrivePower(double power);
 
   /**
    * Gets the distance travelled by the left side of the robot in meters
@@ -84,6 +71,11 @@ class Drive {
    * @param x the value which will be modified
    */
   double Linearize(double x);
+
+  /**
+   * If the input is out of bounds, returns the max or min
+   */
+  double SetLimit(double x);
 
   // Victors
 

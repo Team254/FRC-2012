@@ -16,32 +16,16 @@ Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Vic
 }
 
 void Drive::SetPower(double left, double right) {
-  SetLeftDrivePower(left);
-  SetRightDrivePower(right);
+  left = SetLimit(left);
+  right = SetLimit(right);
+  leftDriveMotorA_->Set(left);
+  leftDriveMotorB_->Set(left);
+  rightDriveMotorA_->Set(right);
+  rightDriveMotorB_->Set(right);
 }
 
 void Drive::SetLinearPower(double left, double right) {
    SetPower(Linearize(left), Linearize(right));
-}
-
-void Drive::SetLeftDrivePower(double power) {
-  if (power > 1.0) {
-    power = 1.0;
-  } else if (power < -1.0) {
-    power = -1.0;
-  }
-  leftDriveMotorA_->Set(power);
-  leftDriveMotorB_->Set(power);
-}
-
-void Drive::SetRightDrivePower(double power) {
-  if (power > 1.0) {
-    power = 1.0;
-  } else if (power < -1.0) {
-    power = -1.0;
-  }
-  rightDriveMotorA_->Set(-power);
-  rightDriveMotorB_->Set(-power);
 }
 
 double Drive::GetLeftEncoderDistance() {
@@ -78,5 +62,15 @@ double Drive::Linearize(double x) {
         constants->linearCoeffC * pow(x, 2) + constants->linearCoeffD * x + constants->linearCoeffE;
   } else {
     return -Linearize(-x);
+  }
+}
+
+double Drive::SetLimit(double x) {
+  if (x > 1.0) {
+    return 1.0;
+  } else if (x < -1.0) {
+    return -1.0;
+  } else {
+    return x;
   }
 }
