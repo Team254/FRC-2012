@@ -39,9 +39,11 @@ void MainRobot::DisabledInit() {
 }
 
 void MainRobot::AutonomousInit() {
+  constants_->LoadFile();
 }
 
 void MainRobot::TeleopInit() {
+  constants_->LoadFile();
 }
 
 void MainRobot::DisabledPeriodic() {
