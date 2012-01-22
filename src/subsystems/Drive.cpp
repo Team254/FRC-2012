@@ -52,16 +52,18 @@ void Drive::SetPower(double left, double right) {
   right = SetLimit(right);
   leftDriveMotorA_->Set(left);
   leftDriveMotorB_->Set(left);
-  rightDriveMotorA_->Set(right);
-  rightDriveMotorB_->Set(right);
+  rightDriveMotorA_->Set(-right);
+  rightDriveMotorB_->Set(-right);
 }
 
 double Drive::Linearize(double x) {
-  if (x >= 0) {
+  if (x > 0) {
     return constants->linearCoeffA * pow(x, 4) + constants->linearCoeffB * pow(x, 3) +
         constants->linearCoeffC * pow(x, 2) + constants->linearCoeffD * x + constants->linearCoeffE;
-  } else {
+  } else if (x < 0) {
     return -Linearize(-x);
+  } else {
+    return 0;
   }
 }
 
