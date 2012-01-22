@@ -4,6 +4,7 @@
 #include "WPILib.h"
 
 #include "subsystems/Drive.h"
+#include "vision/Target.h"
 
 /**
  * @author Eric Caldwell
@@ -70,6 +71,9 @@ class MainRobot : public IterativeRobot {
   // Constants
 
   Constants* constants_;
+
+  // Vision
+  Target* target_;
 
   // Subsystems
 

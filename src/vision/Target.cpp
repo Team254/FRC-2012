@@ -1,6 +1,8 @@
 #include "vision/Target.h"
 #include "config/Constants.h"
 
+Target* Target::instance_ = NULL;
+
 Target::Target() {
   task = new Task("VisionTask", (FUNCPTR) Target::VisionTask);
   task->Start();
@@ -12,7 +14,8 @@ Target::~Target(){
 }
 
 Target* Target::GetInstance() {
-  if (!instance_) {
+  //if (!instance_) {
+  if (instance_ == NULL) {
     instance_ = new Target();
   }
   return instance_;

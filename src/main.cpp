@@ -5,6 +5,7 @@
 
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
+  target_ = Target::GetInstance();
   leftDriveMotorA_ = new Victor((int)constants_->leftMotorPortA);
   leftDriveMotorB_ = new Victor((int)constants_->leftMotorPortB);
   rightDriveMotorA_ = new Victor((int)constants_->rightMotorPortA);
@@ -21,16 +22,17 @@ MainRobot::MainRobot() {
 }
 
 MainRobot::~MainRobot() {
-  delete leftDriveMotorA_;
-  delete leftDriveMotorB_;
-  delete rightDriveMotorA_;
-  delete rightDriveMotorB_;
-  delete leftEncoder_;
+  // Typically members should be deleted in the order they're created
+  delete gyro_;
   delete rightEncoder_;
   delete drivebase_;
   delete leftJoystick_;
   delete rightJoystick_;
-  delete gyro_;
+  delete leftEncoder_;
+  delete rightDriveMotorB_;
+  delete rightDriveMotorA_;
+  delete leftDriveMotorB_;
+  delete leftDriveMotorA_;
 }
 
 void MainRobot::DisabledInit() {
