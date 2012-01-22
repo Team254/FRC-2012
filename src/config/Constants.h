@@ -32,9 +32,12 @@ class Constants {
    * To be used in place of constructor for this class.
    */
   static Constants* GetInstance();
- private:
-  /** Opens a specified filepath and replaces the default values with ones specified in the open file. */
+
+  /**
+   *  Opens a specified filepath and replaces the default values with ones specified in the open file.
+   */
   void LoadFile();
+ private:
   /** 
    * Enters default values for every everything entered in ConstantDeclarations.h and then replaces them
    * using LoadFile().
