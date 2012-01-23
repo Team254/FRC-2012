@@ -2,8 +2,8 @@
 
 #include <stdarg.h>
 
-ConcurrentCommand::ConcurrentCommand(int numCommands, ...)
-    : commands_(numCommands) {
+ConcurrentCommand::ConcurrentCommand(int numCommands, ...) {
+  commands_.reserve(numCommands);
   va_list vl;
   va_start(vl, numCommands);
   for (int i = 0; i < numCommands; i++) {

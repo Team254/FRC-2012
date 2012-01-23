@@ -1,7 +1,9 @@
 #include "auto/SequentialCommand.h"
 
-SequentialCommand::SequentialCommand(int numCommands, ...)
-    : commands_(numCommands) {
+#include <stdarg.h>
+
+SequentialCommand::SequentialCommand(int numCommands, ...) {
+  commands_.reserve(numCommands);
   va_list vl;
   va_start(vl, numCommands);
   for (int i = 0; i < numCommands; i++) {
