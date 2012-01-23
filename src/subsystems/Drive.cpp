@@ -32,12 +32,12 @@ double Drive::GetRightEncoderDistance() {
   // gear ratio from encoder to wheel * wheel circumference
 
   // Don't have current specs now, just return encoder rotations
-  return rightDriveEncoder_->Get() / 256.0;
+  return rightDriveEncoder_->Get() / 128.0;
 }
 
 void Drive::ResetEncoders() {
-	leftDriveEncoder_->Reset();
-	rightDriveEncoder_->Reset();
+  leftDriveEncoder_->Reset();
+  rightDriveEncoder_->Reset();
 }
 
 double Drive::GetGyroAngle() {

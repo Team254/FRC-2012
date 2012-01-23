@@ -14,8 +14,8 @@ DECLARE_DOUBLE(rightMotorPortB, 4)
 // Sensors
 DECLARE_DOUBLE(leftEncoderPortA, 2)
 DECLARE_DOUBLE(leftEncoderPortB, 3)
-DECLARE_DOUBLE(rightEncoderPortA, 4)
-DECLARE_DOUBLE(rightEncoderPortB, 5)
+DECLARE_DOUBLE(rightEncoderPortA, 11)
+DECLARE_DOUBLE(rightEncoderPortB, 12)
 DECLARE_DOUBLE(gyroPort, 1)
 
 // Vision
