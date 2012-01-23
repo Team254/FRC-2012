@@ -43,7 +43,7 @@ void MainRobot::DisabledInit() {
 
 void MainRobot::AutonomousInit() {
   constants_->LoadFile();
-  test->Initialize();
+  pidTest->Initialize();
 }
 
 void MainRobot::TeleopInit() {
@@ -54,7 +54,8 @@ void MainRobot::DisabledPeriodic() {
 }
 
 void MainRobot::AutonomousPeriodic() {
-	test->Run();
+	pidTest->Run();
+	double leftDistance = drivebase_->GetLeftEncoderDistance();
 }
 
 void MainRobot::TeleopPeriodic() {
@@ -65,9 +66,8 @@ void MainRobot::TeleopPeriodic() {
   double rightPower = straightPower - turnPower;
   drivebase_->SetLinearPower(leftPower, rightPower);
   double leftDistance = drivebase_->GetLeftEncoderDistance();
-  printf("left: %f\n",leftDistance);
   double rightDistance = drivebase_->GetRightEncoderDistance();
-  printf("right: %f\n",rightDistance);
+  printf("leftDistance: %f \n", leftDistance);
 }
 
 double MainRobot::HandleDeadband(double val, double deadband) {

@@ -16,12 +16,12 @@ void DriveCommand::Initialize() {
 
 bool DriveCommand::Run() {
 	double currLeftDist = drive_->GetLeftEncoderDistance();
-	double currRightDist = drive_->GetRightEncoderDistance();
+	//Bhargee: have to change this, we only had 1 encoder
+	double currRightDist = drive_->GetLeftEncoderDistance();
 	if(currLeftDist == distanceGoal_ && currRightDist == distanceGoal_) 
 		return true;
 	double leftPwr = leftPid_->Update(currLeftDist);
 	double rightPwr = rightPid_->Update(currRightDist);
-	
 	drive_->SetLinearPower(leftPwr, rightPwr);
 	return false;
 }

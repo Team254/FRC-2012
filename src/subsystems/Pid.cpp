@@ -22,7 +22,7 @@ double Pid::Update(double currentValue) {
   double dError = (error - lastError_) / .01;
   double d = kD_ * dError;
   lastError_ = error;
-
+  printf("Current Value: %f \n error: %f \n new power: %f \n\n", currentValue, error, p+i+d);
   return (p + i + d);
 }
 

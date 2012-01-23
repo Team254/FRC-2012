@@ -37,6 +37,7 @@ void Target::Stop() {
 }
 
 void Target::FindTarget() {
+  /*
   Constants* constants = Constants::GetInstance();
 
   AxisCamera &camera = AxisCamera::GetInstance("10.2.54.90");
@@ -52,6 +53,7 @@ void Target::FindTarget() {
   i++;
   DriverStationLCD::GetInstance()->Printf(DriverStationLCD::kUser_Line1,1,"i: %d" , i);
   DriverStationLCD::GetInstance()->UpdateLCD();
+  */
 }
 
 double Target::GetX() {

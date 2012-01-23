@@ -24,7 +24,7 @@ double Drive::GetLeftEncoderDistance() {
   // gear ratio from encoder to wheel * wheel circumference
 
   // Don't have current specs now, just return encoder rotations
-  return leftDriveEncoder_->Get() / 256.0;
+  return -leftDriveEncoder_->Get() / 256.0;
 }
 
 double Drive::GetRightEncoderDistance() {
