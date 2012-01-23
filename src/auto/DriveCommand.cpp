@@ -3,9 +3,9 @@
 DriveCommand::DriveCommand(Drive* drive, double distance) {
 	drive_ = drive;
 	distanceGoal_ = distance;
-	leftPid_ = new Pid(0, 0, 0);
+	leftPid_ = new Pid(.1, 0, 0);
 	leftPid_->SetGoal(distanceGoal_);
-	rightPid_ = new Pid(0, 0, 0);
+	rightPid_ = new Pid(.1, 0, 0);
 	rightPid_->SetGoal(distanceGoal_);
 	distanceGoal_ = distance;
 }

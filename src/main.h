@@ -3,6 +3,8 @@
 
 #include "WPILib.h"
 
+#include "auto/DriveCommand.h"
+#include "auto/SequentialCommand.h"
 #include "subsystems/Drive.h"
 #include "vision/Target.h"
 
@@ -95,6 +97,11 @@ class MainRobot : public IterativeRobot {
   Encoder* leftEncoder_;
   Encoder* rightEncoder_;
   Gyro* gyro_;
+  
+  //Autonomous stuff for testing purposes
+  //we should add an autoscripts directory for these, and run those for neatness' sake
+  SequentialCommand* test;
+  DriveCommand* pidTest;
 };
 
 // Start the actual program

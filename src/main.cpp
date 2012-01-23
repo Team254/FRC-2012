@@ -19,6 +19,9 @@ MainRobot::MainRobot() {
                          rightEncoder_, gyro_);
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
+  //Autonomous stuff goes here
+  pidTest = new DriveCommand (drivebase_, 36);
+  test = new SequentialCommand(1, pidTest);
 }
 
 MainRobot::~MainRobot() {
@@ -40,6 +43,7 @@ void MainRobot::DisabledInit() {
 
 void MainRobot::AutonomousInit() {
   constants_->LoadFile();
+  test->Initialize();
 }
 
 void MainRobot::TeleopInit() {
@@ -50,6 +54,7 @@ void MainRobot::DisabledPeriodic() {
 }
 
 void MainRobot::AutonomousPeriodic() {
+	test->Run();
 }
 
 void MainRobot::TeleopPeriodic() {
