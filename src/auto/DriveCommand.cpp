@@ -3,6 +3,7 @@
 DriveCommand::DriveCommand(Drive* drive, double distance) {
 	drive_ = drive;
 	distanceGoal_ = distance;
+	//set constanst for tuning here
 	leftPid_ = new Pid(.1, 0, 0);
 	leftPid_->SetGoal(distanceGoal_);
 	rightPid_ = new Pid(.1, 0, 0);
@@ -16,13 +17,16 @@ void DriveCommand::Initialize() {
 
 bool DriveCommand::Run() {
 	double currLeftDist = drive_->GetLeftEncoderDistance();
-	//Bhargee: have to change this, we only had 1 encoder
-	double currRightDist = drive_->GetLeftEncoderDistance();
-	if(currLeftDist == distanceGoal_ && currRightDist == distanceGoal_) 
+	double currRightDist = drive_->GetRightEncoderDistance();
+	//if goal reached, return true so current command can be popped off queue
+	if(currLeftDist == distanceGoal_ && currRightDist == distanceGoal_) {
 		return true;
+	}
+	//get PID feedback and send back to motors
 	double leftPwr = leftPid_->Update(currLeftDist);
 	double rightPwr = rightPid_->Update(currRightDist);
 	drive_->SetLinearPower(leftPwr, rightPwr);
+	//indicates that goal is not reached
 	return false;
 }
 
