@@ -5,7 +5,8 @@
 
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
-  target_ = Target::GetInstance();
+  target_ = new BackboardFinder();
+  target_->Start();
   leftDriveMotorA_ = new Victor((int)constants_->leftMotorPortA);
   leftDriveMotorB_ = new Victor((int)constants_->leftMotorPortB);
   rightDriveMotorA_ = new Victor((int)constants_->rightMotorPortA);
