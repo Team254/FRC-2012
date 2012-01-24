@@ -3,28 +3,18 @@
 
 #include "WPILib.h"
 
-class Target {
+class VisionProcess {
  public:
-  static Target* GetInstance();
-  double GetX();
-  int GetDistance();
-  bool CanSeeTarget();
-  double GetAngle();
-  static void VisionTask();
+  static void VisionTask(VisionProcess*);
   void Start();
   void Stop();
+  VisionProcess();
+  virtual ~VisionProcess();
 
  private:
-  void FindTarget();
-  Target();
-  ~Target();
-
-  int distance_;
-  double x_;
-  bool seesTarget_;
+  virtual void DoVision();
   bool enabled_;
   Task* task;
-  static Target* instance_;
 };
 
 #endif

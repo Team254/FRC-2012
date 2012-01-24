@@ -1,69 +1,31 @@
-#include "vision/Target.h"
+#include "vision/VisionProcess.h"
 #include "config/Constants.h"
 
-Target* Target::instance_ = NULL;
-
-Target::Target() {
-  task = new Task("VisionTask", (FUNCPTR) Target::VisionTask);
-  task->Start();
+VisionProcess::VisionProcess() {
+  task = new Task("VisionTask", (FUNCPTR) VisionProcess::VisionTask);
+  task->Start((UINT32) this);
   enabled_ = false;
 }
 
-Target::~Target(){
+VisionProcess::~VisionProcess(){
   task->Stop();
 }
 
-Target* Target::GetInstance() {
-  //if (!instance_) {
-  if (instance_ == NULL) {
-    instance_ = new Target();
-  }
-  return instance_;
-}
-
-void Target::VisionTask() {
-  Target* t = Target::GetInstance();
+void VisionProcess::VisionTask(VisionProcess* vp) {
   while (true) {
-    t->FindTarget();
+    if (vp->enabled_)
+      vp->DoVision();
   }
 }
 
-void Target::Start() {
+void VisionProcess::Start() {
   enabled_ = true;
 }
 
-void Target::Stop() {
+void VisionProcess::Stop() {
   enabled_ = false;
 }
 
-void Target::FindTarget() {
-  /*
-  Constants* constants = Constants::GetInstance();
-
-  AxisCamera &camera = AxisCamera::GetInstance("10.2.54.90");
-
-  ColorImage img(IMAQ_IMAGE_RGB);
-  camera.GetImage(&img);
-  Threshold thresh = Threshold(constants->thresholdHMin, constants->thresholdHMax,
-                               constants->thresholdSMin, constants->thresholdSMax,
-                               constants->thresholdVMin, constants->thresholdVMax);
-  BinaryImage* bimg = img.ThresholdHSV(thresh);
-
-  static int i = 0;
-  i++;
-  DriverStationLCD::GetInstance()->Printf(DriverStationLCD::kUser_Line1,1,"i: %d" , i);
-  DriverStationLCD::GetInstance()->UpdateLCD();
-  */
-}
-
-double Target::GetX() {
-  return x_;
-}
-
-int Target::GetDistance() {
-  return distance_;
-}
-
-bool Target::CanSeeTarget() {
-  return seesTarget_;
+void VisionProcess::DoVision() {
+  // Override me
 }
