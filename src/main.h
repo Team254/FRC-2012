@@ -6,7 +6,8 @@
 #include "auto/DriveCommand.h"
 #include "auto/SequentialCommand.h"
 #include "subsystems/Drive.h"
-#include "vision/Target.h"
+#include "vision/VisionProcess.h"
+#include "vision/BackboardFinder.h"
 
 /**
  * @author Eric Caldwell
@@ -75,7 +76,7 @@ class MainRobot : public IterativeRobot {
   Constants* constants_;
 
   // Vision
-  Target* target_;
+  VisionProcess* target_;
 
   // Subsystems
 
