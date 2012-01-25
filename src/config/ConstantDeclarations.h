@@ -19,12 +19,12 @@ DECLARE_DOUBLE(rightEncoderPortB, 12)
 DECLARE_DOUBLE(gyroPort, 1)
 
 // Vision
-DECLARE_DOUBLE(thresholdHMin, 0)
-DECLARE_DOUBLE(thresholdHMax, 255)
-DECLARE_DOUBLE(thresholdSMin, 0)
-DECLARE_DOUBLE(thresholdSMax, 255)
-DECLARE_DOUBLE(thresholdVMin, 0)
-DECLARE_DOUBLE(thresholdVMax, 255)
+DECLARE_DOUBLE(thresholdRMin, 0)
+DECLARE_DOUBLE(thresholdRMax, 255)
+DECLARE_DOUBLE(thresholdGMin, 0)
+DECLARE_DOUBLE(thresholdGMax, 255)
+DECLARE_DOUBLE(thresholdBMin, 0)
+DECLARE_DOUBLE(thresholdBMax, 255)
 
 
 // Control Board
