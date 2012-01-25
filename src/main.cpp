@@ -6,7 +6,7 @@
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
   target_ = new BackboardFinder();
-  target_->Start();
+
   leftDriveMotorA_ = new Victor((int)constants_->leftMotorPortA);
   leftDriveMotorB_ = new Victor((int)constants_->leftMotorPortB);
   rightDriveMotorA_ = new Victor((int)constants_->rightMotorPortA);
@@ -62,7 +62,6 @@ void MainRobot::AutonomousPeriodic() {
   pidTest->Run();
   double leftDistance = drivebase_->GetLeftEncoderDistance();
   double rightDistance = drivebase_->GetRightEncoderDistance();
-  printf("left: %f right: %f\n", leftDistance, rightDistance);
 }
 
 void MainRobot::TeleopPeriodic() {
@@ -74,7 +73,15 @@ void MainRobot::TeleopPeriodic() {
   drivebase_->SetLinearPower(leftPower, rightPower);
   double leftDistance = drivebase_->GetLeftEncoderDistance();
   double rightDistance = drivebase_->GetRightEncoderDistance();
-  printf("left: %f right: %f\n", leftDistance, rightDistance);
+ 
+  static bool latch = false;
+  if(rightJoystick_->GetY() > .5) {
+    if (!latch) {
+      target_->DoVision();
+      latch = true;
+      printf("trying\n");
+    }
+  } else latch = false;
 }
 
 double MainRobot::HandleDeadband(double val, double deadband) {

@@ -2,7 +2,7 @@
 #include "config/Constants.h"
 
 VisionProcess::VisionProcess() {
-  task = new Task("VisionTask", (FUNCPTR) VisionProcess::VisionTask);
+  task = new Task("VisionTask", (FUNCPTR) VisionProcess::VisionTask, 200);
   task->Start((UINT32) this);
   enabled_ = false;
 }
@@ -12,6 +12,7 @@ VisionProcess::~VisionProcess(){
 }
 
 void VisionProcess::VisionTask(VisionProcess* vp) {
+
   while (true) {
     if (vp->enabled_)
       vp->DoVision();

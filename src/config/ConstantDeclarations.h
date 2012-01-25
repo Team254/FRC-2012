@@ -20,10 +20,10 @@ DECLARE_DOUBLE(gyroPort, 1)
 
 // Vision
 DECLARE_DOUBLE(thresholdRMin, 0)
-DECLARE_DOUBLE(thresholdRMax, 255)
+DECLARE_DOUBLE(thresholdRMax, 50)
 DECLARE_DOUBLE(thresholdGMin, 0)
-DECLARE_DOUBLE(thresholdGMax, 255)
-DECLARE_DOUBLE(thresholdBMin, 0)
+DECLARE_DOUBLE(thresholdGMax, 50)
+DECLARE_DOUBLE(thresholdBMin, 80)
 DECLARE_DOUBLE(thresholdBMax, 255)
 
 

@@ -10,9 +10,9 @@ class VisionProcess {
   void Stop();
   VisionProcess();
   virtual ~VisionProcess();
+  virtual void DoVision();
 
  private:
-  virtual void DoVision();
   bool enabled_;
   Task* task;
 };

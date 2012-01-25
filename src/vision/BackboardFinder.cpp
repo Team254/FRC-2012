@@ -8,15 +8,18 @@ void BackboardFinder::DoVision() {
   // Get image from camera
   AxisCamera &camera = AxisCamera::GetInstance("10.2.54.90");
   ColorImage img(IMAQ_IMAGE_RGB);
-  camera.GetImage(&img);
+  if (!camera.GetImage(&img))
+    return;
 
   // RGB Threshold -> BinaryImage
-  Threshold thresh = Threshold(constants->thresholdRMin, constants->thresholdBMax,
+  Threshold thresh = Threshold(0,50,0,50,80,255); /*(int)constants->thresholdRMin, constants->thresholdBMax,
                                constants->thresholdGMin, constants->thresholdGMax,
-                               constants->thresholdBMin, constants->thresholdRMax);
+                               constants->thresholdBMin, constants->thresholdRMax);*/
 
   BinaryImage* bimg = img.ThresholdRGB(thresh);
-
+  img.Write("c_img.jpg");
+  bimg->Write("t_img.jpg");
+  printf(" *********************  Wrote an image %d *******************\n");
   // take out small things
 
   // Convex Hull
@@ -33,10 +36,6 @@ void BackboardFinder::DoVision() {
 
   // Calculate angle on fieled based on ?
 
-
-  static int i = 0;
-  x_++;
-  DriverStationLCD::GetInstance()->Printf(DriverStationLCD::kUser_Line1,1,"i: %d" , x_);
-  DriverStationLCD::GetInstance()->UpdateLCD();
+  delete bimg;
 }
 

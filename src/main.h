@@ -76,7 +76,7 @@ class MainRobot : public IterativeRobot {
   Constants* constants_;
 
   // Vision
-  VisionProcess* target_;
+  BackboardFinder* target_;
 
   // Subsystems
 
