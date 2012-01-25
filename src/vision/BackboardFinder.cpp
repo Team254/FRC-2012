@@ -12,14 +12,10 @@ void BackboardFinder::DoVision() {
     return;
 
   // RGB Threshold -> BinaryImage
-  Threshold thresh = Threshold(0,50,0,50,80,255); /*(int)constants->thresholdRMin, constants->thresholdBMax,
-                               constants->thresholdGMin, constants->thresholdGMax,
-                               constants->thresholdBMin, constants->thresholdRMax);*/
-
-  BinaryImage* bimg = img.ThresholdRGB(thresh);
+  BinaryImage* bimg = img.ThresholdRGB(0,50,0,50,80,255);
   img.Write("c_img.jpg");
   bimg->Write("t_img.jpg");
-  printf(" *********************  Wrote an image %d *******************\n");
+  printf(" *********************  Wrote an image to disk  *******************\n");
   // take out small things
 
   // Convex Hull
