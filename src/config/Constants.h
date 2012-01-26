@@ -1,17 +1,15 @@
-/*
- * @author Eric Caldwell
- *
- * Constants is a singleton class that reads constants from a file and stores them in a set of public member
- * variables to be used later in the code. Constants reads the names and default values for these variables
- * from ConstantDeclarations.h. This file is used so that values can be quickly and easily changed and tested
- * without having to recompile code each time.
- */
-
 #ifndef CONFIG_CONSTANTS_H_
 #define CONFIG_CONSTANTS_H_
 
 /**
- * See comment at top of file for a complete description of this class.
+ * @author Eric Caldwell
+ *
+ * Constants is a singleton class that reads constants from a file and stores 
+ * them in a set of public member variables to be used later in the code. 
+ *
+ * Constants reads the names and default values for these variables from 
+ * ConstantDeclarations.h. This file is used so that values can be quickly and
+ * easily changed and tested without having to recompile code each time.
  *
  * Sample Usage:
  * Constants* constants = Constants::GetInstance();
