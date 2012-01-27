@@ -24,9 +24,9 @@ class BackboardFinder : public VisionProcess {
   double GetDistance();
   
   /**
-   * The angular difference between the horizontal axis of the scoring 
-   * apparatus and the target.
-   * @return vertical angle to target
+   * The angular difference between robot and center line of field
+   * Helps orient target of angled shots
+   * @return angle of robot on field relative to goal
    */
   double GetAngle();
   
