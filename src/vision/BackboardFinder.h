@@ -40,13 +40,21 @@ class BackboardFinder : public VisionProcess {
    * Updates sensor information regarding target data.
    */
   void DoVision();
+
+  /**
+   * Is our tracking working
+   * @return true if we have fresh data
+   */
+  bool HasFreshTarget();
   
  private:
   double x_;
   double distance_;
   double angle_;
   bool seesTarget_;
+  double lastUpdate_;
 };
+
 
 
 #endif
