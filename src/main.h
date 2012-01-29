@@ -8,6 +8,7 @@
 #include "subsystems/Drive.h"
 #include "vision/VisionProcess.h"
 #include "vision/BackboardFinder.h"
+#include "ui/PidTuner.h"
 
 /**
  * @author Eric Caldwell

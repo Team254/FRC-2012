@@ -1,0 +1,24 @@
+
+
+PidTuner::PidTuner() {
+
+ struct sockaddr_in si_other;
+ int s, i, slen=sizeof(si_other);
+ char buf[BUFLEN];
+
+    if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
+      ;
+
+   memset((char *) &si_other, 0, sizeof(si_other));
+   si_other.sin_family = AF_INET;
+   si_other.sin_port = htons(PORT);
+   if (inet_aton("10.2.52.125", &si_other.sin_addr)==0) {
+     fprintf(stderr, "inet_aton() failed\n");
+     exit(1);
+   }
+
+
+   if (sendto(s, buf, BUFLEN, 0, &si_other, slen)==-1)
+        diep("sendto()");
+   }
+}

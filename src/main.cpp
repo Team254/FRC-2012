@@ -6,7 +6,7 @@
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
   target_ = new BackboardFinder();
-
+  target_->Start();
   leftDriveMotorA_ = new Victor((int)constants_->leftMotorPortA);
   leftDriveMotorB_ = new Victor((int)constants_->leftMotorPortB);
   rightDriveMotorA_ = new Victor((int)constants_->rightMotorPortA);
@@ -59,9 +59,17 @@ void MainRobot::DisabledPeriodic() {
 }
 
 void MainRobot::AutonomousPeriodic() {
-  pidTest->Run();
+  /*pidTest->Run();
   double leftDistance = drivebase_->GetLeftEncoderDistance();
-  double rightDistance = drivebase_->GetRightEncoderDistance();
+  double rightDistance = drivebase_->GetRightEncoderDistance(); */
+  if (target_->SeesTarget() && target_->HasFreshTarget()) {
+    double err = target_->GetX() * 1.2;
+    err = (err > 1.0) ? 1.0 : err;
+    drivebase_->SetLinearPower(err,-err);
+  }
+  else {
+    drivebase_->SetLinearPower(0,0);
+  }
 }
 
 void MainRobot::TeleopPeriodic() {
@@ -73,15 +81,15 @@ void MainRobot::TeleopPeriodic() {
   drivebase_->SetLinearPower(leftPower, rightPower);
   double leftDistance = drivebase_->GetLeftEncoderDistance();
   double rightDistance = drivebase_->GetRightEncoderDistance();
- 
-  static bool latch = false;
-  if(rightJoystick_->GetY() > .5) {
-    if (!latch) {
+  /*
+  static int i = 0;
+  if(++i > 25) {
       target_->DoVision();
-      latch = true;
-      printf("trying\n");
-    }
-  } else latch = false;
+      i =  0;
+
+  }
+   */
+  PidTuner::GetInstance(); 
 }
 
 double MainRobot::HandleDeadband(double val, double deadband) {
