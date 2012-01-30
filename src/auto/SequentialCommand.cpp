@@ -32,9 +32,11 @@ bool SequentialCommand::Run() {
     return true;
   } else if (commands_[commandIndex_]->Run()) {
     commandIndex_++;
-    if (commandIndex_ == (int)commands_.size()) { // No more commands, SequentialCommand is done
+    if (commandIndex_ == (int)commands_.size()) {
+      // No more commands, SequentialCommand is done
       return true;
-    } else { // More commands to process, Initialize the next one
+    } else {
+      // More commands to process, Initialize the next one
       commands_[commandIndex_]->Initialize();
     }
   }
@@ -43,5 +45,5 @@ bool SequentialCommand::Run() {
 }
 
 void SequentialCommand::AddCommand(AutoCommand* command) {
-    commands_.push_back(command);
+  commands_.push_back(command);
 }

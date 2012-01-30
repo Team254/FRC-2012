@@ -1,8 +1,8 @@
-/* @author Eric Caldwell
+/**
+ * @author Eric Caldwell
  *
- * This file is read by Constants and contains the variables and default values that will be stored
- * as member variables in Constants. Use it by including it in the macro definition of the functions
- * used below.
+ * This file is read by Constants and contains the variables and default values that will be stored as member
+ * variables in Constants. Use it by including it in the macro definition of the functions used below.
  */
 
 // Motors
@@ -26,13 +26,10 @@ DECLARE_DOUBLE(thresholdGMax, 50)
 DECLARE_DOUBLE(thresholdBMin, 80)
 DECLARE_DOUBLE(thresholdBMax, 255)
 
-
 // Control Board
 DECLARE_DOUBLE(leftJoystickPort, 1)
 DECLARE_DOUBLE(rightJoystickPort, 2)
 DECLARE_DOUBLE(operatorControlPort, 3)
-
-
 DECLARE_DOUBLE(conveyorUpPort, 3)
 DECLARE_DOUBLE(conveyorDownPort, 4)
 DECLARE_DOUBLE(conveyorIndexPort, 5)
@@ -61,7 +58,7 @@ DECLARE_DOUBLE(linearCoeffE, 0.0913)
 // PID constants
 DECLARE_DOUBLE(driveKP, 1.2)
 DECLARE_DOUBLE(driveKI, 0.003)
-DECLARE_DOUBLE(driveKD, 0.08)
+DECLARE_DOUBLE(driveKD, 8)
 DECLARE_DOUBLE(baseLockKP, 1.5)
 DECLARE_DOUBLE(baseLockKI, 0.01)
 DECLARE_DOUBLE(baseLockKD, 0)

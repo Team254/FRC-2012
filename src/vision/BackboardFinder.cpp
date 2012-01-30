@@ -1,7 +1,6 @@
 #include "vision/BackboardFinder.h"
-#include "config/Constants.h"
-#include "WPILib.h"
 
+#include "WPILib.h"
 
 double BackboardFinder::GetX() {
   return x_;
@@ -12,8 +11,6 @@ bool BackboardFinder::SeesTarget() {
 }
 
 void BackboardFinder::DoVision() {
-  Constants* constants = Constants::GetInstance();
-
   // Get image from camera
   AxisCamera &camera = AxisCamera::GetInstance("10.2.52.90");
   ColorImage img(IMAQ_IMAGE_RGB);

@@ -2,6 +2,7 @@
 #define UTIL_LOGGER_H_
 
 #include <cstdio>
+#include <string>
 
 /**
  * @author Patrick Fairbank
@@ -24,10 +25,16 @@ class Logger {
    */
   void Log(const char* format, ...);
 
+  /**
+   * Empties the log file of data.
+   */
+  void ClearLog();
+
  private:
   FILE* logfile_;
   int loggingInterval_;
   int intervalCounter_;
+  std::string filename_;
 };
 
 #endif  // UTIL_LOGGER_H_

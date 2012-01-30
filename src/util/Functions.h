@@ -13,6 +13,10 @@ class Functions {
    * Generates a square wave with the given period and amplitude at the given point in time.
    */
   static double SquareWave(double timeSec, double periodSec, double amplitude);
+
+  /**
+   * Generates a sine wave with the given period and amplitude at the given point in time.
+   */
   static double SineWave(double timeSec, double periodSec, double amplitude);
 
  private:

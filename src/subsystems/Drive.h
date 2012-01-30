@@ -19,7 +19,7 @@ class Drive {
    * Accepts the Victors and Encoders to get and set values
    */
   Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
-        Encoder* leftEncoder, Encoder* rightEncoder_, Gyro* gyro);
+        Encoder* leftEncoder, Encoder* rightEncoder, Gyro* gyro);
 
   /**
    * Makes drive power linear to input, then sets power to the respective side of the drivetrain
@@ -43,8 +43,9 @@ class Drive {
   double GetRightEncoderDistance();
 
   void ResetEncoders();
+
   /**
-   * Returns current gyro angle. Gyro is reset after instance is created
+   * Returns current gyro angle.
    * @return the gyro angle in degrees
    */
   double GetGyroAngle();
@@ -84,8 +85,6 @@ class Drive {
    */
   double SetLimit(double x);
 
-  // Data Members
-
   // Victors
   Victor* leftDriveMotorA_;
   Victor* leftDriveMotorB_;
@@ -97,7 +96,6 @@ class Drive {
   Encoder* rightDriveEncoder_;
   Gyro* gyro_;
 
-  // Other Data Members
   Constants* constants;
 };
 

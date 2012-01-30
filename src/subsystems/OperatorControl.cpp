@@ -1,19 +1,12 @@
-#include "OperatorControl.h"
+#include "subsystems/OperatorControl.h"
 
-/**
- * @author Art Kalb
- *
- * Functions for getting values from the buttons and switches on the control board.
- */
 OperatorControl::OperatorControl(int port) {
   operatorJoystick_ = new Joystick(port);
-  //Constants is a singleton, so GetInstance() is used rather than a constructor or a parameter
   constants_ = Constants::GetInstance();
 }
 
 OperatorControl::~OperatorControl() {
   delete operatorJoystick_;
-  delete constants_;
 }
 
 bool OperatorControl::GetConveyorUpButton() {

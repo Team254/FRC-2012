@@ -3,12 +3,17 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "subsystems/Drive.h"
+#include "subsystems/OperatorControl.h"
+#include "subsystems/Pid.h"
 #include "util/Functions.h"
+#include "util/Logger.h"
+#include "util/PidTuner.h"
+#include "vision/BackboardFinder.h"
 
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
-  //  target_ = new BackboardFinder();
-  //target_->Start();
+
   leftDriveMotorA_ = new Victor((int)constants_->leftMotorPortA);
   leftDriveMotorB_ = new Victor((int)constants_->leftMotorPortB);
   rightDriveMotorA_ = new Victor((int)constants_->rightMotorPortA);
@@ -20,6 +25,7 @@ MainRobot::MainRobot() {
   gyro_ = new Gyro((int)constants_->gyroPort);
   drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_, leftEncoder_,
                          rightEncoder_, gyro_);
+
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
   operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
@@ -28,24 +34,6 @@ MainRobot::MainRobot() {
   baseLockPid_ = new Pid(constants_->baseLockKP, constants_->baseLockKI, constants_->baseLockKD);
   testTimer_ = new Timer();
   testLogger_ = new Logger("/test.log", 2);
-
-  //Autonomous stuff goes here
-  pidTest = new DriveCommand (drivebase_, 36);
-  test = new SequentialCommand(1, pidTest);
-}
-
-MainRobot::~MainRobot() {
-  // Typically members should be deleted in the order they're created
-  delete gyro_;
-  delete rightEncoder_;
-  delete drivebase_;
-  delete leftJoystick_;
-  delete rightJoystick_;
-  delete leftEncoder_;
-  delete rightDriveMotorB_;
-  delete rightDriveMotorA_;
-  delete leftDriveMotorB_;
-  delete leftDriveMotorA_;
 }
 
 void MainRobot::DisabledInit() {
@@ -55,7 +43,6 @@ void MainRobot::AutonomousInit() {
   constants_->LoadFile();
   delete testPid_;
   testPid_ = new Pid(constants_->driveKP, constants_->driveKI, constants_->driveKD);
-  pidTest->Initialize();
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
   testPid_->ResetError();
@@ -85,18 +72,22 @@ void MainRobot::AutonomousPeriodic() {
 }
 
 void MainRobot::TeleopPeriodic() {
-  // Drive Code
+  // Operator drive control
   double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
   double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
   double leftPower = straightPower + turnPower;
   double rightPower = straightPower - turnPower;
   drivebase_->SetLinearPower(leftPower, rightPower);
   double position = drivebase_->GetLeftEncoderDistance();
+
   if (operatorControl_->GetBaseLockSwitch()) {
+    // Activate closed-loop base lock mode.
     baseLockPosition_ += straightPower * .1;
     double signal = baseLockPid_->Update(baseLockPosition_, position);
     drivebase_->SetLinearPower(signal, signal);
   }
+
+  // Set the position to lock the base to upon initial activation.
   if (!oldBaseLockSwitch_ && operatorControl_->GetBaseLockSwitch()) {
     baseLockPosition_ = position;
   }

@@ -2,16 +2,16 @@
 #define AUTO_DRIVE_COMMAND_H_
 
 #include "auto/AutoCommand.h"
-#include "subsystems/Drive.h"
-#include "subsystems/Pid.h"
+
+class Drive;
+class Pid;
 
 /**
- * @author: Bhargava Manja
- * This class encompasses all drive functionality in autonomous mode
- * and includes PID error handling for distance (tuned by changing constants
- * in constructor.
+ * @author Bhargava Manja
+ *
+ * This class encompasses all drive functionality in autonomous mode and includes PID error handling for
+ * distance.
  */
-
 class DriveCommand : public AutoCommand {
  public:
   /**
@@ -34,13 +34,15 @@ class DriveCommand : public AutoCommand {
    */
  ~DriveCommand();
  private:
-  //drivebase object for motor control and encoder reading functionality
+  // Drivebase object for motor control and encoder reading functionality
   Drive* drive_;
-  //PIDs for distance on both sides
+
+  // PIDs for distance on both sides
   Pid* leftPid_;
   Pid* rightPid_;
-  //distance goal, more goals can be added (angle, velocity, etc.)
+
+  // Distance goal, more goals can be added (angle, velocity, etc.)
   double distanceGoal_;
 };
 
-#endif //AUTO_DRIVE_COMMAND_H_
+#endif  // AUTO_DRIVE_COMMAND_H_

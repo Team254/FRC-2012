@@ -1,13 +1,12 @@
-#ifndef BACKBOARD_FINDER_H_
-#define BACKBOARD_FINDER_H_
+#ifndef VISION_BACKBOARD_FINDER_H_
+#define VISION_BACKBOARD_FINDER_H_
 
 #include "vision/VisionProcess.h"
 
 /**
  * @author Tom Bottglieri
  *
- * Task which updates information regarding distance, angle, and other
- * vision-targetting information.
+ * Task which updates information regarding distance, angle, and other vision-targeting information.
  */
 class BackboardFinder : public VisionProcess {
  public:
@@ -55,6 +54,4 @@ class BackboardFinder : public VisionProcess {
   double lastUpdate_;
 };
 
-
-
-#endif
+#endif  // VISION_BACKBOARD_FINDER_H_

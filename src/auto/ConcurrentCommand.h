@@ -44,6 +44,7 @@ class ConcurrentCommand : public AutoCommand {
    * @param command the command to pass in
    */
   void AddCommand(AutoCommand* command);
+
  private:
   // CommandPair represents a command and its completion state.
   // The completion state is initalized to false and is updated every time Run() is called.

@@ -8,12 +8,13 @@
 /**
  * @author Art Kalb
  *
- * OperatorControl is a wrapper class that provides quick and easy access to the buttons on the ControlBoard.
+ * Convenience class that wraps a Joystick to provide access to the buttons on the control board.
  */
 class OperatorControl {
  public:
   /**
-   * @param stick Takes a joystick and stores it allowing the class to use it later.
+   * Constructor
+   * @param port The port number of the Joystick
    */
   OperatorControl(int port);
 
@@ -23,7 +24,7 @@ class OperatorControl {
   ~OperatorControl();
 
   /**
-   * The Get* functions return the value of the button following Get
+   * Return the value of the specified button
    */
   bool GetConveyorUpButton();
   bool GetConveyorIndexButton();

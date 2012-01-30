@@ -27,7 +27,7 @@ class AutoCommand {
   /**
    * Destructor, doesn't do much...
    */
-  virtual ~AutoCommand() {};
+  virtual ~AutoCommand() {}
 };
 
 #endif  // AUTO_AUTO_COMMAND_H_

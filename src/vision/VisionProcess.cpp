@@ -1,21 +1,20 @@
 #include "vision/VisionProcess.h"
-#include "config/Constants.h"
 
 VisionProcess::VisionProcess() {
-  task = new Task("VisionTask", (FUNCPTR) VisionProcess::VisionTask, 200);
-  task->Start((UINT32) this);
+  task_ = new Task("VisionTask", (FUNCPTR)VisionProcess::VisionTask, 200);
+  task_->Start((UINT32)this);
   enabled_ = false;
 }
 
 VisionProcess::~VisionProcess(){
-  task->Stop();
+  task_->Stop();
 }
 
 void VisionProcess::VisionTask(VisionProcess* vp) {
-
   while (true) {
-    if (vp->enabled_)
+    if (vp->enabled_) {
       vp->DoVision();
+    }
   }
 }
 
@@ -25,8 +24,4 @@ void VisionProcess::Start() {
 
 void VisionProcess::Stop() {
   enabled_ = false;
-}
-
-void VisionProcess::DoVision() {
-  // Override me
 }

@@ -20,16 +20,16 @@ void Drive::SetLinearPower(double left, double right) {
 }
 
 double Drive::GetLeftEncoderDistance() {
-  // Number of clicks read by encoder / number of clicks per rotation *
-  // gear ratio from encoder to wheel * wheel circumference
+  // Number of clicks read by encoder / number of clicks per rotation * gear ratio from encoder to wheel *
+  // wheel circumference
 
   // Don't have current specs now, just return encoder rotations
   return -leftDriveEncoder_->Get() / 256.0;
 }
 
 double Drive::GetRightEncoderDistance() {
-  // Number of clicks read by encoder / number of clicks per rotation *
-  // gear ratio from encoder to wheel * wheel circumference
+  // Number of clicks read by encoder / number of clicks per rotation * gear ratio from encoder to wheel *
+  // wheel circumference
 
   // Don't have current specs now, just return encoder rotations
   return rightDriveEncoder_->Get() / 128.0;
@@ -66,6 +66,7 @@ double Drive::Linearize(double x) {
     return constants->linearCoeffA * pow(x, 4) + constants->linearCoeffB * pow(x, 3) +
         constants->linearCoeffC * pow(x, 2) + constants->linearCoeffD * x + constants->linearCoeffE;
   } else if (x < 0) {
+    // Rotate the linearization function by 180 degrees to handle negative input.
     return -Linearize(-x);
   } else {
     return 0;

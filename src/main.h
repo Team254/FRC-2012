@@ -3,15 +3,12 @@
 
 #include "WPILib.h"
 
-#include "auto/DriveCommand.h"
-#include "auto/SequentialCommand.h"
-#include "subsystems/Drive.h"
-#include "subsystems/OperatorControl.h"
-#include "util/Logger.h"
-#include "vision/BackboardFinder.h"
-#include "ui/PidTuner.h"
-#include "vision/VisionProcess.h"
-
+class BackboardFinder;
+class Constants;
+class Drive;
+class Logger;
+class OperatorControl;
+class Pid;
 
 /**
  * @author Eric Caldwell
@@ -26,12 +23,6 @@ class MainRobot : public IterativeRobot {
    * Also constructs support subsystem classes
    */
   MainRobot();
-
-  /**
-   * Destructor
-   * Deletes all the constructed subsystems, sensors, victors, etc.
-   */
-  virtual ~MainRobot();
 
   /**
    * Runs once when the robot enters Disabled mode
@@ -76,18 +67,15 @@ class MainRobot : public IterativeRobot {
  private:
 
   // Constants
-
   Constants* constants_;
 
   // Vision
   BackboardFinder* target_;
 
   // Subsystems
-
   Drive* drivebase_;
 
   // Joysticks
-
   Joystick* leftJoystick_;
   Joystick* rightJoystick_;
   OperatorControl* operatorControl_;
@@ -110,11 +98,6 @@ class MainRobot : public IterativeRobot {
   bool oldBaseLockSwitch_;
   Timer* testTimer_;
   Logger* testLogger_;
-
-  //Autonomous stuff for testing purposes
-  //we should add an autoscripts directory for these, and run those for neatness' sake
-  SequentialCommand* test;
-  DriveCommand* pidTest;
 };
 
 // Start the actual program

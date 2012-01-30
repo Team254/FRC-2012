@@ -17,9 +17,8 @@ double Pid::Update(double goal, double currentValue) {
   double p = kP_ * error;
   errorSum_ += error;
   double i = kI_ * errorSum_;
-  double dError = (error - lastError_) / .01;
+  double dError = error - lastError_;
   double d = kD_ * dError;
   lastError_ = error;
-  printf("Current Value: %f \n error: %f \n new power: %f \n\n", currentValue, error, p+i+d);
-  return (p + i + d);
+  return p + i + d;
 }

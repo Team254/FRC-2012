@@ -1,26 +1,23 @@
-#ifndef VISION_TARGET_H_
-#define VISION_TARGET_H_
+#ifndef VISION_VISION_PROCESS_H_
+#define VISION_VISION_PROCESS_H_
 
 #include "WPILib.h"
+
 /**
  * @author Tom Bottglieri
  *
- * Abstract superclass of tasks (run on a separate thread) involving vision
- * targets.
- *
+ * Abstract superclass of tasks (run on a separate thread) involving vision targets.
  * Call Start() to begin the task and Stop() to terminate it.
  */
 class VisionProcess {
  public:
   /**
-   * Do not call this function externally as it's only passed to the constructor to
-   * initialize the object.
+   * Do not call this function externally as it's only passed to the constructor to initialize the object.
    *
-   * This function perpetually loops, calling DoVision() if Start() has been
-   * called and Stop() hasn't.
+   * This function perpetually loops, calling DoVision() if Start() has been called and Stop() hasn't.
    * @param VisionProcess the given VisionProcess object to run.
    */
-  static void VisionTask(VisionProcess*);
+  static void VisionTask(VisionProcess* vp);
 
   /**
    * Starts the task.
@@ -48,11 +45,11 @@ class VisionProcess {
    *
    * Subclasses should override this function to specify their own behavior.
    */
-  virtual void DoVision();
+  virtual void DoVision() = 0;
 
  private:
   bool enabled_;
-  Task* task;
+  Task* task_;
 };
 
-#endif
+#endif  // VISION_VISION_PROCESS_H_

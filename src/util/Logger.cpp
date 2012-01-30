@@ -3,9 +3,11 @@
 #include <cstdarg>
 
 Logger::Logger(const char* filename, int loggingInterval) {
+  // Open the log file in append mode to preserve any existing contents.
   logfile_ = fopen(filename, "a");
   loggingInterval_ = loggingInterval;
   intervalCounter_ = 0;
+  filename_ = filename;
 }
 
 Logger::~Logger() {
@@ -26,4 +28,9 @@ void Logger::Log(const char* format, ...) {
   if (intervalCounter_ >= loggingInterval_) {
     intervalCounter_ = 0;
   }
+}
+
+void Logger::ClearLog() {
+  // Close the log file and reopen it in write mode to overwrite any existing contents.
+  logfile_ = freopen(filename_.c_str(), "w", logfile_);
 }

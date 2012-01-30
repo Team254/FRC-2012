@@ -1,8 +1,6 @@
 #ifndef SUBSYSTEMS_PID_H_
 #define SUBSYSTEMS_PID_H_
 
-#include "WPILib.h"
-
 /**
  * @author Bhargava Manja
  * @author Francisco Sanchez
@@ -13,12 +11,12 @@ class Pid {
  public:
   /**
    * Constructor
-   * accepts the kP, kI, and kD to determine the correction value
+   * Accepts the kP, kI, and kD to determine the correction value
    */
    Pid(double kP, double kI, double kD);
 
   /**
-   * Resets the error counts. Call when the PID loop is not active.
+   * Resets the error counts. Call when the PID loop is not active to prevent integral windup.
    */
   void ResetError();
 
@@ -30,16 +28,16 @@ class Pid {
   double Update(double goal, double currentValue);
 
  private:
-  //PID constants
+  // PID constants
   double kP_;
   double kI_;
   double kD_;
 
-  //sum of past errors used to create integral term
+  // Cumulative error used in integral term
   double errorSum_;
 
-  //last error, used to find error difference to create derivative term
+  // Last error value used to find error difference for derivative term
   double lastError_;
 };
 
-#endif // SUBSYSTEMS_PID_H_
+#endif  // SUBSYSTEMS_PID_H_
