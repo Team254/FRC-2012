@@ -10,6 +10,13 @@ class PidTuner {
   void Push(double setpoint, double value);
   PidTuner();
   ~PidTuner();
+
+
+ struct sockaddr_in  serverAddr;    /* server's socket address */ 
+ char                display;       /* if TRUE, server prints message */ 
+ int                 sockAddrSize;  /* size of socket address structure */ 
+ int                 sFd;           /* socket file descriptor */  
+ int                 mlen;          /* length of message */  
   
   static PidTuner* instance;
 };

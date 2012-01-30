@@ -21,12 +21,22 @@
 <script type="text/javascript">
 $(function () {
     var maxPoints = 5 * 50;
-    var data = [];
-
+    var dataSetpoint = [];
+    var dataValue = [];
     function getData() {
-      var res = []
-      for (var i = 0; i < data.length; ++i)
-         res.push([i, data[i]])
+      var resS = []
+      var resV = []
+      for (var i = 0; i < maxPoints; ++i)
+         if( i > dataSetpoint.length)
+           resS.push([i, 0]);
+         else
+           resS.push([i, dataSetpoint[i]]);
+      for (var i = 0; i < maxPoints; ++i)
+         if( i > dataValue.length)
+           resV.push([i, 0]);
+         else
+           resV.push([i, dataValue[i]]);
+      var res = [resS, resV]; console.log(res);
       return res;
     }
     // setup plot
@@ -35,23 +45,34 @@ $(function () {
         yaxis: { min: 0, max: 100 },
         xaxis: { show: false }
     };
-    var plot = $.plot($("#pid_plot"),[data], options);
+    plot = $.plot($("#pid_plot"),getData(), options);
 
-   function push(newD) {
-        if (data.length > 0))
-            data = data.slice(1);
+   function push(newS, newV) {
+console.log(newV);
+        if (dataSetpoint.length > 0)
+            dataSetpoint = dataSetpoint.slice(1);
 
-        while (data.length < totalPoints) {
-            var prev = data.length > 0 ? data[data.length - 1] : 0
-            var y = newD
+        while (dataSetpoint.length < maxPoints) {
+            var y = newS
             if (y < 0)
                 y = 0;
             if (y > 100)
                 y = 100;
-            data.push(y);
+            dataSetpoint.push(y);
         }
 
-        plot.setData([getData()]);
+        if (dataValue.length > 0)
+            dataValue = dataValue.slice(1);
+
+        while (dataValue.length < maxPoints) {
+            var y = newV
+            if (y < 0)
+                y = 0;
+            if (y > 100)
+                y = 100;
+            dataValue.push(y);
+        }
+        plot.setData(getData());
         // since the axes don't change, we don't need to call plot.setupGrid()
         plot.draw();
         
@@ -59,7 +80,7 @@ $(function () {
 
    var socket = io.connect('http://localhost');
     socket.on('update', function (dataIn) {
-      console.log(dataIn);
+      push(dataIn["S"], dataIn["V"]);
     });
 
 });

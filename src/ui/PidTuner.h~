@@ -4,7 +4,7 @@
 class PidTuner {
  public: 
   static void PushData(double setpoint, double value);
-  PidTuner* GetInstance();
+  static PidTuner* GetInstance();
 
  private:
   void Push(double setpoint, double value);

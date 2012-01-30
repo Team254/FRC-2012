@@ -5,8 +5,8 @@
 
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
-  target_ = new BackboardFinder();
-  target_->Start();
+  //  target_ = new BackboardFinder();
+  //target_->Start();
   leftDriveMotorA_ = new Victor((int)constants_->leftMotorPortA);
   leftDriveMotorB_ = new Victor((int)constants_->leftMotorPortB);
   rightDriveMotorA_ = new Victor((int)constants_->rightMotorPortA);
@@ -62,14 +62,14 @@ void MainRobot::AutonomousPeriodic() {
   /*pidTest->Run();
   double leftDistance = drivebase_->GetLeftEncoderDistance();
   double rightDistance = drivebase_->GetRightEncoderDistance(); */
-  if (target_->SeesTarget() && target_->HasFreshTarget()) {
+  /*  if (target_->SeesTarget() && target_->HasFreshTarget()) {
     double err = target_->GetX() * 1.2;
     err = (err > 1.0) ? 1.0 : err;
     drivebase_->SetLinearPower(err,-err);
   }
   else {
     drivebase_->SetLinearPower(0,0);
-  }
+    }*/
 }
 
 void MainRobot::TeleopPeriodic() {
@@ -81,15 +81,11 @@ void MainRobot::TeleopPeriodic() {
   drivebase_->SetLinearPower(leftPower, rightPower);
   double leftDistance = drivebase_->GetLeftEncoderDistance();
   double rightDistance = drivebase_->GetRightEncoderDistance();
-  /*
-  static int i = 0;
-  if(++i > 25) {
-      target_->DoVision();
-      i =  0;
 
-  }
-   */
-  PidTuner::GetInstance(); 
+  static int i = 0;
+  i++;
+  i = (i > 100) ?  0 : i;
+  PidTuner::PushData(i, i/2); 
 }
 
 double MainRobot::HandleDeadband(double val, double deadband) {

@@ -16,9 +16,7 @@ app.get('/', function (req, res) {
 var server = dgram.createSocket("udp4");
 
 server.on("message", function (msg, rinfo) {
-	console.log("sadiofnadskjfhjkadshbfjkasdhfjkahdsf");
-	console.log(msg);
-        var jsonObj = JSON.parse(msg);
+        var jsonObj = JSON.parse(msg.toString('utf8'));
 	io.sockets.emit('update', jsonObj);
         
     });

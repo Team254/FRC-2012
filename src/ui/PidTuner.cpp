@@ -26,16 +26,15 @@ PidTuner* PidTuner::GetInstance() {
   return instance;
 }
 
+void PidTuner::PushData(double setpoint, double value) {
+  PidTuner::GetInstance()->Push(setpoint, value);
+}
+
 PidTuner::PidTuner() {
 
  struct sockaddr_in si_other;
  int s, i, slen=sizeof(si_other);
  char buf[BUFLEN];
- struct sockaddr_in  serverAddr;    /* server's socket address */ 
- char                display;       /* if TRUE, server prints message */ 
- int                 sockAddrSize;  /* size of socket address structure */ 
- int                 sFd;           /* socket file descriptor */  
- int                 mlen;          /* length of message */  
 
 /* create client's socket */ 
  
@@ -55,24 +54,24 @@ PidTuner::PidTuner() {
  serverAddr.sin_family = AF_INET; 
  serverAddr.sin_port = htons (SERVER_PORT_NUM); 
  
- if (((serverAddr.sin_addr.s_addr = inet_addr ("10.2.52.125")) == ERROR)) 
+ if (((serverAddr.sin_addr.s_addr = inet_addr ("10.2.54.125")) == ERROR)) 
    { 
      perror ("unknown server name"); 
      close (sFd); 
      //    return (ERROR); 
    } 
 
+}
 
- char* myRequest = "{\"S\":100, \"V\":50}";
- if (sendto (sFd, (caddr_t) myRequest, sizeof (myRequest), 0, 
+void PidTuner::Push(double setpoint, double value) {
+  char myRequest[50];
+  sprintf(myRequest, "{\"S\":%f, \"V\":%f}\0", (float) setpoint, (float) value);
+  if (sendto (sFd, (caddr_t) myRequest, strlen(myRequest), 0, 
 	     (struct sockaddr *) &serverAddr, sockAddrSize) == ERROR) 
    { 
      perror ("sendto"); 
      close (sFd); 
-     //     return (ERROR); 
    } 
  
- close (sFd);
- 
-	
-}
+ // close (sFd);
+ }

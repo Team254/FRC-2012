@@ -36,7 +36,7 @@ $(function () {
            resV.push([i, 0]);
          else
            resV.push([i, dataValue[i]]);
-      var res = [resS, resV]; console.log(res);
+      var res = [resS, resV]; //console.log(res);
       return res;
     }
     // setup plot
@@ -48,7 +48,7 @@ $(function () {
     plot = $.plot($("#pid_plot"),getData(), options);
 
    function push(newS, newV) {
-console.log(newV);
+//console.log(newV);
         if (dataSetpoint.length > 0)
             dataSetpoint = dataSetpoint.slice(1);
 
