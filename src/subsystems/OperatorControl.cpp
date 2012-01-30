@@ -5,8 +5,8 @@
  * 
  * Functions for getting values from the buttons and switches on the control board.
  */
-OperatorControl::OperatorControl(Joystick* stick) {
-  operatorJoystick_ = stick;
+OperatorControl::OperatorControl(int port) {
+  operatorJoystick_ = new Joystick(port);
   //Constants is a singleton, so GetInstance() is used rather than a constructor or a parameter
   constants_ = Constants::GetInstance();
 }

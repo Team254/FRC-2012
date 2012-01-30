@@ -15,7 +15,7 @@ class OperatorControl {
   /**
    * @param stick Takes a joystick and stores it allowing the class to use it later.
    */	
-  OperatorControl(Joystick* stick);
+  OperatorControl(int port);
 
   /**
    * Destroys the Joystick and the Constants (created in constructor) variables
