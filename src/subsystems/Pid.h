@@ -16,7 +16,7 @@ class Pid {
    * accepts the kP, kI, and kD to determine the correction value
    */
    Pid(double kP, double kI, double kD);
-  
+
   /**
    * Resets the error counts. Call when the PID loop is not active.
    */

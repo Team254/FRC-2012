@@ -2,7 +2,7 @@
 
 /**
  * @author Art Kalb
- * 
+ *
  * Functions for getting values from the buttons and switches on the control board.
  */
 OperatorControl::OperatorControl(int port) {

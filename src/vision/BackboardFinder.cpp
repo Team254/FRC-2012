@@ -36,8 +36,8 @@ void BackboardFinder::DoVision() {
   structElem.kernel = pKernel;
 
   // Filters particles based on their size.
-  imaqSizeFilter(image, image, TRUE, 1, IMAQ_KEEP_LARGE, &structElem);  
-  
+  imaqSizeFilter(image, image, TRUE, 1, IMAQ_KEEP_LARGE, &structElem);
+
   // Convex Hull
   imaqConvexHull(image, image, true);
 
@@ -64,11 +64,11 @@ void BackboardFinder::DoVision() {
     if (p.center_mass_x_normalized < left.center_mass_x_normalized)
       left = p;
     else if (p.center_mass_x_normalized > right.center_mass_x_normalized)
-      right = p; 
+      right = p;
   }
   //  printf("Left | X: %f | Y: %f | A: %f\n", (float)left.center_mass_x_normalized, (float) left.center_mass_x_normalized, (float) left.particleArea);
   //  printf("Right | X: %f | Y: %f | A: %f\n", (float)right.center_mass_x_normalized, (float) right.center_mass_x_normalized, (float) right.particleArea);
-  
+
   // Calculate distance
 
   // Calculate x offset from target center

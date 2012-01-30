@@ -7,14 +7,14 @@
 
 /**
  * @author Art Kalb
- * 
+ *
  * OperatorControl is a wrapper class that provides quick and easy access to the buttons on the ControlBoard.
  */
 class OperatorControl {
  public:
   /**
    * @param stick Takes a joystick and stores it allowing the class to use it later.
-   */	
+   */
   OperatorControl(int port);
 
   /**

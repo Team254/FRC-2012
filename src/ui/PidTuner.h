@@ -2,7 +2,7 @@
 #define PID_TUNER_H_
 
 class PidTuner {
- public: 
+ public:
   static void PushData(double setpoint, double value);
   static PidTuner* GetInstance();
 
@@ -12,12 +12,12 @@ class PidTuner {
   ~PidTuner();
 
 
- struct sockaddr_in  serverAddr;    /* server's socket address */ 
- char                display;       /* if TRUE, server prints message */ 
- int                 sockAddrSize;  /* size of socket address structure */ 
- int                 sFd;           /* socket file descriptor */  
- int                 mlen;          /* length of message */  
-  
+ struct sockaddr_in  serverAddr;    /* server's socket address */
+ char                display;       /* if TRUE, server prints message */
+ int                 sockAddrSize;  /* size of socket address structure */
+ int                 sFd;           /* socket file descriptor */
+ int                 mlen;          /* length of message */
+
   static PidTuner* instance;
 };
 
