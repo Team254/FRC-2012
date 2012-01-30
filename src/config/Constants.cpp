@@ -14,7 +14,7 @@
 #include <string>
 
 Constants* Constants::instance_ = NULL;
-const char* kConstantsFile = "constants.txt";
+const char* kConstantsFile = "/constants.txt";
 
 /** Checks to see if an instance of Constants has been created, if not, creates it. */
 Constants* Constants::GetInstance() {

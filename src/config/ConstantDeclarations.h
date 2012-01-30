@@ -55,3 +55,8 @@ DECLARE_DOUBLE(linearCoeffB, -5.9762)
 DECLARE_DOUBLE(linearCoeffC, 2.5895)
 DECLARE_DOUBLE(linearCoeffD, -0.0869)
 DECLARE_DOUBLE(linearCoeffE, 0.0913)
+
+// PID constants
+DECLARE_DOUBLE(driveKP, 1)
+DECLARE_DOUBLE(driveKI, 0)
+DECLARE_DOUBLE(driveKD, 0)

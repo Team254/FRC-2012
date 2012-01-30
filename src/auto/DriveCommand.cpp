@@ -5,9 +5,9 @@ DriveCommand::DriveCommand(Drive* drive, double distance) {
   distanceGoal_ = distance;
   // set constants for tuning here
   leftPid_ = new Pid(.1, 0, 0);
-  leftPid_->SetGoal(distanceGoal_);
+  //leftPid_->SetGoal(distanceGoal_);
   rightPid_ = new Pid(.1, 0, 0);
-  rightPid_->SetGoal(distanceGoal_);
+  //rightPid_->SetGoal(distanceGoal_);
   distanceGoal_ = distance;
 }
 
@@ -23,8 +23,8 @@ bool DriveCommand::Run() {
     return true;
   }
   // get PID feedback and send back to motors
-  double leftPwr = leftPid_->Update(currLeftDist);
-  double rightPwr = rightPid_->Update(currRightDist);
+  double leftPwr = leftPid_->Update(distanceGoal_, currLeftDist);
+  double rightPwr = rightPid_->Update(distanceGoal_, currRightDist);
   drive_->SetLinearPower(leftPwr, rightPwr);
   // indicates that goal is not reached
   return false;

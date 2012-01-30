@@ -4,18 +4,16 @@ Pid::Pid(double kP, double kI, double kD) {
   kP_ = kP;
   kI_ = kI;
   kD_ = kD;
-  errorSum_ = 0;
-  lastError_ = 0;
+  ResetError();
 }
 
-void Pid::SetGoal(double goal) {
-  goal_ = goal;
+void Pid::ResetError() {
   errorSum_ = 0.0;
   lastError_ = 0.0;
 }
 
-double Pid::Update(double currentValue) {
-  double error = goal_ - currentValue;
+double Pid::Update(double goal, double currentValue) {
+  double error = goal - currentValue;
   double p = kP_ * error;
   errorSum_ += error;
   double i = kI_ * errorSum_;
@@ -25,4 +23,3 @@ double Pid::Update(double currentValue) {
   printf("Current Value: %f \n error: %f \n new power: %f \n\n", currentValue, error, p+i+d);
   return (p + i + d);
 }
-
