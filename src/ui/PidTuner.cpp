@@ -54,7 +54,7 @@ PidTuner::PidTuner() {
  serverAddr.sin_family = AF_INET; 
  serverAddr.sin_port = htons (SERVER_PORT_NUM); 
  
- if (((serverAddr.sin_addr.s_addr = inet_addr ("10.2.54.125")) == ERROR)) 
+ if (((serverAddr.sin_addr.s_addr = inet_addr ("10.2.52.125")) == ERROR))
    { 
      perror ("unknown server name"); 
      close (sFd); 

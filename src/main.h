@@ -6,9 +6,12 @@
 #include "auto/DriveCommand.h"
 #include "auto/SequentialCommand.h"
 #include "subsystems/Drive.h"
-#include "vision/VisionProcess.h"
+#include "subsystems/OperatorControl.h"
+#include "util/Logger.h"
 #include "vision/BackboardFinder.h"
 #include "ui/PidTuner.h"
+#include "vision/VisionProcess.h"
+
 
 /**
  * @author Eric Caldwell
@@ -87,6 +90,7 @@ class MainRobot : public IterativeRobot {
 
   Joystick* leftJoystick_;
   Joystick* rightJoystick_;
+  OperatorControl* operatorControl_;
 
   // Motors
 
@@ -99,7 +103,14 @@ class MainRobot : public IterativeRobot {
   Encoder* leftEncoder_;
   Encoder* rightEncoder_;
   Gyro* gyro_;
-  
+
+  Pid* testPid_;
+  Pid* baseLockPid_;
+  double baseLockPosition_;
+  bool oldBaseLockSwitch_;
+  Timer* testTimer_;
+  Logger* testLogger_;
+
   //Autonomous stuff for testing purposes
   //we should add an autoscripts directory for these, and run those for neatness' sake
   SequentialCommand* test;

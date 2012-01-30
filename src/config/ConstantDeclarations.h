@@ -30,6 +30,8 @@ DECLARE_DOUBLE(thresholdBMax, 255)
 // Control Board
 DECLARE_DOUBLE(leftJoystickPort, 1)
 DECLARE_DOUBLE(rightJoystickPort, 2)
+DECLARE_DOUBLE(operatorControlPort, 3)
+
 
 DECLARE_DOUBLE(conveyorUpPort, 3)
 DECLARE_DOUBLE(conveyorDownPort, 4)
@@ -45,7 +47,7 @@ DECLARE_DOUBLE(presetMaxPort, 13)
 DECLARE_DOUBLE(shooterPort, 14)
 DECLARE_DOUBLE(hoodIncrementPort, 15)
 DECLARE_DOUBLE(hoodDecrementPort, 16)
-DECLARE_DOUBLE(baseLockPort, 17)
+DECLARE_DOUBLE(baseLockPort, 1)
 DECLARE_DOUBLE(manualOverridePort, 18)
 DECLARE_DOUBLE(bridgeLowererPort, 19)
 
@@ -57,6 +59,9 @@ DECLARE_DOUBLE(linearCoeffD, -0.0869)
 DECLARE_DOUBLE(linearCoeffE, 0.0913)
 
 // PID constants
-DECLARE_DOUBLE(driveKP, 1)
-DECLARE_DOUBLE(driveKI, 0)
-DECLARE_DOUBLE(driveKD, 0)
+DECLARE_DOUBLE(driveKP, 1.2)
+DECLARE_DOUBLE(driveKI, 0.003)
+DECLARE_DOUBLE(driveKD, 0.08)
+DECLARE_DOUBLE(baseLockKP, 1.5)
+DECLARE_DOUBLE(baseLockKI, 0.01)
+DECLARE_DOUBLE(baseLockKD, 0)

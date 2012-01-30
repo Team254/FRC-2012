@@ -3,6 +3,8 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "util/Functions.h"
+
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
   //  target_ = new BackboardFinder();
@@ -20,6 +22,13 @@ MainRobot::MainRobot() {
                          rightEncoder_, gyro_);
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
+  operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
+
+  testPid_ = new Pid(constants_->driveKP, constants_->driveKI, constants_->driveKD);
+  baseLockPid_ = new Pid(constants_->baseLockKP, constants_->baseLockKI, constants_->baseLockKD);
+  testTimer_ = new Timer();
+  testLogger_ = new Logger("/test.log", 2);
+
   //Autonomous stuff goes here
   pidTest = new DriveCommand (drivebase_, 36);
   test = new SequentialCommand(1, pidTest);
@@ -44,32 +53,35 @@ void MainRobot::DisabledInit() {
 
 void MainRobot::AutonomousInit() {
   constants_->LoadFile();
+  delete testPid_;
+  testPid_ = new Pid(constants_->driveKP, constants_->driveKI, constants_->driveKD);
   pidTest->Initialize();
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
+  testPid_->ResetError();
+  testTimer_->Reset();
+  testTimer_->Start();
 }
 
 void MainRobot::TeleopInit() {
   constants_->LoadFile();
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
+  baseLockPosition_ = drivebase_->GetLeftEncoderDistance();
+  baseLockPid_->ResetError();
 }
 
 void MainRobot::DisabledPeriodic() {
 }
 
 void MainRobot::AutonomousPeriodic() {
-  /*pidTest->Run();
-  double leftDistance = drivebase_->GetLeftEncoderDistance();
-  double rightDistance = drivebase_->GetRightEncoderDistance(); */
-  /*  if (target_->SeesTarget() && target_->HasFreshTarget()) {
-    double err = target_->GetX() * 1.2;
-    err = (err > 1.0) ? 1.0 : err;
-    drivebase_->SetLinearPower(err,-err);
-  }
-  else {
-    drivebase_->SetLinearPower(0,0);
-    }*/
+  double time = testTimer_->Get();
+  double inputValue = Functions::SineWave(time, 5, 2);
+  double position = drivebase_->GetLeftEncoderDistance();
+  double signal = testPid_->Update(inputValue, position);
+  drivebase_->SetLinearPower(signal, signal);
+  testLogger_->Log("%f,%f,%f,%f\n", time, inputValue, signal, position);
+  PidTuner::PushData(inputValue, position);
 }
 
 void MainRobot::TeleopPeriodic() {
@@ -79,13 +91,16 @@ void MainRobot::TeleopPeriodic() {
   double leftPower = straightPower + turnPower;
   double rightPower = straightPower - turnPower;
   drivebase_->SetLinearPower(leftPower, rightPower);
-  double leftDistance = drivebase_->GetLeftEncoderDistance();
-  double rightDistance = drivebase_->GetRightEncoderDistance();
-
-  static int i = 0;
-  i++;
-  i = (i > 100) ?  0 : i;
-  PidTuner::PushData(i, i/2); 
+  double position = drivebase_->GetLeftEncoderDistance();
+  if (operatorControl_->GetBaseLockSwitch()) {
+    baseLockPosition_ += straightPower * .1;
+    double signal = baseLockPid_->Update(baseLockPosition_, position);
+    drivebase_->SetLinearPower(signal, signal);
+  }
+  if (!oldBaseLockSwitch_ && operatorControl_->GetBaseLockSwitch()) {
+    baseLockPosition_ = position;
+  }
+  oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 }
 
 double MainRobot::HandleDeadband(double val, double deadband) {
