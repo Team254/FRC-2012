@@ -1,6 +1,8 @@
 #ifndef CONFIG_CONSTANTS_H_
 #define CONFIG_CONSTANTS_H_
 
+#include "utils.hpp" // Constants are included everywhere, why not utils?
+
 /**
  * @author Eric Caldwell
  *

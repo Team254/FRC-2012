@@ -19,7 +19,9 @@ class Drive {
    * Accepts the Victors and Encoders to get and set values
    */
   Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
-        Solenoid* shiftSolenoid, Encoder* leftEncoder, Encoder* rightEncoder, Gyro* gyro);
+        Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, Encoder* leftEncoder,
+        Encoder* rightEncoder, Gyro* gyro, Accelerometer* accelerometerX, Accelerometer* accelerometerY,
+        Accelerometer* accelerometerZ);
 
   /**
    * Makes drive power linear to input, then sets power to the respective side of the drivetrain
@@ -42,6 +44,9 @@ class Drive {
    */
   double GetRightEncoderDistance();
 
+  /**
+   * Resets the drive encoders
+   */
   void ResetEncoders();
 
   /**
@@ -51,17 +56,34 @@ class Drive {
   void SetHighGear(bool highGear);
 
   /**
+   * Sets the pizza wheel position
+   * @param up true for up, false for down
+   */
+  void SetPizzaWheelUp(bool up);
+
+  /**
    * Returns current gyro angle.
    * @return the gyro angle in degrees
    */
   double GetGyroAngle();
 
   /**
-   * Sets gyro's sensitivity. Input is in V/sec, so remember to divide argument
-   * by 1000 if spec sheet says mV, which is most common
-   * @param sensitivity the sensitivity to set
+   * Returns current robot acceleration in the X direction
+   * @return the robot X acceleration in G's
    */
-  void SetGyroSensitivity(double sensitivity);
+  double GetXAcceleration();
+
+  /**
+   * Returns current robot acceleration in the Y direction
+   * @return the robot Y acceleration in G's
+   */
+  double GetYAcceleration();
+
+  /**
+   * Returns current robot acceleration in the Z direction
+   * @return the robot Z acceleration in G's
+   */
+  double GetZAcceleration();
 
   /**
    * Resets gyro so that current angle becomes new 0 degrees. Makes sequential turns
@@ -84,13 +106,6 @@ class Drive {
    */
   double Linearize(double x);
 
-  /**
-   * Caps a value to plus or minus 1.0
-   * @param val the value to be limited
-   * @return the capped value
-   */
-  double SetLimit(double x);
-
   // Victors
   Victor* leftDriveMotorA_;
   Victor* leftDriveMotorB_;
@@ -101,11 +116,15 @@ class Drive {
   Encoder* leftDriveEncoder_;
   Encoder* rightDriveEncoder_;
   Gyro* gyro_;
+  Accelerometer* accelerometerX_;
+  Accelerometer* accelerometerY_;
+  Accelerometer* accelerometerZ_;
 
   // Pneumatics
   Solenoid* shiftSolenoid_;
+  DoubleSolenoid* pizzaWheelSolenoid_;
 
-  Constants* constants;
+  Constants* constants_;
 };
 
 #endif  // SUBSYSTEMS_DRIVE_H_

@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "subsystems/Drive.h"
+#include "subsystems/Shooter.h"
 #include "subsystems/OperatorControl.h"
 #include "subsystems/Pid.h"
 #include "util/Functions.h"
@@ -12,23 +13,53 @@
 #include "vision/BackboardFinder.h"
 
 MainRobot::MainRobot() {
+  // Constants
   constants_ = Constants::GetInstance();
 
+  // Motors
   leftDriveMotorA_ = new Victor((int)constants_->leftDrivePwmA);
   leftDriveMotorB_ = new Victor((int)constants_->leftDrivePwmB);
   rightDriveMotorA_ = new Victor((int)constants_->rightDrivePwmA);
   rightDriveMotorB_ = new Victor((int)constants_->rightDrivePwmB);
+  intakeMotor_ = new Victor((int)constants_->intakePwm);
+  conveyorMotor_ = new Victor((int)constants_->conveyorPwm);
+  leftShooterMotor_ = new Victor((int)constants_->leftShooterPwm);
+  rightShooterMotor_ = new Victor((int)constants_->rightShooterPwm);
+
+  // Sensors
   leftEncoder_ = new Encoder((int)constants_->leftEncoderPortA, (int)constants_->leftEncoderPortB);
   leftEncoder_->Start();
   rightEncoder_ = new Encoder((int)constants_->rightEncoderPortA, (int)constants_->rightEncoderPortB);
   rightEncoder_->Start();
+  shooterEncoder_ = new Encoder((int)constants_->shooterEncoderPortA, (int)constants_->shooterEncoderPortB);
+  shooterEncoder_->Start();
+  gyro_ = new Gyro((int)constants_->gyroPort);
+  gyro_->SetSensitivity(1.0);
+  double accelerometerSensitivity=1.0;
+  accelerometerX_ = new Accelerometer((int)constants_->accelerometerXPort);
+  accelerometerY_ = new Accelerometer((int)constants_->accelerometerYPort);
+  accelerometerZ_ = new Accelerometer((int)constants_->accelerometerZPort);
+  accelerometerX_->SetSensitivity(accelerometerSensitivity);
+  accelerometerY_->SetSensitivity(accelerometerSensitivity);
+  accelerometerZ_->SetSensitivity(accelerometerSensitivity);
+
+  // Pneumatics
   compressor_ = new Compressor((int)constants_->compressorPressureSwitchPort,(int)constants_->compressorRelayPort);
   compressor_->Start();
   shiftSolenoid_ = new Solenoid((int)constants_->shiftSolenoidPort);
-  gyro_ = new Gyro((int)constants_->gyroPort);
-  drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_,
-                         shiftSolenoid_, leftEncoder_, rightEncoder_, gyro_);
+  hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
+  pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidHighPort,(int)constants_->pizzaWheelSolenoidLowPort);
+  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidHighPort,(int)constants_->intakeSolenoidLowPort);
 
+  // Subsystems
+  drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_,
+                         shiftSolenoid_, pizzaWheelSolenoid_, leftEncoder_,
+                         rightEncoder_, gyro_, accelerometerX_, accelerometerY_,
+                         accelerometerZ_);
+  shooter_ = new Shooter(intakeMotor_, conveyorMotor_, leftShooterMotor_, rightShooterMotor_,
+                         shooterEncoder_, hoodSolenoid_, intakeSolenoid_);
+
+  // Control Board
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
   operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
@@ -76,13 +107,14 @@ void MainRobot::AutonomousPeriodic() {
 
 void MainRobot::TeleopPeriodic() {
   // Operator drive control
-  bool wantHighGear = leftJoystick_->GetRawButton((int)constants_->highGearPort);
+  bool wantHighGear = !leftJoystick_->GetRawButton((int)constants_->highGearPort);
   double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
   double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
   double leftPower = straightPower + turnPower;
   double rightPower = straightPower - turnPower;
   drivebase_->SetHighGear(wantHighGear);
   drivebase_->SetLinearPower(leftPower, rightPower);
+  printf("left: %f right: %f high: %d\n",leftPower,rightPower,(int)wantHighGear);
   double position = drivebase_->GetLeftEncoderDistance();
 
   if (operatorControl_->GetBaseLockSwitch()) {

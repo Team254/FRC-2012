@@ -3,18 +3,25 @@
 #include <cmath>
 
 Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
-             Solenoid* shiftSolenoid, Encoder* leftEncoder, Encoder* rightEncoder, Gyro* gyro) {
-  constants = Constants::GetInstance();
+       Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, Encoder* leftEncoder,
+       Encoder* rightEncoder, Gyro* gyro, Accelerometer* accelerometerX, Accelerometer* accelerometerY,
+       Accelerometer* accelerometerZ) {
+  constants_ = Constants::GetInstance();
   leftDriveMotorA_ = leftVictorA;
   leftDriveMotorB_ = leftVictorB;
   rightDriveMotorA_ = rightVictorA;
   rightDriveMotorB_ = rightVictorB;
   shiftSolenoid_ = shiftSolenoid;
+  pizzaWheelSolenoid_ = pizzaWheelSolenoid;
   SetHighGear(true); // Default to high gear
   leftDriveEncoder_ = leftEncoder;
   rightDriveEncoder_ = rightEncoder;
+  ResetEncoders();
   gyro_ = gyro;
   gyro_->Reset();
+  accelerometerX_ = accelerometerX;
+  accelerometerY_ = accelerometerY;
+  accelerometerZ_ = accelerometerZ;
 }
 
 void Drive::SetLinearPower(double left, double right) {
@@ -34,7 +41,7 @@ double Drive::GetRightEncoderDistance() {
   // wheel circumference
 
   // Don't have current specs now, just return encoder rotations
-  return rightDriveEncoder_->Get() / 128.0;
+  return rightDriveEncoder_->Get() / 256.0;
 }
 
 void Drive::ResetEncoders() {
@@ -46,6 +53,14 @@ void Drive::SetHighGear(bool highGear) {
   shiftSolenoid_->Set(highGear);
 }
 
+void Drive::SetPizzaWheelUp(bool up) {
+  if(up) {
+    pizzaWheelSolenoid_->Set(DoubleSolenoid::kForward);
+  } else {
+    pizzaWheelSolenoid_->Set(DoubleSolenoid::kReverse);
+  }
+}
+
 double Drive::GetGyroAngle() {
   return gyro_->GetAngle();
 }
@@ -54,13 +69,21 @@ void Drive::ResetGyro() {
   gyro_->Reset();
 }
 
-void Drive::SetGyroSensitivity(double sensitivity) {
-  gyro_->SetSensitivity(sensitivity);
+double Drive::GetXAcceleration() {
+  return accelerometerX_->GetAcceleration();
+}
+
+double Drive::GetYAcceleration() {
+  return accelerometerY_->GetAcceleration();
+}
+
+double Drive::GetZAcceleration() {
+  return accelerometerZ_->GetAcceleration();
 }
 
 void Drive::SetPower(double left, double right) {
-  left = SetLimit(left);
-  right = SetLimit(right);
+  left = PwmLimit(left);
+  right = PwmLimit(right);
   leftDriveMotorA_->Set(left);
   leftDriveMotorB_->Set(left);
   rightDriveMotorA_->Set(-right);
@@ -69,8 +92,8 @@ void Drive::SetPower(double left, double right) {
 
 double Drive::Linearize(double x) {
   if (x > 0) {
-    return constants->linearCoeffA * pow(x, 4) + constants->linearCoeffB * pow(x, 3) +
-        constants->linearCoeffC * pow(x, 2) + constants->linearCoeffD * x + constants->linearCoeffE;
+    return constants_->linearCoeffA * pow(x, 4) + constants_->linearCoeffB * pow(x, 3) +
+        constants_->linearCoeffC * pow(x, 2) + constants_->linearCoeffD * x + constants_->linearCoeffE;
   } else if (x < 0) {
     // Rotate the linearization function by 180 degrees to handle negative input.
     return -Linearize(-x);
@@ -79,12 +102,3 @@ double Drive::Linearize(double x) {
   }
 }
 
-double Drive::SetLimit(double x) {
-  if (x > 1.0) {
-    return 1.0;
-  } else if (x < -1.0) {
-    return -1.0;
-  } else {
-    return x;
-  }
-}

@@ -9,6 +9,7 @@ class Drive;
 class Logger;
 class OperatorControl;
 class Pid;
+class Shooter;
 
 /**
  * @author Eric Caldwell
@@ -74,6 +75,7 @@ class MainRobot : public IterativeRobot {
 
   // Subsystems
   Drive* drivebase_;
+  Shooter* shooter_;
 
   // Joysticks
   Joystick* leftJoystick_;
@@ -85,15 +87,26 @@ class MainRobot : public IterativeRobot {
   Victor* leftDriveMotorB_;
   Victor* rightDriveMotorA_;
   Victor* rightDriveMotorB_;
+  Victor* intakeMotor_;
+  Victor* conveyorMotor_;
+  Victor* leftShooterMotor_;
+  Victor* rightShooterMotor_;
 
   // Sensors
   Encoder* leftEncoder_;
   Encoder* rightEncoder_;
+  Encoder* shooterEncoder_;
   Gyro* gyro_;
+  Accelerometer* accelerometerX_;
+  Accelerometer* accelerometerY_;
+  Accelerometer* accelerometerZ_;
   
   // Pneumatics
   Compressor* compressor_;
   Solenoid* shiftSolenoid_;
+  Solenoid* hoodSolenoid_;
+  DoubleSolenoid* pizzaWheelSolenoid_;
+  DoubleSolenoid* intakeSolenoid_;
 
   Pid* testPid_;
   Pid* baseLockPid_;
