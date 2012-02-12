@@ -3,12 +3,14 @@
 #include <cmath>
 
 Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
-             Encoder* leftEncoder, Encoder* rightEncoder, Gyro* gyro) {
+             Solenoid* shiftSolenoid, Encoder* leftEncoder, Encoder* rightEncoder, Gyro* gyro) {
   constants = Constants::GetInstance();
   leftDriveMotorA_ = leftVictorA;
   leftDriveMotorB_ = leftVictorB;
   rightDriveMotorA_ = rightVictorA;
   rightDriveMotorB_ = rightVictorB;
+  shiftSolenoid_ = shiftSolenoid;
+  SetHighGear(true); // Default to high gear
   leftDriveEncoder_ = leftEncoder;
   rightDriveEncoder_ = rightEncoder;
   gyro_ = gyro;
@@ -38,6 +40,10 @@ double Drive::GetRightEncoderDistance() {
 void Drive::ResetEncoders() {
   leftDriveEncoder_->Reset();
   rightDriveEncoder_->Reset();
+}
+
+void Drive::SetHighGear(bool highGear) {
+  shiftSolenoid_->Set(highGear);
 }
 
 double Drive::GetGyroAngle() {

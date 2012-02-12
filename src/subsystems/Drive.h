@@ -19,7 +19,7 @@ class Drive {
    * Accepts the Victors and Encoders to get and set values
    */
   Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
-        Encoder* leftEncoder, Encoder* rightEncoder, Gyro* gyro);
+        Solenoid* shiftSolenoid, Encoder* leftEncoder, Encoder* rightEncoder, Gyro* gyro);
 
   /**
    * Makes drive power linear to input, then sets power to the respective side of the drivetrain
@@ -43,6 +43,12 @@ class Drive {
   double GetRightEncoderDistance();
 
   void ResetEncoders();
+
+  /**
+   * Selects the drive gearing
+   * @param highGear true for high gear, false for low gear
+   */
+  void SetHighGear(bool highGear);
 
   /**
    * Returns current gyro angle.
@@ -95,6 +101,9 @@ class Drive {
   Encoder* leftDriveEncoder_;
   Encoder* rightDriveEncoder_;
   Gyro* gyro_;
+
+  // Pneumatics
+  Solenoid* shiftSolenoid_;
 
   Constants* constants;
 };

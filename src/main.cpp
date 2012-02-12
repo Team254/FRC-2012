@@ -22,9 +22,12 @@ MainRobot::MainRobot() {
   leftEncoder_->Start();
   rightEncoder_ = new Encoder((int)constants_->rightEncoderPortA, (int)constants_->rightEncoderPortB);
   rightEncoder_->Start();
+  compressor_ = new Compressor((int)constants_->compressorPressureSwitchPort,(int)constants_->compressorRelayPort);
+  compressor_->Start();
+  shiftSolenoid_ = new Solenoid((int)constants_->shiftSolenoidPort);
   gyro_ = new Gyro((int)constants_->gyroPort);
-  drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_, leftEncoder_,
-                         rightEncoder_, gyro_);
+  drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_,
+                         shiftSolenoid_, leftEncoder_, rightEncoder_, gyro_);
 
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
@@ -73,10 +76,12 @@ void MainRobot::AutonomousPeriodic() {
 
 void MainRobot::TeleopPeriodic() {
   // Operator drive control
+  bool wantHighGear = leftJoystick_->GetRawButton((int)constants_->highGearPort);
   double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
   double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
   double leftPower = straightPower + turnPower;
   double rightPower = straightPower - turnPower;
+  drivebase_->SetHighGear(wantHighGear);
   drivebase_->SetLinearPower(leftPower, rightPower);
   double position = drivebase_->GetLeftEncoderDistance();
 

@@ -23,6 +23,11 @@ DECLARE_DOUBLE(rightEncoderPortA, 11)
 DECLARE_DOUBLE(rightEncoderPortB, 12)
 DECLARE_DOUBLE(gyroPort, 1)
 
+// Pneumatics
+DECLARE_DOUBLE(compressorPressureSwitchPort,0)
+DECLARE_DOUBLE(compressorRelayPort,0)
+DECLARE_DOUBLE(shiftSolenoidPort,0)
+
 // Vision
 DECLARE_DOUBLE(thresholdRMin, 0)
 DECLARE_DOUBLE(thresholdRMax, 50)
@@ -52,6 +57,7 @@ DECLARE_DOUBLE(hoodDecrementPort, 16)
 DECLARE_DOUBLE(baseLockPort, 1)
 DECLARE_DOUBLE(manualOverridePort, 18)
 DECLARE_DOUBLE(bridgeLowererPort, 19)
+DECLARE_DOUBLE(highGearPort, 0);
 
 // Linearization
 DECLARE_DOUBLE(linearCoeffA, 4.5504)

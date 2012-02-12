@@ -81,7 +81,6 @@ class MainRobot : public IterativeRobot {
   OperatorControl* operatorControl_;
 
   // Motors
-
   Victor* leftDriveMotorA_;
   Victor* leftDriveMotorB_;
   Victor* rightDriveMotorA_;
@@ -91,6 +90,10 @@ class MainRobot : public IterativeRobot {
   Encoder* leftEncoder_;
   Encoder* rightEncoder_;
   Gyro* gyro_;
+  
+  // Pneumatics
+  Compressor* compressor_;
+  Solenoid* shiftSolenoid_;
 
   Pid* testPid_;
   Pid* baseLockPid_;
