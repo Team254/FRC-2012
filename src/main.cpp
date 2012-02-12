@@ -14,10 +14,10 @@
 MainRobot::MainRobot() {
   constants_ = Constants::GetInstance();
 
-  leftDriveMotorA_ = new Victor((int)constants_->leftMotorPortA);
-  leftDriveMotorB_ = new Victor((int)constants_->leftMotorPortB);
-  rightDriveMotorA_ = new Victor((int)constants_->rightMotorPortA);
-  rightDriveMotorB_ = new Victor((int)constants_->rightMotorPortB);
+  leftDriveMotorA_ = new Victor((int)constants_->leftDrivePwmA);
+  leftDriveMotorB_ = new Victor((int)constants_->leftDrivePwmB);
+  rightDriveMotorA_ = new Victor((int)constants_->rightDrivePwmA);
+  rightDriveMotorB_ = new Victor((int)constants_->rightDrivePwmB);
   leftEncoder_ = new Encoder((int)constants_->leftEncoderPortA, (int)constants_->leftEncoderPortB);
   leftEncoder_->Start();
   rightEncoder_ = new Encoder((int)constants_->rightEncoderPortA, (int)constants_->rightEncoderPortB);
