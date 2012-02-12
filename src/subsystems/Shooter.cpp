@@ -27,6 +27,7 @@ void Shooter::SetLinearPower(double pwm) {
 
 void Shooter::SetTargetWubbleu(double wubbleu) {
   targetWubbleu_ = wubbleu;
+  pid_.ResetError();
 }
 
 bool Shooter::PIDUpdate() {
@@ -61,7 +62,6 @@ void Shooter::SetHoodUp(bool up) {
 
 double Shooter::GetShooterWubbleu() {
   double currShooterVal = shooterEncoder_->Get() / 256.0 * 360;
-  // Assume dt to be 10ms
   double returnVal = (currShooterVal - prevShooterVal_) / timer_.Get();
   prevShooterVal_ = currShooterVal;
   timer_.Reset();
