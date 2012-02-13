@@ -53,8 +53,8 @@ void Drive::SetHighGear(bool highGear) {
   shiftSolenoid_->Set(highGear);
 }
 
-void Drive::SetPizzaWheelUp(bool up) {
-  if(up) {
+void Drive::SetPizzaWheelDown(bool down) {
+  if (down) {
     pizzaWheelSolenoid_->Set(DoubleSolenoid::kForward);
   } else {
     pizzaWheelSolenoid_->Set(DoubleSolenoid::kReverse);

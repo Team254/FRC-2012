@@ -57,9 +57,9 @@ class Drive {
 
   /**
    * Sets the pizza wheel position
-   * @param up true for up, false for down
+   * @param up true for down, false for up
    */
-  void SetPizzaWheelUp(bool up);
+  void SetPizzaWheelDown(bool down);
 
   /**
    * Returns current gyro angle.

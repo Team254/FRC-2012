@@ -42,22 +42,23 @@ MainRobot::MainRobot() {
   accelerometerX_->SetSensitivity(accelerometerSensitivity);
   accelerometerY_->SetSensitivity(accelerometerSensitivity);
   accelerometerZ_->SetSensitivity(accelerometerSensitivity);
+  bumpSensor_ = new DigitalInput(1);
 
   // Pneumatics
   compressor_ = new Compressor((int)constants_->compressorPressureSwitchPort,(int)constants_->compressorRelayPort);
   compressor_->Start();
   shiftSolenoid_ = new Solenoid((int)constants_->shiftSolenoidPort);
-  hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
-  pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidHighPort,(int)constants_->pizzaWheelSolenoidLowPort);
-  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidHighPort,(int)constants_->intakeSolenoidLowPort);
+//  hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
+  pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidDownPort, (int)constants_->pizzaWheelSolenoidUpPort);
+//  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidHighPort,(int)constants_->intakeSolenoidLowPort);
 
   // Subsystems
   drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_,
                          shiftSolenoid_, pizzaWheelSolenoid_, leftEncoder_,
                          rightEncoder_, gyro_, accelerometerX_, accelerometerY_,
                          accelerometerZ_);
-  shooter_ = new Shooter(intakeMotor_, conveyorMotor_, leftShooterMotor_, rightShooterMotor_,
-                         shooterEncoder_, hoodSolenoid_, intakeSolenoid_);
+//  shooter_ = new Shooter(intakeMotor_, conveyorMotor_, leftShooterMotor_, rightShooterMotor_,
+//                         shooterEncoder_, hoodSolenoid_, intakeSolenoid_);
 
   // Control Board
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
@@ -68,6 +69,8 @@ MainRobot::MainRobot() {
   baseLockPid_ = new Pid(constants_->baseLockKP, constants_->baseLockKI, constants_->baseLockKD);
   testTimer_ = new Timer();
   testLogger_ = new Logger("/test.log", 2);
+  oldPizzaWheelsButton_ = false;
+  pizzaWheelsDown_ = false;
 }
 
 void MainRobot::DisabledInit() {
@@ -114,8 +117,18 @@ void MainRobot::TeleopPeriodic() {
   double rightPower = straightPower - turnPower;
   drivebase_->SetHighGear(wantHighGear);
   drivebase_->SetLinearPower(leftPower, rightPower);
-  printf("left: %f right: %f high: %d\n",leftPower,rightPower,(int)wantHighGear);
+//  printf("left: %f right: %f high: %d\n",leftPower,rightPower,(int)wantHighGear);
   double position = drivebase_->GetLeftEncoderDistance();
+
+  // Pizza wheel control
+  if (rightJoystick_->GetTrigger() && !oldPizzaWheelsButton_) {
+    pizzaWheelsDown_ = !pizzaWheelsDown_;
+  }
+  oldPizzaWheelsButton_ = rightJoystick_->GetTrigger();
+  if (pizzaWheelsDown_ && bumpSensor_->Get()) {
+    pizzaWheelsDown_ = false;
+  }
+  drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
 
   if (operatorControl_->GetBaseLockSwitch()) {
     // Activate closed-loop base lock mode.

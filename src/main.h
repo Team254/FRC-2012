@@ -100,6 +100,7 @@ class MainRobot : public IterativeRobot {
   Accelerometer* accelerometerX_;
   Accelerometer* accelerometerY_;
   Accelerometer* accelerometerZ_;
+  DigitalInput* bumpSensor_;
   
   // Pneumatics
   Compressor* compressor_;
@@ -114,6 +115,8 @@ class MainRobot : public IterativeRobot {
   bool oldBaseLockSwitch_;
   Timer* testTimer_;
   Logger* testLogger_;
+  bool oldPizzaWheelsButton_;
+  bool pizzaWheelsDown_;
 };
 
 // Start the actual program
