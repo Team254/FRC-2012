@@ -71,9 +71,11 @@ MainRobot::MainRobot() {
   testLogger_ = new Logger("/test.log", 2);
   oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
   pizzaWheelsDown_ = false;
+  printf("Teleop good to go!\n");
 }
 
 void MainRobot::DisabledInit() {
+  oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
   pizzaWheelsDown_=false;
   drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
 }
@@ -98,7 +100,6 @@ void MainRobot::TeleopInit() {
   oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
   pizzaWheelsDown_=false;
   drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
-  printf("Teleop good to go!\n");
 }
 
 void MainRobot::DisabledPeriodic() {
@@ -130,13 +131,12 @@ void MainRobot::TeleopPeriodic() {
       rightPower = straightPower - turnPower;
   }
   drivebase_->SetLinearPower(leftPower, rightPower);
-  printf("lj: %f rj: %f lw: %f rw: %f high: %d\n",HandleDeadband(-leftJoystick_->GetY(), 0.1), HandleDeadband(rightJoystick_->GetX(), 0.1), leftPower,rightPower,(int)wantHighGear);
+  printf("lj: %f rj: %f lw: %f rw: %f wt: %d wh: %d\n",HandleDeadband(-leftJoystick_->GetY(), 0.1), HandleDeadband(rightJoystick_->GetX(), 0.1), leftPower, rightPower, quickTurning, wantHighGear);
 
   //double position = drivebase_->GetLeftEncoderDistance();
 
   // Pizza wheel control
   bool currPizzaWheelsButton = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
-  printf("b: %d curr: %d old: %d\n", (int)constants_->pizzaSwitchPort, currPizzaWheelsButton, oldPizzaWheelsButton_);
 
   // If the switch has toggled, flip the pizza wheels
   if (currPizzaWheelsButton!=oldPizzaWheelsButton_) {
