@@ -68,6 +68,8 @@ DECLARE_DOUBLE(baseLockPort, 1)
 DECLARE_DOUBLE(manualOverridePort, 18)
 DECLARE_DOUBLE(bridgeLowererPort, 19)
 DECLARE_DOUBLE(highGearPort, 2);
+DECLARE_DOUBLE(quickTurnPort, 4);
+DECLARE_DOUBLE(pizzaSwitchPort, 2);
 
 // Linearization
 DECLARE_DOUBLE(linearCoeffA, 4.5504)
