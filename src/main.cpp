@@ -42,7 +42,7 @@ MainRobot::MainRobot() {
   accelerometerX_->SetSensitivity(accelerometerSensitivity);
   accelerometerY_->SetSensitivity(accelerometerSensitivity);
   accelerometerZ_->SetSensitivity(accelerometerSensitivity);
-  bumpSensor_ = new DigitalInput(1);
+  bumpSensor_ = new DigitalInput((int)constants_->bumpSensorPort);
 
   // Pneumatics
   compressor_ = new Compressor((int)constants_->compressorPressureSwitchPort,(int)constants_->compressorRelayPort);
