@@ -25,7 +25,10 @@ Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Vic
 }
 
 void Drive::SetLinearPower(double left, double right) {
-   SetPower(Linearize(left), Linearize(right));
+  double linearLeft=Linearize(left);
+  double linearRight=Linearize(right);
+  printf("li: %f ri: %f\nlo: %f ro: %f\n\n", left, right, linearLeft, linearRight);
+  SetPower(linearLeft, linearRight);
 }
 
 double Drive::GetLeftEncoderDistance() {

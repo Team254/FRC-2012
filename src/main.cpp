@@ -71,13 +71,10 @@ MainRobot::MainRobot() {
   testLogger_ = new Logger("/test.log", 2);
   oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
   pizzaWheelsDown_ = false;
-  printf("Teleop good to go!\n");
+  printf("\n\n***Teleop good to go!***\n\n\n");
 }
 
 void MainRobot::DisabledInit() {
-  oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
-  pizzaWheelsDown_=false;
-  drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
 }
 
 void MainRobot::AutonomousInit() {
@@ -95,14 +92,22 @@ void MainRobot::TeleopInit() {
   constants_->LoadFile();
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
-  baseLockPosition_ = drivebase_->GetLeftEncoderDistance();
-  baseLockPid_->ResetError();
+  //baseLockPosition_ = drivebase_->GetLeftEncoderDistance();
+  //baseLockPid_->ResetError();
+
+  // Reset Pizza Wheels
   oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
   pizzaWheelsDown_=false;
   drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
+
+  // Sometimes drive will be stuck at linearCoeffE when enabling teleop
+  drivebase_->SetLinearPower(0.0,0.0);
 }
 
 void MainRobot::DisabledPeriodic() {
+  oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
+  pizzaWheelsDown_=false;
+  drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
 }
 
 void MainRobot::AutonomousPeriodic() {
@@ -130,8 +135,8 @@ void MainRobot::TeleopPeriodic() {
       leftPower = straightPower + turnPower;
       rightPower = straightPower - turnPower;
   }
+  printf("lj: %f rj: %f wt: %d wh: %d\n",HandleDeadband(-leftJoystick_->GetY(), 0.1), HandleDeadband(rightJoystick_->GetX(), 0.1), quickTurning, wantHighGear);
   drivebase_->SetLinearPower(leftPower, rightPower);
-  printf("lj: %f rj: %f lw: %f rw: %f wt: %d wh: %d\n",HandleDeadband(-leftJoystick_->GetY(), 0.1), HandleDeadband(rightJoystick_->GetX(), 0.1), leftPower, rightPower, quickTurning, wantHighGear);
 
   //double position = drivebase_->GetLeftEncoderDistance();
 

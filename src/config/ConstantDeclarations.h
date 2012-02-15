@@ -27,7 +27,7 @@ DECLARE_DOUBLE(gyroPort, 1)
 DECLARE_DOUBLE(accelerometerXPort, 2)
 DECLARE_DOUBLE(accelerometerYPort, 3)
 DECLARE_DOUBLE(accelerometerZPort, 4)
-DECLARE_DOUBLE(bumpSensorPort, 4)
+DECLARE_DOUBLE(bumpSensorPort, 1)
 
 // Pneumatics
 DECLARE_DOUBLE(compressorPressureSwitchPort, 14)
