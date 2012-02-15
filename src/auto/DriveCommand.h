@@ -17,7 +17,7 @@ class DriveCommand : public AutoCommand {
   /**
    * Constructor. Accepts drivetrain pointer and goal in terms of distance in inches
    */
-  DriveCommand(Drive* drive, double distance);
+  DriveCommand(Drive* drive, double distance, bool usePizza);
 
   /**
    * Clears encoders and gyro
@@ -43,6 +43,10 @@ class DriveCommand : public AutoCommand {
 
   // Distance goal, more goals can be added (angle, velocity, etc.)
   double distanceGoal_;
+
+  // Should pizza wheels be down?
+  bool usePizza_;
+  bool resetPizza_;
 };
 
 #endif  // AUTO_DRIVE_COMMAND_H_

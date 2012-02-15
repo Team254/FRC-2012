@@ -64,6 +64,10 @@ void Drive::SetPizzaWheelDown(bool down) {
   }
 }
 
+bool Drive::GetPizzaUp() {
+  return (pizzaWheelSolenoid_->Get() == DoubleSolenoid::kForward);
+}
+
 double Drive::GetGyroAngle() {
   return gyro_->GetAngle();
 }

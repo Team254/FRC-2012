@@ -3,9 +3,11 @@
 #include "subsystems/Drive.h"
 #include "subsystems/Pid.h"
 
-DriveCommand::DriveCommand(Drive* drive, double distance) {
+DriveCommand::DriveCommand(Drive* drive, double distance, bool usePizza) {
   drive_ = drive;
   distanceGoal_ = distance;
+  usePizza_ = usePizza;
+  resetPizza_ =  (usePizza && drive->GetPizzaUp());
 
   Constants* constants = Constants::GetInstance();
   leftPid_ = new Pid(constants->driveKP, constants->driveKI, constants->driveKD);
@@ -14,6 +16,7 @@ DriveCommand::DriveCommand(Drive* drive, double distance) {
 
 void DriveCommand::Initialize() {
   drive_->ResetEncoders();
+  drive_->SetPizzaWheelDown(usePizza_);
 }
 
 bool DriveCommand::Run() {
@@ -22,6 +25,7 @@ bool DriveCommand::Run() {
 
   // If the goal has been reached, this command is done.
   if (currLeftDist == distanceGoal_ && currRightDist == distanceGoal_) {
+    drive_->SetPizzaWheelDown(!resetPizza_);
     return true;
   }
 

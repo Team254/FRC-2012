@@ -9,6 +9,7 @@
  * @author Eric Caldwell
  * @author Bhargava Manja
  * @author Art Kalb
+ * @author Tom Bottiglieri
  *
  * Easy-access functions for drive functions: setting power, getting encoder values, etc.
  */
@@ -60,6 +61,12 @@ class Drive {
    * @param up true for down, false for up
    */
   void SetPizzaWheelDown(bool down);
+
+  /**
+   * Gets the current upness of the pizza cutter wheels
+   * @return true if wheels up, false if wheels down
+   */
+  bool GetPizzaUp();
 
   /**
    * Returns current gyro angle.
