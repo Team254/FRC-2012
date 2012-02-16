@@ -138,16 +138,18 @@ void MainRobot::TeleopPeriodic() {
   double leftPower, rightPower;
   double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
   double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
-  if(quickTurning) {
+
+  /*  if(quickTurning) {
       leftPower = turnPower;
       rightPower = -turnPower;
   } else if(straightPower) {
       leftPower = straightPower + turnPower;
       rightPower = straightPower - turnPower;
   }
+  drivebase_->SetLinearPower(leftPower, rightPower); */
+
   lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "lj:%.4f rj:%.4f", HandleDeadband(-leftJoystick_->GetY(), 0.1), HandleDeadband(rightJoystick_->GetX(), 0.1));
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "sp:%.4f tp:%.4f", straightPower, turnPower);
-  drivebase_->SetLinearPower(leftPower, rightPower);
 
   //double position = drivebase_->GetLeftEncoderDistance();
 
@@ -167,6 +169,11 @@ void MainRobot::TeleopPeriodic() {
   }
   drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
 
+
+  // Drive
+  if (pizzaWheelsDown_)
+    turnPower = 0;
+  drivebase_->CheesyDrive(straightPower, turnPower, quickTurning);
   /*
   if (operatorControl_->GetBaseLockSwitch()) {
     // Activate closed-loop base lock mode.

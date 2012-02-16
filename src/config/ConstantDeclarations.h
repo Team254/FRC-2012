@@ -79,6 +79,10 @@ DECLARE_DOUBLE(linearCoeffC, 2.5895)
 DECLARE_DOUBLE(linearCoeffD, -0.0869)
 DECLARE_DOUBLE(linearCoeffE, 0.0913)
 
+// Drive tuning
+DECLARE_DOUBLE(turnSensLow, 1.1)
+DECLARE_DOUBLE(turnSensHigh, 1.4)
+
 // PID constants
 DECLARE_DOUBLE(driveKP, 1.2)
 DECLARE_DOUBLE(driveKI, 0.003)

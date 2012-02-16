@@ -98,6 +98,11 @@ class Drive {
    */
   void ResetGyro();
 
+  /**
+   * Nice operator control for a fast robot
+   */
+  void CheesyDrive(double throttle, double wheel, bool quickturn);
+
  private:
   /**
    * Sets unlinearized power to the left and right sides of the drivetrain

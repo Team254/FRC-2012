@@ -115,3 +115,50 @@ double Drive::Linearize(double x) {
   }
 }
 
+void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
+  double angularPower = 0.0;
+  double overPower = 0.0;
+  double sensitivity = 1.0;
+  double rPower = 0.0;
+  double lPower = 0.0;
+
+  if (!shiftSolenoid_->Get()) //high gear
+    sensitivity = constants_->turnSensHigh;
+  else
+    sensitivity = constants_->turnSensLow;
+
+  if(quickTurn) {
+    overPower = 1.0;
+    sensitivity = 1.0;
+    angularPower = wheel;
+  }
+  else {
+    overPower = 0.0;
+    angularPower = fabs(throttle) * wheel * sensitivity;
+  }
+
+  rPower = lPower = throttle;
+  lPower += angularPower;
+  rPower -= angularPower;
+
+  if(lPower > 1.0) {
+    rPower -= overPower * (lPower - 1.0);
+    lPower = 1.0;
+  }
+  else if(rPower > 1.0) {
+    lPower -= overPower * (rPower - 1.0);
+    rPower = 1.0;
+  }
+  else if(lPower < -1.0) {
+    rPower += overPower * (-1.0 - lPower);
+    lPower = -1.0;
+  }
+  else if(rPower < -1.0) {
+    lPower += overPower * (-1.0 - rPower);
+    rPower = -1.0;
+  }
+
+  //  printf("ts: %f | lp: %f\nrp: %f\n\n", sensitivity, lPower, rPower);
+  SetLinearPower(lPower, rPower);
+}
+
