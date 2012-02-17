@@ -131,6 +131,7 @@ class Drive {
   Solenoid* shiftSolenoid_;
   DoubleSolenoid* pizzaWheelSolenoid_;
 
+  DriverStationLCD* lcd_;
   Constants* constants_;
 };
 

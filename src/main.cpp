@@ -71,7 +71,13 @@ MainRobot::MainRobot() {
   testLogger_ = new Logger("/test.log", 2);
   oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
   pizzaWheelsDown_ = false;
-  printf("\n\n***Teleop good to go!***\n\n\n");
+
+  // Watchdog
+  GetWatchdog().SetExpiration(100);
+
+  // Get a local instance of the Driver Station LCD
+  lcd_ = DriverStationLCD::GetInstance();
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line1,"***Teleop Ready!***");
 }
 
 void MainRobot::DisabledInit() {
@@ -86,6 +92,7 @@ void MainRobot::AutonomousInit() {
   testPid_->ResetError();
   testTimer_->Reset();
   testTimer_->Start();
+  GetWatchdog().SetEnabled(false);
 }
 
 void MainRobot::TeleopInit() {
@@ -102,12 +109,14 @@ void MainRobot::TeleopInit() {
 
   // Sometimes drive will be stuck at linearCoeffE when enabling teleop
   drivebase_->SetLinearPower(0.0,0.0);
+  GetWatchdog().SetEnabled(true);
 }
 
 void MainRobot::DisabledPeriodic() {
   oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
   pizzaWheelsDown_=false;
   drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
+  lcd_->UpdateLCD();
 }
 
 void MainRobot::AutonomousPeriodic() {
@@ -121,6 +130,7 @@ void MainRobot::AutonomousPeriodic() {
 }
 
 void MainRobot::TeleopPeriodic() {
+  GetWatchdog().Feed();
   // Operator drive control
   bool wantHighGear = leftJoystick_->GetRawButton((int)constants_->highGearPort);
   bool quickTurning = rightJoystick_->GetRawButton((int)constants_->quickTurnPort);
@@ -135,7 +145,8 @@ void MainRobot::TeleopPeriodic() {
       leftPower = straightPower + turnPower;
       rightPower = straightPower - turnPower;
   }
-  printf("lj: %f rj: %f wt: %d wh: %d\n",HandleDeadband(-leftJoystick_->GetY(), 0.1), HandleDeadband(rightJoystick_->GetX(), 0.1), quickTurning, wantHighGear);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "lj:%.4f rj:%.4f", HandleDeadband(-leftJoystick_->GetY(), 0.1), HandleDeadband(rightJoystick_->GetX(), 0.1));
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "sp:%.4f tp:%.4f", straightPower, turnPower);
   drivebase_->SetLinearPower(leftPower, rightPower);
 
   //double position = drivebase_->GetLeftEncoderDistance();
@@ -170,6 +181,7 @@ void MainRobot::TeleopPeriodic() {
   }
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
   */
+  lcd_->UpdateLCD();
 }
 
 double MainRobot::HandleDeadband(double val, double deadband) {

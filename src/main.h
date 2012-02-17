@@ -117,6 +117,7 @@ class MainRobot : public IterativeRobot {
   Logger* testLogger_;
   bool oldPizzaWheelsButton_;
   bool pizzaWheelsDown_;
+  DriverStationLCD* lcd_;
 };
 
 // Start the actual program

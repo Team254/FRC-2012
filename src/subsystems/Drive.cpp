@@ -22,12 +22,15 @@ Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Vic
   accelerometerX_ = accelerometerX;
   accelerometerY_ = accelerometerY;
   accelerometerZ_ = accelerometerZ;
+  lcd_ = DriverStationLCD::GetInstance();
 }
 
 void Drive::SetLinearPower(double left, double right) {
   double linearLeft=Linearize(left);
   double linearRight=Linearize(right);
-  printf("li: %f ri: %f\nlo: %f ro: %f\n\n", left, right, linearLeft, linearRight);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "l: %d r: %d", left==0.0, right==0.0);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "li:%.4f lo:%.4f", left, linearLeft);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "ri:%.4f ro:%.4f", right, linearRight);
   SetPower(linearLeft, linearRight);
 }
 
@@ -98,14 +101,17 @@ void Drive::SetPower(double left, double right) {
 }
 
 double Drive::Linearize(double x) {
-  if (x > 0) {
+  if(fabs(x) < 0.01 ) {
+      x = 0.0;
+  }
+  if (x > 0.0) {
     return constants_->linearCoeffA * pow(x, 4) + constants_->linearCoeffB * pow(x, 3) +
         constants_->linearCoeffC * pow(x, 2) + constants_->linearCoeffD * x + constants_->linearCoeffE;
-  } else if (x < 0) {
-    // Rotate the linearization function by 180 degrees to handle negative input.
+  } else if (x < 0.0) {
+    // Rotate the linearization function by 180.0 degrees to handle negative input.
     return -Linearize(-x);
   } else {
-    return 0;
+    return 0.0;
   }
 }
 
