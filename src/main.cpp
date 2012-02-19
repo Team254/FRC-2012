@@ -35,7 +35,7 @@ MainRobot::MainRobot() {
   shooterEncoder_->Start();
   gyro_ = new Gyro((int)constants_->gyroPort);
   gyro_->SetSensitivity(1.0);
-  double accelerometerSensitivity=1.0;
+  double accelerometerSensitivity = 1.0;
   accelerometerX_ = new Accelerometer((int)constants_->accelerometerXPort);
   accelerometerY_ = new Accelerometer((int)constants_->accelerometerYPort);
   accelerometerZ_ = new Accelerometer((int)constants_->accelerometerZPort);
@@ -104,7 +104,7 @@ void MainRobot::TeleopInit() {
 
   // Reset Pizza Wheels
   oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
-  pizzaWheelsDown_=false;
+  pizzaWheelsDown_= false;
   drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
 
   // Sometimes drive will be stuck at linearCoeffE when enabling teleop
@@ -114,7 +114,7 @@ void MainRobot::TeleopInit() {
 
 void MainRobot::DisabledPeriodic() {
   oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
-  pizzaWheelsDown_=false;
+  pizzaWheelsDown_ = false;
   drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
   lcd_->UpdateLCD();
 }
@@ -157,7 +157,7 @@ void MainRobot::TeleopPeriodic() {
   bool currPizzaWheelsButton = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
 
   // If the switch has toggled, flip the pizza wheels
-  if (currPizzaWheelsButton!=oldPizzaWheelsButton_) {
+  if (currPizzaWheelsButton != oldPizzaWheelsButton_) {
     pizzaWheelsDown_ = !pizzaWheelsDown_;
   }
   // Update the button
