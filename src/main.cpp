@@ -7,6 +7,7 @@
 #include "subsystems/Shooter.h"
 #include "subsystems/OperatorControl.h"
 #include "subsystems/Pid.h"
+#include "subsystems/PidCommander.h"
 #include "util/Functions.h"
 #include "util/Logger.h"
 #include "util/PidTuner.h"
@@ -189,6 +190,12 @@ void MainRobot::TeleopPeriodic() {
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
   */
   lcd_->UpdateLCD();
+  static PidCommander* pc = new PidCommander(NULL, 100, .1, 3);
+  static int i = 0;
+  if ( i <= 100) {
+    pc->Update(i);
+  }
+  i++;
 }
 
 double MainRobot::HandleDeadband(double val, double deadband) {
