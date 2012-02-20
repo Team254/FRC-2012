@@ -1,6 +1,7 @@
 #include "util/Logger.h"
-
 #include <cstdarg>
+
+Logger* Logger::instance_ = NULL;
 
 Logger::Logger(const char* filename, int loggingInterval) {
   // Open the log file in append mode to preserve any existing contents.
@@ -33,4 +34,11 @@ void Logger::Log(const char* format, ...) {
 void Logger::ClearLog() {
   // Close the log file and reopen it in write mode to overwrite any existing contents.
   logfile_ = freopen(filename_.c_str(), "w", logfile_);
+}
+
+Logger* Logger::GetSysLog() {
+  if(Logger::instance_ == NULL) {
+    Logger::instance_ = new Logger("robot.log");
+  }
+  return Logger::instance_;
 }

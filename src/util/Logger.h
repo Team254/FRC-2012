@@ -30,11 +30,14 @@ class Logger {
    */
   void ClearLog();
 
+  static Logger* GetSysLog();
+
  private:
   FILE* logfile_;
   int loggingInterval_;
   int intervalCounter_;
   std::string filename_;
+  static Logger* instance_;
 };
 
 #endif  // UTIL_LOGGER_H_
