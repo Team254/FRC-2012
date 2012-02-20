@@ -3,7 +3,7 @@
 #include <cmath>
 
 Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
-       Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, Encoder* leftEncoder,
+       Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid,  Encoder* leftEncoder,
        Encoder* rightEncoder, Gyro* gyro, Accelerometer* accelerometerX, Accelerometer* accelerometerY,
        Accelerometer* accelerometerZ) {
   constants_ = Constants::GetInstance();
@@ -13,6 +13,8 @@ Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Vic
   rightDriveMotorB_ = rightVictorB;
   shiftSolenoid_ = shiftSolenoid;
   pizzaWheelSolenoid_ = pizzaWheelSolenoid;
+  brakeSolenoid_ = brakeSolenoid;
+  SetBrakeOn(false);
   SetHighGear(true); // Default to high gear
   leftDriveEncoder_ = leftEncoder;
   rightDriveEncoder_ = rightEncoder;
@@ -39,7 +41,7 @@ double Drive::GetLeftEncoderDistance() {
   // wheel circumference
 
   // Don't have current specs now, just return encoder rotations
-  return -leftDriveEncoder_->Get() / 256.0;
+  return -leftDriveEncoder_->Get() / 256.0 * 3.5 * 3.14159265;
 }
 
 double Drive::GetRightEncoderDistance() {
@@ -47,7 +49,7 @@ double Drive::GetRightEncoderDistance() {
   // wheel circumference
 
   // Don't have current specs now, just return encoder rotations
-  return rightDriveEncoder_->Get() / 256.0;
+  return rightDriveEncoder_->Get() / 256.0 * 3.5 * 3.14159265;
 }
 
 void Drive::ResetEncoders() {
@@ -67,6 +69,18 @@ void Drive::SetPizzaWheelDown(bool down) {
   }
 }
 
+void Drive::SetBrakeOn(bool on) {
+  if (on) {
+    brakeSolenoid_->Set(DoubleSolenoid::kForward);
+  } else {
+    brakeSolenoid_->Set(DoubleSolenoid::kReverse);
+  }
+}
+
+bool Drive::GetBrakeOn() {
+  return (brakeSolenoid_->Get() == DoubleSolenoid::kForward);
+}
+
 bool Drive::GetPizzaUp() {
   return (pizzaWheelSolenoid_->Get() == DoubleSolenoid::kForward);
 }
@@ -80,20 +94,23 @@ void Drive::ResetGyro() {
 }
 
 double Drive::GetXAcceleration() {
-  return accelerometerX_->GetAcceleration();
+  return (double) accelerometerX_->GetAcceleration();
 }
 
 double Drive::GetYAcceleration() {
-  return accelerometerY_->GetAcceleration();
+  return (double) accelerometerY_->GetAcceleration();
 }
 
 double Drive::GetZAcceleration() {
-  return accelerometerZ_->GetAcceleration();
+  return (double) accelerometerZ_->GetAcceleration();
 }
 
 void Drive::SetPower(double left, double right) {
   left = PwmLimit(left);
   right = PwmLimit(right);
+  if (GetBrakeOn()) {
+    left = right = 0;
+  }
   leftDriveMotorA_->Set(left);
   leftDriveMotorB_->Set(-left); //reverse 550
   rightDriveMotorA_->Set(-right);

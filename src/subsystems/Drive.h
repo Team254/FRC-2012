@@ -20,7 +20,7 @@ class Drive {
    * Accepts the Victors and Encoders to get and set values
    */
   Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
-        Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, Encoder* leftEncoder,
+        Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid, Encoder* leftEncoder,
         Encoder* rightEncoder, Gyro* gyro, Accelerometer* accelerometerX, Accelerometer* accelerometerY,
         Accelerometer* accelerometerZ);
 
@@ -103,6 +103,16 @@ class Drive {
    */
   void CheesyDrive(double throttle, double wheel, bool quickturn);
 
+  /**
+   * Turn brakes on
+   */
+  void SetBrakeOn(bool on);
+
+  /**
+   * Is brake on?
+   */
+  bool GetBrakeOn();
+
  private:
   /**
    * Sets unlinearized power to the left and right sides of the drivetrain
@@ -135,6 +145,9 @@ class Drive {
   // Pneumatics
   Solenoid* shiftSolenoid_;
   DoubleSolenoid* pizzaWheelSolenoid_;
+
+  // Brake
+  DoubleSolenoid* brakeSolenoid_;
 
   DriverStationLCD* lcd_;
   Constants* constants_;

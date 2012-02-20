@@ -107,7 +107,8 @@ class MainRobot : public IterativeRobot {
   Solenoid* shiftSolenoid_;
   Solenoid* hoodSolenoid_;
   DoubleSolenoid* pizzaWheelSolenoid_;
-  DoubleSolenoid* intakeSolenoid_;
+  Solenoid* intakeSolenoid_;
+  DoubleSolenoid* brakeSolenoid_;
 
   Pid* testPid_;
   Pid* baseLockPid_;

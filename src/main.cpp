@@ -36,13 +36,14 @@ MainRobot::MainRobot() {
   shooterEncoder_->Start();
   gyro_ = new Gyro((int)constants_->gyroPort);
   gyro_->SetSensitivity(1.0);
+
   double accelerometerSensitivity = 1.0;
   accelerometerX_ = new Accelerometer((int)constants_->accelerometerXPort);
   accelerometerY_ = new Accelerometer((int)constants_->accelerometerYPort);
   accelerometerZ_ = new Accelerometer((int)constants_->accelerometerZPort);
-  accelerometerX_->SetSensitivity(accelerometerSensitivity);
-  accelerometerY_->SetSensitivity(accelerometerSensitivity);
-  accelerometerZ_->SetSensitivity(accelerometerSensitivity);
+  //accelerometerX_->SetSensitivity(accelerometerSensitivity);
+  //  accelerometerY_->SetSensitivity(accelerometerSensitivity);
+  //  accelerometerZ_->SetSensitivity(accelerometerSensitivity);
   bumpSensor_ = new DigitalInput((int)constants_->bumpSensorPort);
 
   // Pneumatics
@@ -52,10 +53,10 @@ MainRobot::MainRobot() {
 //  hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
   pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidDownPort, (int)constants_->pizzaWheelSolenoidUpPort);
 //  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidHighPort,(int)constants_->intakeSolenoidLowPort);
-
+  brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidHighPort, (int)constants_->brakeSolenoidLowPort);
   // Subsystems
   drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_,
-                         shiftSolenoid_, pizzaWheelSolenoid_, leftEncoder_,
+                         shiftSolenoid_, pizzaWheelSolenoid_, brakeSolenoid_,  leftEncoder_,
                          rightEncoder_, gyro_, accelerometerX_, accelerometerY_,
                          accelerometerZ_);
 //  shooter_ = new Shooter(intakeMotor_, conveyorMotor_, leftShooterMotor_, rightShooterMotor_,
@@ -175,7 +176,7 @@ void MainRobot::TeleopPeriodic() {
   if (pizzaWheelsDown_)
     turnPower = 0;
   drivebase_->CheesyDrive(straightPower, turnPower, quickTurning);
-  /*
+ #if 0
   if (operatorControl_->GetBaseLockSwitch()) {
     // Activate closed-loop base lock mode.
     baseLockPosition_ += straightPower * .1;
@@ -188,13 +189,13 @@ void MainRobot::TeleopPeriodic() {
     baseLockPosition_ = position;
   }
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
-  */
-  lcd_->UpdateLCD();
-  static PidCommander* pc = new PidCommander(NULL, 100, .1, 3);
+ #endif
   static int i = 0;
-  if ( i <= 100) {
-    pc->Update(i);
-  }
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "%d, %f, %f, %f\n", i,(float) drivebase_->GetXAcceleration(),(float)drivebase_->GetXAcceleration(),(float) drivebase_->GetXAcceleration());
+  lcd_->UpdateLCD();
+
+  Logger::GetSysLog()->Log("%d, %f, %f, %f\n", i,(float) drivebase_->GetXAcceleration(),(float)drivebase_->GetXAcceleration(),(float) drivebase_->GetXAcceleration());
+  
   i++;
 }
 
