@@ -95,9 +95,9 @@ void Drive::SetPower(double left, double right) {
   left = PwmLimit(left);
   right = PwmLimit(right);
   leftDriveMotorA_->Set(left);
-  leftDriveMotorB_->Set(left);
+  leftDriveMotorB_->Set(-left); //reverse 550
   rightDriveMotorA_->Set(-right);
-  rightDriveMotorB_->Set(-right);
+  rightDriveMotorB_->Set(right); //reverse 550s
 }
 
 double Drive::Linearize(double x) {

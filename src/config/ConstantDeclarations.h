@@ -10,11 +10,11 @@
 DECLARE_DOUBLE(leftDrivePwmA, 5)
 DECLARE_DOUBLE(leftDrivePwmB, 4)
 DECLARE_DOUBLE(rightDrivePwmA, 6)
-DECLARE_DOUBLE(rightDrivePwmB, 7)
+DECLARE_DOUBLE(rightDrivePwmB, 8)
 DECLARE_DOUBLE(intakePwm, 2)
 DECLARE_DOUBLE(conveyorPwm, 9)
 DECLARE_DOUBLE(leftShooterPwm, 3)
-DECLARE_DOUBLE(rightShooterPwm, 8)
+DECLARE_DOUBLE(rightShooterPwm, 7)
 
 // Sensors
 DECLARE_DOUBLE(leftEncoderPortA, 2)
