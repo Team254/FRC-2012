@@ -50,4 +50,4 @@ class AutoCommand {
   Timer* timer_;
 };
 
-#endif  // AUTO_AUTO_COMMAND_H_
+#endif // AUTO_AUTO_COMMAND_H_
