@@ -1,6 +1,8 @@
 #ifndef DRIVERS_DRIVER_H
 #define DRIVERS_DRIVER_H
 
+class Drive;
+
 /**
  * @author Eric Bakan
  *
@@ -23,7 +25,11 @@
 class Driver {
  public:
 
-  Driver();
+  /**
+   * All drivers need a drive to drive!
+   * Other things like joysticks, etc. can come later
+   */
+  Driver(Drive* drive);
 
   /**
    * Updates the driver
@@ -43,6 +49,9 @@ class Driver {
    * Clean up clea nup, everybody do your share!
    */
   virtual ~Driver();
+
+ private:
+  Drive* drive_;
 
 };
 
