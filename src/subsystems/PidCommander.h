@@ -9,7 +9,7 @@ class PidCommander {
  public:
 
   PidCommander(Pid* pid, double g, double attackPercent, double maxDeltaG);
-  void Update (double cur);
+  double Update (double cur);
  private:
   Pid* pid_;
   double goal_;

@@ -10,7 +10,7 @@ PidCommander::PidCommander(Pid* pid, double g, double attackPercent, double maxD
   firstRun_ = true;
 }
 
-void PidCommander::Update(double cur) {
+double PidCommander::Update(double cur) {
   double deltaG = 0;
   double minDeltaG  = maxDeltaG_ / 10.0;
   if (firstRun_) {
@@ -25,7 +25,8 @@ void PidCommander::Update(double cur) {
 
   double range = goal_ - firstVal_;
   cur = cur - firstVal_;
-
+  
+  double signedCur = cur;
   cur = fabs(cur);
   range = fabs(range);
 
@@ -40,8 +41,8 @@ void PidCommander::Update(double cur) {
     deltaG = ((-maxDeltaG_ / ((1.0 - decayPercentage_) * range)) * curTemp) + maxDeltaG_;
   }
 
-  //  pid_->Update((deltaG+cur)*direction_,cur*direction_);
-
   Logger::GetSysLog()->Log("PidCommander: cur: %f, deltaG: %f\n\n", (float) cur, deltaG);
-  // newgoal = cur + (deltaG * direction_);
+  double newgoal = signedCur + (deltaG * direction_);
+  
+  return pid_->Update(newgoal, cur*direction_);
 }
