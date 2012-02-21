@@ -10,6 +10,9 @@ class Logger;
 class OperatorControl;
 class Pid;
 class Shooter;
+class Driver;
+class TeleopDriver;
+class BaselockDriver;
 
 /**
  * @author Eric Caldwell
@@ -55,16 +58,6 @@ class MainRobot : public IterativeRobot {
    */
   virtual void TeleopPeriodic();
 
-  // Helper functions
-
-  /**
-   * Implements a deadband on a joystick
-   * @param val the joystick value
-   * @param deadband the maximum value the deadband will return 0 for
-   * @return 0.0 if the absolute value of the joystick value is less than the deadband, else the joystick value
-   */
-  double HandleDeadband(double val, double deadband);
-
  private:
 
   // Constants
@@ -76,6 +69,11 @@ class MainRobot : public IterativeRobot {
   // Subsystems
   Drive* drivebase_;
   Shooter* shooter_;
+  
+  // Drivers
+  Driver* currDriver_;
+  TeleopDriver* teleopDriver_;
+  BaselockDriver* baselockDriver_;
 
   // Joysticks
   Joystick* leftJoystick_;
@@ -111,14 +109,10 @@ class MainRobot : public IterativeRobot {
   DoubleSolenoid* brakeSolenoid_;
 
   Pid* testPid_;
-  Pid* baseLockPid_;
-  double baseLockPosition_;
-  bool oldBaseLockSwitch_;
   Timer* testTimer_;
   Logger* testLogger_;
-  bool oldPizzaWheelsButton_;
-  bool pizzaWheelsDown_;
   DriverStationLCD* lcd_;
+  bool oldBaseLockSwitch_;
 };
 
 // Start the actual program

@@ -50,7 +50,7 @@ class Driver {
    */
   virtual ~Driver();
 
- private:
+ protected:
   Drive* drive_;
 
 };

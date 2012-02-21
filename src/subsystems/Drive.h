@@ -22,7 +22,7 @@ class Drive {
   Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
         Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid, Encoder* leftEncoder,
         Encoder* rightEncoder, Gyro* gyro, Accelerometer* accelerometerX, Accelerometer* accelerometerY,
-        Accelerometer* accelerometerZ);
+        Accelerometer* accelerometerZ, DigitalInput* bumpSensor);
 
   /**
    * Makes drive power linear to input, then sets power to the respective side of the drivetrain
@@ -93,6 +93,12 @@ class Drive {
   double GetZAcceleration();
 
   /**
+   * Returns bump sensor value
+   * @return bump sensor value
+   */
+  int GetBumpSensorValue();
+
+  /**
    * Resets gyro so that current angle becomes new 0 degrees. Makes sequential turns
    * easier. Also required to make sensor values accurate after noise is encountered
    */
@@ -141,6 +147,7 @@ class Drive {
   Accelerometer* accelerometerX_;
   Accelerometer* accelerometerY_;
   Accelerometer* accelerometerZ_;
+  DigitalInput* bumpSensor_;
 
   // Pneumatics
   Solenoid* shiftSolenoid_;

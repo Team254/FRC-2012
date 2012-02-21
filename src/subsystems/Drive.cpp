@@ -5,7 +5,7 @@
 Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
        Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid,  Encoder* leftEncoder,
        Encoder* rightEncoder, Gyro* gyro, Accelerometer* accelerometerX, Accelerometer* accelerometerY,
-       Accelerometer* accelerometerZ) {
+       Accelerometer* accelerometerZ, DigitalInput* bumpSensor) {
   constants_ = Constants::GetInstance();
   leftDriveMotorA_ = leftVictorA;
   leftDriveMotorB_ = leftVictorB;
@@ -24,6 +24,7 @@ Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Vic
   accelerometerX_ = accelerometerX;
   accelerometerY_ = accelerometerY;
   accelerometerZ_ = accelerometerZ;
+  bumpSensor_ = bumpSensor;
   lcd_ = DriverStationLCD::GetInstance();
 }
 
@@ -103,6 +104,10 @@ double Drive::GetYAcceleration() {
 
 double Drive::GetZAcceleration() {
   return (double) accelerometerZ_->GetAcceleration();
+}
+
+int Drive::GetBumpSensorValue() {
+  return bumpSensor_->Get();
 }
 
 void Drive::SetPower(double left, double right) {

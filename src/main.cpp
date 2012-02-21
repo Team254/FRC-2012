@@ -3,6 +3,9 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "drivers/Driver.h"
+#include "drivers/TeleopDriver.h"
+#include "drivers/BaselockDriver.h"
 #include "subsystems/Drive.h"
 #include "subsystems/Shooter.h"
 #include "subsystems/OperatorControl.h"
@@ -54,13 +57,20 @@ MainRobot::MainRobot() {
   pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidDownPort, (int)constants_->pizzaWheelSolenoidUpPort);
 //  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidHighPort,(int)constants_->intakeSolenoidLowPort);
   brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidHighPort, (int)constants_->brakeSolenoidLowPort);
+
   // Subsystems
   drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_,
                          shiftSolenoid_, pizzaWheelSolenoid_, brakeSolenoid_,  leftEncoder_,
                          rightEncoder_, gyro_, accelerometerX_, accelerometerY_,
-                         accelerometerZ_);
+                         accelerometerZ_, bumpSensor_);
 //  shooter_ = new Shooter(intakeMotor_, conveyorMotor_, leftShooterMotor_, rightShooterMotor_,
 //                         shooterEncoder_, hoodSolenoid_, intakeSolenoid_);
+
+  // Drivers
+  teleopDriver_ = new TeleopDriver(drivebase_, leftJoystick_, rightJoystick_, operatorControl_);
+  baselockDriver_ = new BaselockDriver(drivebase_, leftJoystick_);
+  // Set the current Driver to teleop, though this will change later
+  currDriver_ = teleopDriver_;
 
   // Control Board
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
@@ -68,11 +78,8 @@ MainRobot::MainRobot() {
   operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
 
   testPid_ = new Pid(constants_->driveKP, constants_->driveKI, constants_->driveKD);
-  baseLockPid_ = new Pid(constants_->baseLockKP, constants_->baseLockKI, constants_->baseLockKD);
   testTimer_ = new Timer();
   testLogger_ = new Logger("/test.log", 2);
-  oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
-  pizzaWheelsDown_ = false;
 
   // Watchdog
   GetWatchdog().SetExpiration(100);
@@ -80,6 +87,8 @@ MainRobot::MainRobot() {
   // Get a local instance of the Driver Station LCD
   lcd_ = DriverStationLCD::GetInstance();
   lcd_->PrintfLine(DriverStationLCD::kUser_Line1,"***Teleop Ready!***");
+
+  oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 }
 
 void MainRobot::DisabledInit() {
@@ -104,20 +113,14 @@ void MainRobot::TeleopInit() {
   //baseLockPosition_ = drivebase_->GetLeftEncoderDistance();
   //baseLockPid_->ResetError();
 
-  // Reset Pizza Wheels
-  oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
-  pizzaWheelsDown_= false;
-  drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
-
-  // Sometimes drive will be stuck at linearCoeffE when enabling teleop
-  drivebase_->SetLinearPower(0.0,0.0);
+  // Start off with the TeleopDriver
+  currDriver_ = teleopDriver_;
+  currDriver_->Reset();
   GetWatchdog().SetEnabled(true);
 }
 
 void MainRobot::DisabledPeriodic() {
-  oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
-  pizzaWheelsDown_ = false;
-  drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
+  drivebase_->SetPizzaWheelDown(false);
   lcd_->UpdateLCD();
 }
 
@@ -133,63 +136,22 @@ void MainRobot::AutonomousPeriodic() {
 
 void MainRobot::TeleopPeriodic() {
   GetWatchdog().Feed();
-  // Operator drive control
-  bool wantHighGear = leftJoystick_->GetRawButton((int)constants_->highGearPort);
-  bool quickTurning = rightJoystick_->GetRawButton((int)constants_->quickTurnPort);
-  drivebase_->SetHighGear(wantHighGear);
-  double leftPower, rightPower;
-  double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
-  double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
 
-  /*  if(quickTurning) {
-      leftPower = turnPower;
-      rightPower = -turnPower;
-  } else if(straightPower) {
-      leftPower = straightPower + turnPower;
-      rightPower = straightPower - turnPower;
-  }
-  drivebase_->SetLinearPower(leftPower, rightPower); */
-
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "lj:%.4f rj:%.4f", HandleDeadband(-leftJoystick_->GetY(), 0.1), HandleDeadband(rightJoystick_->GetX(), 0.1));
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "sp:%.4f tp:%.4f", straightPower, turnPower);
-
-  //double position = drivebase_->GetLeftEncoderDistance();
-
-  // Pizza wheel control
-  bool currPizzaWheelsButton = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
-
-  // If the switch has toggled, flip the pizza wheels
-  if (currPizzaWheelsButton != oldPizzaWheelsButton_) {
-    pizzaWheelsDown_ = !pizzaWheelsDown_;
-  }
-  // Update the button
-  oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
-
-  // If we've run over the bump
-  if (pizzaWheelsDown_ && bumpSensor_->Get()) {
-    pizzaWheelsDown_ = false;
-  }
-  drivebase_->SetPizzaWheelDown(pizzaWheelsDown_);
-
-
-  // Drive
-  if (pizzaWheelsDown_)
-    turnPower = 0;
-  drivebase_->CheesyDrive(straightPower, turnPower, quickTurning);
- #if 0
-  if (operatorControl_->GetBaseLockSwitch()) {
-    // Activate closed-loop base lock mode.
-    baseLockPosition_ += straightPower * .1;
-    double signal = baseLockPid_->Update(baseLockPosition_, position);
-    drivebase_->SetLinearPower(signal, signal);
+  // Only have Teleop and Baselock Drivers right now
+  if (operatorControl_->GetBaseLockSwitch() && !oldBaseLockSwitch_) {
+      // If the baselock switch has been flipped on, switch to baselock
+      currDriver_ = baselockDriver_;
+      currDriver_->Reset();
+  } else if (!operatorControl_->GetBaseLockSwitch() && oldBaseLockSwitch_) {
+      // If the baselock switch has been flipped off, switch back to teleop
+      currDriver_ = teleopDriver_;
+      currDriver_->Reset();
   }
 
-  // Set the position to lock the base to upon initial activation.
-  if (!oldBaseLockSwitch_ && operatorControl_->GetBaseLockSwitch()) {
-    baseLockPosition_ = position;
-  }
+  // Update the driver and the baselock switch status
+  currDriver_->UpdateDriver();
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
- #endif
+
   static int i = 0;
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "%d, %f, %f, %f\n", i,(float) drivebase_->GetXAcceleration(),(float)drivebase_->GetXAcceleration(),(float) drivebase_->GetXAcceleration());
   lcd_->UpdateLCD();
@@ -199,6 +161,3 @@ void MainRobot::TeleopPeriodic() {
   i++;
 }
 
-double MainRobot::HandleDeadband(double val, double deadband) {
-  return (fabs(val) > fabs(deadband)) ? val : 0.0;
-}
