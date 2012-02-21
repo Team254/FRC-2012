@@ -20,7 +20,7 @@ class Shooter {
    */
   Shooter(Victor* intakeMotor, Victor* conveyorMotor, Victor* leftShooterMotor,
           Victor* rightShooterMotor, Encoder* shooterEncoder, Solenoid* hoodSolenoid,
-          DoubleSolenoid* intakeSolenoid);
+          Solenoid* intakeSolenoid);
 
   /**
    * Sets the linearized power of the shooter motors
@@ -100,7 +100,7 @@ class Shooter {
 
   // Solenoids
   Solenoid*  hoodSolenoid_;
-  DoubleSolenoid* intakeSolenoid_;
+  Solenoid* intakeSolenoid_;
 
   // Other
   Constants* constants_;

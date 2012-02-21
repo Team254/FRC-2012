@@ -4,7 +4,7 @@
 
 Shooter::Shooter(Victor* intakeMotor, Victor* conveyorMotor, Victor* leftShooterMotor,
                  Victor* rightShooterMotor, Encoder* shooterEncoder, Solenoid* hoodSolenoid,
-                 DoubleSolenoid* intakeSolenoid) {
+                 Solenoid* intakeSolenoid) {
   constants_ = Constants::GetInstance();
   intakeMotor_ =  intakeMotor;
   conveyorMotor_ =  conveyorMotor;
@@ -22,7 +22,7 @@ Shooter::Shooter(Victor* intakeMotor, Victor* conveyorMotor, Victor* leftShooter
 }
 
 void Shooter::SetLinearPower(double pwm) {
-  SetIntakePower(Linearize(pwm));
+  SetPower(Linearize(pwm));
 }
 
 void Shooter::SetTargetWubbleu(double wubbleu) {

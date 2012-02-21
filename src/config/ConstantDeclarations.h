@@ -10,11 +10,11 @@
 DECLARE_DOUBLE(leftDrivePwmA, 5)
 DECLARE_DOUBLE(leftDrivePwmB, 4)
 DECLARE_DOUBLE(rightDrivePwmA, 6)
-DECLARE_DOUBLE(rightDrivePwmB, 8)
+DECLARE_DOUBLE(rightDrivePwmB, 7)
 DECLARE_DOUBLE(intakePwm, 2)
 DECLARE_DOUBLE(conveyorPwm, 9)
 DECLARE_DOUBLE(leftShooterPwm, 3)
-DECLARE_DOUBLE(rightShooterPwm, 7)
+DECLARE_DOUBLE(rightShooterPwm, 8)
 
 // Sensors
 DECLARE_DOUBLE(leftEncoderPortA, 2)
@@ -33,12 +33,13 @@ DECLARE_DOUBLE(bumpSensorPort, 1)
 DECLARE_DOUBLE(compressorPressureSwitchPort, 14)
 DECLARE_DOUBLE(compressorRelayPort, 8)
 DECLARE_DOUBLE(pizzaWheelSolenoidUpPort, 1)
-DECLARE_DOUBLE(pizzaWheelSolenoidDownPort, 2)
-DECLARE_DOUBLE(hoodSolenoidPort, 5)
-DECLARE_DOUBLE(intakeSolenoidPort, 7)
-DECLARE_DOUBLE(brakeSolenoidLowPort, 4)
+DECLARE_DOUBLE(pizzaWheelSolenoidDownPort, 4)
+DECLARE_DOUBLE(hoodSolenoidPort, 6)
+DECLARE_DOUBLE(intakeSolenoidPort, 5)
+DECLARE_DOUBLE(brakeSolenoidLowPort, 2)
 DECLARE_DOUBLE(brakeSolenoidHighPort, 3)
 DECLARE_DOUBLE(shiftSolenoidPort, 6)
+
 
 // Vision
 DECLARE_DOUBLE(thresholdRMin, 0)
