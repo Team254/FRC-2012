@@ -36,19 +36,19 @@ class Driver {
    * All logic goes in here - setting motor values, reading joysticks, etc.
    * @return true if the driver is done/at its goal, else false
    */
-  virtual bool UpdateDriver() = 0;
+  virtual bool UpdateDriver() { return true; }
 
   /**
    * Resets the Driver.
    * Useful if the controller has a PID or other heuristic elements
    */
-  virtual void Reset() = 0;
+  virtual void Reset() {}
 
   /**
-   * Clean up clea nup, everybody everywhere!
-   * Clean up clea nup, everybody do your share!
+   * Clean up clean up, everybody everywhere!
+   * Clean up clean up, everybody do your share!
    */
-  virtual ~Driver();
+  virtual ~Driver() {}
 
  protected:
   Drive* drive_;
