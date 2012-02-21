@@ -39,16 +39,16 @@ MainRobot::MainRobot() {
   rightEncoder_->Start();
   shooterEncoder_ = new Encoder((int)constants_->shooterEncoderPortA, (int)constants_->shooterEncoderPortB);
   shooterEncoder_->Start();
-  gyro_ = new Gyro((int)constants_->gyroPort);
-  gyro_->SetSensitivity(1.0);
+  //gyro_ = new Gyro((int)constants_->gyroPort);
+  //gyro_->SetSensitivity(1.0);
 
   double accelerometerSensitivity = 1.0;
-  accelerometerX_ = new Accelerometer((int)constants_->accelerometerXPort);
-  accelerometerY_ = new Accelerometer((int)constants_->accelerometerYPort);
-  accelerometerZ_ = new Accelerometer((int)constants_->accelerometerZPort);
+  //accelerometerX_ = new Accelerometer((int)constants_->accelerometerXPort);
+  //accelerometerY_ = new Accelerometer((int)constants_->accelerometerYPort);
+  //accelerometerZ_ = new Accelerometer((int)constants_->accelerometerZPort);
   //accelerometerX_->SetSensitivity(accelerometerSensitivity);
-  //  accelerometerY_->SetSensitivity(accelerometerSensitivity);
-  //  accelerometerZ_->SetSensitivity(accelerometerSensitivity);
+  //accelerometerY_->SetSensitivity(accelerometerSensitivity);
+  //accelerometerZ_->SetSensitivity(accelerometerSensitivity);
   bumpSensor_ = new DigitalInput((int)constants_->bumpSensorPort);
 
   // Pneumatics
@@ -57,7 +57,7 @@ MainRobot::MainRobot() {
   shiftSolenoid_ = new Solenoid((int)constants_->shiftSolenoidPort);
   hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
   pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidDownPort, (int)constants_->pizzaWheelSolenoidUpPort);
-  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidHighPort,(int)constants_->intakeSolenoidLowPort);
+  //intakeSolenoid_ = new Solenoid((int)constants_->intakeSolenoidPort);
   brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidHighPort, (int)constants_->brakeSolenoidLowPort);
 
   // Subsystems
@@ -142,9 +142,16 @@ void MainRobot::TeleopPeriodic() {
   double ljoy = xbox->GetY();
   double trigger = -xbox->GetRawAxis(3);
   double rjoy = -xbox->GetRawAxis(5);
+  printf("%f %f %f\n", ljoy, trigger, rjoy);
 
-  shooter_->SetLinearPower(ljoy);
-  shooter_->SetConveyorPower(trigger);
+  /*
+  intakeMotor_->Set(rjoy);
+  conveyorMotor_->Set(ljoy);
+  leftShooterMotor_->Set(trigger);
+  rightShooterMotor_->Set(trigger);
+  */
+  shooter_->SetLinearPower(trigger);
+  shooter_->SetConveyorPower(ljoy);
   shooter_->SetIntakePower(rjoy);
 
   // Only have Teleop and Baselock Drivers right now
