@@ -38,7 +38,7 @@ DECLARE_DOUBLE(hoodSolenoidPort, 6)
 DECLARE_DOUBLE(intakeSolenoidPort, 5)
 DECLARE_DOUBLE(brakeSolenoidLowPort, 2)
 DECLARE_DOUBLE(brakeSolenoidHighPort, 3)
-DECLARE_DOUBLE(shiftSolenoidPort, 6)
+DECLARE_DOUBLE(shiftSolenoidPort, 8)
 
 
 // Vision
