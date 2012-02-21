@@ -16,6 +16,8 @@
 #include "util/PidTuner.h"
 #include "vision/BackboardFinder.h"
 
+Joystick* xbox = new Joystick(3);
+
 MainRobot::MainRobot() {
   // Constants
   constants_ = Constants::GetInstance();
@@ -53,9 +55,9 @@ MainRobot::MainRobot() {
   compressor_ = new Compressor((int)constants_->compressorPressureSwitchPort,(int)constants_->compressorRelayPort);
   compressor_->Start();
   shiftSolenoid_ = new Solenoid((int)constants_->shiftSolenoidPort);
-//  hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
+  hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
   pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidDownPort, (int)constants_->pizzaWheelSolenoidUpPort);
-//  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidHighPort,(int)constants_->intakeSolenoidLowPort);
+  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidHighPort,(int)constants_->intakeSolenoidLowPort);
   brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidHighPort, (int)constants_->brakeSolenoidLowPort);
 
   // Subsystems
@@ -63,8 +65,8 @@ MainRobot::MainRobot() {
                          shiftSolenoid_, pizzaWheelSolenoid_, brakeSolenoid_,  leftEncoder_,
                          rightEncoder_, gyro_, accelerometerX_, accelerometerY_,
                          accelerometerZ_, bumpSensor_);
-//  shooter_ = new Shooter(intakeMotor_, conveyorMotor_, leftShooterMotor_, rightShooterMotor_,
-//                         shooterEncoder_, hoodSolenoid_, intakeSolenoid_);
+  shooter_ = new Shooter(intakeMotor_, conveyorMotor_, leftShooterMotor_, rightShooterMotor_,
+                         shooterEncoder_, hoodSolenoid_, intakeSolenoid_);
 
   // Drivers
   teleopDriver_ = new TeleopDriver(drivebase_, leftJoystick_, rightJoystick_, operatorControl_);
@@ -136,6 +138,14 @@ void MainRobot::AutonomousPeriodic() {
 
 void MainRobot::TeleopPeriodic() {
   GetWatchdog().Feed();
+
+  double ljoy = xbox->GetY();
+  double trigger = -xbox->GetRawAxis(3);
+  double rjoy = -xbox->GetRawAxis(5);
+
+  shooter_->SetLinearPower(ljoy);
+  shooter_->SetConveyorPower(trigger);
+  shooter_->SetIntakePower(rjoy);
 
   // Only have Teleop and Baselock Drivers right now
   if (operatorControl_->GetBaseLockSwitch() && !oldBaseLockSwitch_) {
