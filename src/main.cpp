@@ -39,8 +39,8 @@ MainRobot::MainRobot() {
   rightEncoder_->Start();
   shooterEncoder_ = new Encoder((int)constants_->shooterEncoderPortA, (int)constants_->shooterEncoderPortB);
   shooterEncoder_->Start();
-  //gyro_ = new Gyro((int)constants_->gyroPort);
-  //gyro_->SetSensitivity(1.0);
+  gyro_ = new Gyro((int)constants_->gyroPort);
+  gyro_->SetSensitivity(1.0);
 
   double accelerometerSensitivity = 1.0;
   //accelerometerX_ = new Accelerometer((int)constants_->accelerometerXPort);
@@ -68,16 +68,16 @@ MainRobot::MainRobot() {
   shooter_ = new Shooter(intakeMotor_, conveyorMotor_, leftShooterMotor_, rightShooterMotor_,
                          shooterEncoder_, hoodSolenoid_, intakeSolenoid_);
 
+  // Control Board
+  leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
+  rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
+  operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
+
   // Drivers
   teleopDriver_ = new TeleopDriver(drivebase_, leftJoystick_, rightJoystick_, operatorControl_);
   baselockDriver_ = new BaselockDriver(drivebase_, leftJoystick_);
   // Set the current Driver to teleop, though this will change later
   currDriver_ = teleopDriver_;
-
-  // Control Board
-  leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
-  rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
-  operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
 
   testPid_ = new Pid(constants_->driveKP, constants_->driveKI, constants_->driveKD);
   testTimer_ = new Timer();
@@ -112,8 +112,7 @@ void MainRobot::TeleopInit() {
   constants_->LoadFile();
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
-  //baseLockPosition_ = drivebase_->GetLeftEncoderDistance();
-  //baseLockPid_->ResetError();
+  shooter_->ResetEncoder();
 
   // Start off with the TeleopDriver
   currDriver_ = teleopDriver_;
@@ -122,8 +121,8 @@ void MainRobot::TeleopInit() {
 }
 
 void MainRobot::DisabledPeriodic() {
-  drivebase_->SetPizzaWheelDown(false);
-  lcd_->UpdateLCD();
+  //drivebase_->SetPizzaWheelDown(false);
+  //lcd_->UpdateLCD();
 }
 
 void MainRobot::AutonomousPeriodic() {
@@ -169,6 +168,7 @@ void MainRobot::TeleopPeriodic() {
   currDriver_->UpdateDriver();
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
+  /*
   static int i = 0;
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "%d, %f, %f, %f\n", i,(float) drivebase_->GetXAcceleration(),(float)drivebase_->GetXAcceleration(),(float) drivebase_->GetXAcceleration());
   lcd_->UpdateLCD();
@@ -176,5 +176,6 @@ void MainRobot::TeleopPeriodic() {
   Logger::GetSysLog()->Log("%d, %f, %f, %f\n", i,(float) drivebase_->GetXAcceleration(),(float)drivebase_->GetXAcceleration(),(float) drivebase_->GetXAcceleration());
   
   i++;
+  */
 }
 
