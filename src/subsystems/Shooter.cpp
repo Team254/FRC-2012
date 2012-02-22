@@ -49,11 +49,7 @@ void Shooter::SetIntakePower(double pwm) {
 }
 
 void Shooter::SetIntakeUp(bool up) {
-  if(up) {
-    intakeSolenoid_->Set(DoubleSolenoid::kForward);
-  } else {
-    intakeSolenoid_->Set(DoubleSolenoid::kReverse);
-  }
+  intakeSolenoid_->Set(up);
 }
 
 void Shooter::SetHoodUp(bool up) {
