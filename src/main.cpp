@@ -57,8 +57,8 @@ MainRobot::MainRobot() {
   shiftSolenoid_ = new Solenoid((int)constants_->shiftSolenoidPort);
   hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
   pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidDownPort, (int)constants_->pizzaWheelSolenoidUpPort);
-  //intakeSolenoid_ = new Solenoid((int)constants_->intakeSolenoidPort);
-  brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidHighPort, (int)constants_->brakeSolenoidLowPort);
+  intakeSolenoid_ = new Solenoid((int)constants_->intakeSolenoidPort);
+  brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidOnPort, (int)constants_->brakeSolenoidOffPort);
 
   // Subsystems
   drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_,
@@ -137,21 +137,26 @@ void MainRobot::AutonomousPeriodic() {
 
 void MainRobot::TeleopPeriodic() {
   GetWatchdog().Feed();
-
+  drivebase_->SetBrakeOn(false);
   double ljoy = xbox->GetY();
   double trigger = -xbox->GetRawAxis(3);
   double rjoy = -xbox->GetRawAxis(5);
   printf("%f %f %f\n", ljoy, trigger, rjoy);
 
-  /*
-  intakeMotor_->Set(rjoy);
-  conveyorMotor_->Set(ljoy);
-  leftShooterMotor_->Set(trigger);
-  rightShooterMotor_->Set(trigger);
-  */
+  // Ghetto shooter control for testing
   shooter_->SetLinearPower(trigger);
   shooter_->SetConveyorPower(ljoy);
   shooter_->SetIntakePower(rjoy);
+  if (xbox->GetRawButton(1)) {
+    intakeSolenoid_->Set(true);
+  } else if (xbox->GetRawButton(2)) {
+    intakeSolenoid_->Set(false);
+  }
+  if (xbox->GetRawButton(3)) {
+    hoodSolenoid_->Set(true);
+  } else if (xbox->GetRawButton(4)) {
+    hoodSolenoid_->Set(false);
+  }
 
   // Only have Teleop and Baselock Drivers right now
   if (operatorControl_->GetBaseLockSwitch() && !oldBaseLockSwitch_) {
@@ -168,14 +173,5 @@ void MainRobot::TeleopPeriodic() {
   currDriver_->UpdateDriver();
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
-  /*
-  static int i = 0;
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "%d, %f, %f, %f\n", i,(float) drivebase_->GetXAcceleration(),(float)drivebase_->GetXAcceleration(),(float) drivebase_->GetXAcceleration());
-  lcd_->UpdateLCD();
-
-  Logger::GetSysLog()->Log("%d, %f, %f, %f\n", i,(float) drivebase_->GetXAcceleration(),(float)drivebase_->GetXAcceleration(),(float) drivebase_->GetXAcceleration());
-  
-  i++;
-  */
 }
 

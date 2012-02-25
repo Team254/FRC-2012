@@ -18,18 +18,18 @@ DECLARE_DOUBLE(rightShooterPwm, 8)
 
 // Analog Sensors
 DECLARE_DOUBLE(gyroPort, 1)
-DECLARE_DOUBLE(accelerometerXPort, 8)
-DECLARE_DOUBLE(accelerometerYPort, 7)
-DECLARE_DOUBLE(accelerometerZPort, 6)
+DECLARE_DOUBLE(accelerometerXPort, 2)
+DECLARE_DOUBLE(accelerometerYPort, 3)
+DECLARE_DOUBLE(accelerometerZPort, 4)
 
 // Digital Sensors
 DECLARE_DOUBLE(bumpSensorPort, 1)
 DECLARE_DOUBLE(leftEncoderPortA, 2)
 DECLARE_DOUBLE(leftEncoderPortB, 3)
-DECLARE_DOUBLE(shooterEncoderPortA, 5)
-DECLARE_DOUBLE(shooterEncoderPortB, 6)
-DECLARE_DOUBLE(rightEncoderPortA, 11)
-DECLARE_DOUBLE(rightEncoderPortB, 12)
+DECLARE_DOUBLE(shooterEncoderPortA, 6)
+DECLARE_DOUBLE(shooterEncoderPortB, 7)
+DECLARE_DOUBLE(rightEncoderPortA, 4)
+DECLARE_DOUBLE(rightEncoderPortB, 5)
 
 // Pneumatics
 DECLARE_DOUBLE(compressorPressureSwitchPort, 14)
@@ -38,8 +38,8 @@ DECLARE_DOUBLE(pizzaWheelSolenoidUpPort, 1)
 DECLARE_DOUBLE(pizzaWheelSolenoidDownPort, 4)
 DECLARE_DOUBLE(hoodSolenoidPort, 6)
 DECLARE_DOUBLE(intakeSolenoidPort, 5)
-DECLARE_DOUBLE(brakeSolenoidLowPort, 2)
-DECLARE_DOUBLE(brakeSolenoidHighPort, 3)
+DECLARE_DOUBLE(brakeSolenoidOnPort, 2)
+DECLARE_DOUBLE(brakeSolenoidOffPort, 3)
 DECLARE_DOUBLE(shiftSolenoidPort, 8)
 
 
