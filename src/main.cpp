@@ -57,7 +57,7 @@ MainRobot::MainRobot() {
   shiftSolenoid_ = new Solenoid((int)constants_->shiftSolenoidPort);
   hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
   pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidDownPort, (int)constants_->pizzaWheelSolenoidUpPort);
-  intakeSolenoid_ = new Solenoid((int)constants_->intakeSolenoidPort);
+  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidUpPort, (int)constants_->intakeSolenoidDownPort);
   brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidOnPort, (int)constants_->brakeSolenoidOffPort);
 
   // Subsystems
@@ -141,21 +141,21 @@ void MainRobot::TeleopPeriodic() {
   double ljoy = xbox->GetY();
   double trigger = -xbox->GetRawAxis(3);
   double rjoy = -xbox->GetRawAxis(5);
-  printf("%f %f %f\n", ljoy, trigger, rjoy);
+  //  printf("%f %f %f\n", ljoy, trigger, rjoy);
 
   // Ghetto shooter control for testing
   shooter_->SetLinearPower(trigger);
   shooter_->SetConveyorPower(ljoy);
   shooter_->SetIntakePower(rjoy);
   if (xbox->GetRawButton(1)) {
-    intakeSolenoid_->Set(true);
+    shooter_->SetIntakePosition(Shooter::INTAKE_UP);
   } else if (xbox->GetRawButton(2)) {
-    intakeSolenoid_->Set(false);
+    shooter_->SetIntakePosition(Shooter::INTAKE_DOWN);
   }
   if (xbox->GetRawButton(3)) {
-    hoodSolenoid_->Set(true);
+    shooter_->SetHoodUp(true);
   } else if (xbox->GetRawButton(4)) {
-    hoodSolenoid_->Set(false);
+    shooter_->SetHoodUp(false);
   }
 
   // Only have Teleop and Baselock Drivers right now
