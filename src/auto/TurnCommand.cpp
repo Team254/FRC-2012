@@ -8,7 +8,7 @@ TurnCommand::TurnCommand(Drive* drive, double angle, double timeout) {
   angle_ = angle;
   drive_ = drive;
   oldAngle_ = 9999;
-  turnPid_ = new Pid(0,0,0); // TODO add constants
+//  turnPid_ = new Pid(0,0,0); // TODO add constants
 }
 
 void TurnCommand::Initialize() {

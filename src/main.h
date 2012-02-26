@@ -117,6 +117,7 @@ class MainRobot : public IterativeRobot {
   Logger* testLogger_;
   DriverStationLCD* lcd_;
   bool oldBaseLockSwitch_;
+  double shooterTargetVelocity_;
 };
 
 // Start the actual program

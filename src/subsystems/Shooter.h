@@ -59,13 +59,13 @@ class Shooter {
    */
   double GetVelocity();
 
- private:
   /**
    * Sets the unlinearized power of the shooter motors
    * @param pwm the power to st
    */
   void SetPower(double power);
 
+ private:
   /**
    * Linearizes the shooter motors
    * @param x the unlinearized input
@@ -90,6 +90,7 @@ class Shooter {
   Pid* pid_;
   int prevEncoderPos_;
   double targetVelocity_;
+  double velocity_;
 };
 
 #endif  // SUBSYSTEMS_SHOOTER_H_

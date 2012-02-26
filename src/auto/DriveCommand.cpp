@@ -10,8 +10,8 @@ DriveCommand::DriveCommand(Drive* drive, double distance, bool usePizza) {
   resetPizza_ =  (usePizza && drive->GetPizzaUp());
 
   Constants* constants = Constants::GetInstance();
-  leftPid_ = new Pid(constants->driveKP, constants->driveKI, constants->driveKD);
-  rightPid_ = new Pid(constants->driveKP, constants->driveKI, constants->driveKD);
+  leftPid_ = new Pid(&constants->driveKP, &constants->driveKI, &constants->driveKD);
+  rightPid_ = new Pid(&constants->driveKP, &constants->driveKI, &constants->driveKD);
 }
 
 void DriveCommand::Initialize() {

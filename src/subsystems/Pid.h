@@ -14,7 +14,7 @@ class Pid {
    * Accepts the kP, kI, and kD to determine the correction value
    * Defaults to (0,0,0) - useful when a class has member Pid's
    */
-   Pid(double kP=0, double kI=0, double kD=0);
+   Pid(double* kP=0, double* kI=0, double* kD=0);
   /**
    * Resets the error counts. Call when the PID loop is not active to prevent integral windup.
    */
@@ -29,9 +29,9 @@ class Pid {
 
  private:
   // PID constants
-  double kP_;
-  double kI_;
-  double kD_;
+  double* kP_;
+  double* kI_;
+  double* kD_;
 
   // Cumulative error used in integral term
   double errorSum_;

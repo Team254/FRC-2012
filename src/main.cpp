@@ -84,7 +84,7 @@ MainRobot::MainRobot() {
   // Set the current Driver to teleop, though this will change later
   currDriver_ = teleopDriver_;
 
-  testPid_ = new Pid(constants_->driveKP, constants_->driveKI, constants_->driveKD);
+  testPid_ = new Pid(&constants_->driveKP, &constants_->driveKI, &constants_->driveKD);
   testTimer_ = new Timer();
   testLogger_ = new Logger("/test.log", 2);
 
@@ -96,6 +96,8 @@ MainRobot::MainRobot() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line1,"***Teleop Ready!***");
 
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
+
+  shooterTargetVelocity_ = 0;
 }
 
 void MainRobot::DisabledInit() {
@@ -104,7 +106,7 @@ void MainRobot::DisabledInit() {
 void MainRobot::AutonomousInit() {
   constants_->LoadFile();
   delete testPid_;
-  testPid_ = new Pid(constants_->driveKP, constants_->driveKI, constants_->driveKD);
+  testPid_ = new Pid(&constants_->driveKP, &constants_->driveKI, &constants_->driveKD);
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
   testPid_->ResetError();
@@ -131,28 +133,58 @@ void MainRobot::DisabledPeriodic() {
 
 void MainRobot::AutonomousPeriodic() {
   double time = testTimer_->Get();
-  double inputValue = Functions::SineWave(time, 5, 2);
-  double position = drivebase_->GetLeftEncoderDistance();
-  double signal = testPid_->Update(inputValue, position);
-  drivebase_->SetLinearPower(signal, signal);
-  testLogger_->Log("%f,%f,%f,%f\n", time, inputValue, signal, position);
-  PidTuner::PushData(inputValue, position);
+  double inputValue = 1;//Functions::SineWave(time, 5, 2);
+  //double position = drivebase_->GetLeftEncoderDistance();
+  //double signal = testPid_->Update(inputValue, position);
+  double revolutions = (float)shooterEncoder_->Get() / 32;
+  shooter_->SetPower(inputValue);
+  //drivebase_->SetLinearPower(signal, signal);
+  testLogger_->Log("%f,%f,%f,%f\n", time, inputValue, revolutions,
+                   DriverStation::GetInstance()->GetBatteryVoltage());
+//  PidTuner::PushData(inputValue, position, signal);
 }
 
 void MainRobot::TeleopPeriodic() {
   GetWatchdog().Feed();
   drivebase_->SetBrakeOn(false);
-  double ljoy = xbox->GetY();
-  double trigger = -xbox->GetRawAxis(3);
-  double rjoy = -xbox->GetRawAxis(5);
+//  double ljoy = xbox->GetY();
+//  double trigger = -xbox->GetRawAxis(3);
+//  double rjoy = -xbox->GetRawAxis(5);
   //  printf("%f %f %f\n", ljoy, trigger, rjoy);
   printf("F: %d | r: %d | off: %d\n", intakeSolenoid_->Get() == DoubleSolenoid::kForward, intakeSolenoid_->Get() == DoubleSolenoid::kReverse, intakeSolenoid_->Get() == DoubleSolenoid::kOff  );
+
   // Ghetto shooter control for testing
-  double tShooter = (trigger > .1) ? trigger : 0;
-  shooter_->SetLinearPower(trigger);
-  shooter_->SetConveyorPower(ljoy);
+  if (xbox->GetRawButton(10)) {
+    shooterTargetVelocity_ = 0;
+  } else if (xbox->GetRawButton(9)) {
+    shooterTargetVelocity_ = 25;
+  } else if (xbox->GetRawButton(8)) {
+    shooterTargetVelocity_ = 50;
+  } else if (xbox->GetRawButton(7)) {
+    shooterTargetVelocity_ = 75;
+  }
+  shooter_->SetTargetVelocity(shooterTargetVelocity_);
+  shooter_->PIDUpdate();
+
+  if (xbox->GetRawButton(12)) {
+    intake_->SetIntakePower(1.0);
+  } else {
+    intake_->SetIntakePower(0);
+  }
+
+  if (xbox->GetRawButton(11)) {
+    shooter_->SetConveyorPower(1.0);
+  } else {
+    shooter_->SetConveyorPower(0);
+  }
+
+//  double tShooter = (trigger > .1) ? trigger : 0;
+//  shooter_->SetLinearPower(trigger);
+
+//  shooter_->SetConveyorPower(ljoy);
+
   //  intake_->SetIntakePower(rjoy);
-  if (xbox->GetRawButton(6)){
+/*  if (xbox->GetRawButton(6)){
     intake_->SetIntakePower(1);
   }
   else if (xbox->GetRawButton(5)){
@@ -160,18 +192,18 @@ void MainRobot::TeleopPeriodic() {
   }
   else {
     intake_->SetIntakePower(0);
-  }
-  if (xbox->GetRawButton(1)) {
+  }*/
+  if (xbox->GetRawButton(6)) {
     intake_->SetIntakePosition(Intake::INTAKE_UP);
-  } else if (xbox->GetRawButton(2)) {
+  } else if (xbox->GetRawButton(4)) {
     intake_->SetIntakePosition(Intake::INTAKE_DOWN);
-  } else if (xbox->GetRawButton(8)) {
+  } else if (xbox->GetRawButton(5)) {
     intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
   }
 
-  if (xbox->GetRawButton(3)) {
+  if (xbox->GetRawButton(2)) {
     shooter_->SetHoodUp(true);
-  } else if (xbox->GetRawButton(4)) {
+  } else {
     shooter_->SetHoodUp(false);
   }
 
@@ -194,5 +226,4 @@ void MainRobot::TeleopPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2,"Pos: %d", shooterEncoder_->Get());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3,"Vel: %f", velocity);
   lcd_->UpdateLCD();
-  PidTuner::PushData(70, velocity);
 }

@@ -1,6 +1,6 @@
 #include "subsystems/Pid.h"
 
-Pid::Pid(double kP, double kI, double kD) {
+Pid::Pid(double* kP, double* kI, double* kD) {
   kP_ = kP;
   kI_ = kI;
   kD_ = kD;
@@ -14,11 +14,11 @@ void Pid::ResetError() {
 
 double Pid::Update(double goal, double currentValue) {
   double error = goal - currentValue;
-  double p = kP_ * error;
+  double p = *kP_ * error;
   errorSum_ += error;
-  double i = kI_ * errorSum_;
+  double i = *kI_ * errorSum_;
   double dError = error - lastError_;
-  double d = kD_ * dError;
+  double d = *kD_ * dError;
   lastError_ = error;
   return p + i + d;
 }

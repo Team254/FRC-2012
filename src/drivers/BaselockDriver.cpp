@@ -9,8 +9,8 @@
 BaselockDriver::BaselockDriver(Drive* drive, Joystick* leftJoystick) : Driver(drive) {
   constants_ = Constants::GetInstance();
   leftJoystick_ = leftJoystick;
-  leftPid_ = new Pid(constants_->baseLockKP, constants_->baseLockKI, constants_->baseLockKD);
-  rightPid_ = new Pid(constants_->baseLockKP, constants_->baseLockKI, constants_->baseLockKD);
+  leftPid_ = new Pid(&constants_->baseLockKP, &constants_->baseLockKI, &constants_->baseLockKD);
+  rightPid_ = new Pid(&constants_->baseLockKP, &constants_->baseLockKI, &constants_->baseLockKD);
   Reset();
 }
 

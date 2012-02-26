@@ -5,12 +5,12 @@
 
 class PidTuner {
  public:
-  static void PushData(double setpoint, double value);
+  static void PushData(double setpoint, double value, double control);
   static PidTuner* GetInstance();
 
  private:
   PidTuner();
-  void Push(double setpoint, double value);
+  void Push(double setpoint, double value, double control);
 
   struct sockaddr_in serverAddr_;  // Server's socket address
   char display_;  // If true, server prints message
