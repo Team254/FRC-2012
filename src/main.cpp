@@ -117,6 +117,7 @@ void MainRobot::TeleopInit() {
   constants_->LoadFile();
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
+  testTimer_->Start();
 
   // Start off with the TeleopDriver
   currDriver_ = teleopDriver_;
@@ -126,7 +127,6 @@ void MainRobot::TeleopInit() {
 
 void MainRobot::DisabledPeriodic() {
   //drivebase_->SetPizzaWheelDown(false);
-  //lcd_->UpdateLCD();
 }
 
 void MainRobot::AutonomousPeriodic() {
@@ -190,4 +190,9 @@ void MainRobot::TeleopPeriodic() {
   currDriver_->UpdateDriver();
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
+  double velocity = shooter_->GetVelocity();
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line2,"Pos: %d", shooterEncoder_->Get());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line3,"Vel: %f", velocity);
+  lcd_->UpdateLCD();
+  PidTuner::PushData(70, velocity);
 }
