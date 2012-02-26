@@ -145,7 +145,7 @@ void MainRobot::TeleopPeriodic() {
   double trigger = -xbox->GetRawAxis(3);
   double rjoy = -xbox->GetRawAxis(5);
   //  printf("%f %f %f\n", ljoy, trigger, rjoy);
-
+  printf("F: %d | r: %d | off: %d\n", intakeSolenoid_->Get() == DoubleSolenoid::kForward, intakeSolenoid_->Get() == DoubleSolenoid::kReverse, intakeSolenoid_->Get() == DoubleSolenoid::kOff  );
   // Ghetto shooter control for testing
   shooter_->SetLinearPower(trigger);
   shooter_->SetConveyorPower(ljoy);
@@ -154,7 +154,10 @@ void MainRobot::TeleopPeriodic() {
     intake_->SetIntakePosition(Intake::INTAKE_UP);
   } else if (xbox->GetRawButton(2)) {
     intake_->SetIntakePosition(Intake::INTAKE_DOWN);
+  } else if (xbox->GetRawButton(8)) {
+    intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
   }
+
   if (xbox->GetRawButton(3)) {
     shooter_->SetHoodUp(true);
   } else if (xbox->GetRawButton(4)) {

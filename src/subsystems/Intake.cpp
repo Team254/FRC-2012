@@ -9,9 +9,6 @@ Intake::Intake(Victor* intakeMotor, DoubleSolenoid* intakeSolenoid) {
 }
 
 void Intake::SetIntakePower(double pwm) {
-  if (GetIntakePosition()== INTAKE_DOWN && pwm != 0) {
-    SetIntakePosition(INTAKE_FLOATING);
-  }
   intakeMotor_->Set(PwmLimit(pwm));
 }
 
