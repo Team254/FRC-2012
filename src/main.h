@@ -14,6 +14,7 @@ class Shooter;
 class Driver;
 class TeleopDriver;
 class BaselockDriver;
+class ShooterController;
 
 /**
  * @author Eric Caldwell
@@ -71,7 +72,8 @@ class MainRobot : public IterativeRobot {
   Drive* drivebase_;
   Intake* intake_;
   Shooter* shooter_;
-  
+  ShooterController* sc_;
+
   // Drivers
   Driver* currDriver_;
   TeleopDriver* teleopDriver_;

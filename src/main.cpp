@@ -9,6 +9,7 @@
 #include "subsystems/Drive.h"
 #include "subsystems/Intake.h"
 #include "subsystems/Shooter.h"
+#include "subsystems/ShooterController.h"
 #include "subsystems/OperatorControl.h"
 #include "subsystems/Pid.h"
 #include "subsystems/PidCommander.h"
@@ -70,6 +71,7 @@ MainRobot::MainRobot() {
   intake_ = new Intake(intakeMotor_, intakeSolenoid_);
   shooter_ = new Shooter(conveyorMotor_, leftShooterMotor_, rightShooterMotor_, shooterEncoder_,
                          hoodSolenoid_);
+  sc_ = new ShooterController(shooter_, intake_);
 
   // Control Board
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
@@ -146,9 +148,19 @@ void MainRobot::TeleopPeriodic() {
   //  printf("%f %f %f\n", ljoy, trigger, rjoy);
   printf("F: %d | r: %d | off: %d\n", intakeSolenoid_->Get() == DoubleSolenoid::kForward, intakeSolenoid_->Get() == DoubleSolenoid::kReverse, intakeSolenoid_->Get() == DoubleSolenoid::kOff  );
   // Ghetto shooter control for testing
+  double tShooter = (trigger > .1) ? trigger : 0;
   shooter_->SetLinearPower(trigger);
   shooter_->SetConveyorPower(ljoy);
-  intake_->SetIntakePower(rjoy);
+  //  intake_->SetIntakePower(rjoy);
+  if (xbox->GetRawButton(6)){
+    intake_->SetIntakePower(1);
+  }
+  else if (xbox->GetRawButton(5)){
+    intake_->SetIntakePower(-1);
+  }
+  else {
+    intake_->SetIntakePower(0);
+  }
   if (xbox->GetRawButton(1)) {
     intake_->SetIntakePosition(Intake::INTAKE_UP);
   } else if (xbox->GetRawButton(2)) {
