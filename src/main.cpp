@@ -115,7 +115,6 @@ void MainRobot::TeleopInit() {
   constants_->LoadFile();
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
-  shooter_->ResetEncoder();
 
   // Start off with the TeleopDriver
   currDriver_ = teleopDriver_;

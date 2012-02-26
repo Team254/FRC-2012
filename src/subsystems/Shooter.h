@@ -6,11 +6,13 @@
 #include "config/Constants.h"
 #include "subsystems/Pid.h"
 
+#define TICKS_PER_REV 32
+#define VELOCITY_THRESHOLD 1.0
+
 /**
  * @author Eric Bakaan
  *
  * Easy-access functions for shooter functions: shooting, intaking, conveying, etc.
- * If you haven't taken Janke's class yet, wubbleu=lowercase omega=rotational velocity
  */
 class Shooter {
  public:
@@ -26,49 +28,44 @@ class Shooter {
    * @param pwm the power to st
    */
   void SetLinearPower(double pwm);
-  
+
   /**
-   * Sets the target rotational velocity of the wheel in degrees/second
-   * @param wubbleu the rotational velocity to set
+   * Sets the target rotational velocity of the wheel in rotations/second
+   * @param velocity the rotational velocity to set
    */
-  void SetTargetWubbleu(double wubbleu);
-  
+  void SetTargetVelocity(double velocity);
+
   /**
    * Updates the shooter wheel velocity PID
    * @return true if done, else false
    */
   bool PIDUpdate();
-  
+
   /**
    * Sets the power of the conveyor motor
    * @param pwm the power to st
    */
   void SetConveyorPower(double pwm);
-  
+
   /**
    * Sets the solenoid position for the hood
    * @param up true to set up, else false
    */
   void SetHoodUp(bool up);
-  
+
   /**
-   * Get the shooter wheel's current rotational velocity
-   * @return the shooter wheel's rotational velocity in degrees/second
+   * Get the shooter wheel's current measured rotational velocity
+   * @return the shooter wheel's rotational velocity in rotations/second
    */
-  double GetShooterWubbleu();
-  
-  /**
-   * Resets the shooter wheel encoder
-   */
-  void ResetEncoder();
-  
+  double GetVelocity();
+
  private:
   /**
    * Sets the unlinearized power of the shooter motors
    * @param pwm the power to st
    */
   void SetPower(double power);
-  
+
   /**
    * Linearizes the shooter motors
    * @param x the unlinearized input
@@ -89,10 +86,10 @@ class Shooter {
 
   // Other
   Constants* constants_;
-  Timer timer_;
-  Pid pid_;
-  double prevShooterVal_;
-  double targetWubbleu_;
+  Timer* timer_;
+  Pid* pid_;
+  int prevEncoderPos_;
+  double targetVelocity_;
 };
 
 #endif  // SUBSYSTEMS_SHOOTER_H_
