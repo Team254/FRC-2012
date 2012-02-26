@@ -38,7 +38,8 @@ MainRobot::MainRobot() {
   leftEncoder_->Start();
   rightEncoder_ = new Encoder((int)constants_->rightEncoderPortA, (int)constants_->rightEncoderPortB);
   rightEncoder_->Start();
-  shooterEncoder_ = new Encoder((int)constants_->shooterEncoderPortA, (int)constants_->shooterEncoderPortB);
+  shooterEncoder_ = new Encoder((int)constants_->shooterEncoderPortA, (int)constants_->shooterEncoderPortB,
+                                false, CounterBase::k1X);
   shooterEncoder_->Start();
   gyro_ = new Gyro((int)constants_->gyroPort);
   gyro_->SetSensitivity(1.0);
