@@ -84,6 +84,10 @@ DECLARE_DOUBLE(linearCoeffB, -5.9762)
 DECLARE_DOUBLE(linearCoeffC, 2.5895)
 DECLARE_DOUBLE(linearCoeffD, -0.0869)
 DECLARE_DOUBLE(linearCoeffE, 0.0913)
+DECLARE_DOUBLE(shooterCoeffA, 4.7658)
+DECLARE_DOUBLE(shooterCoeffB, -5.8827)
+DECLARE_DOUBLE(shooterCoeffC, 1.8275)
+DECLARE_DOUBLE(shooterCoeffD, 0.2894)
 
 // Drive tuning
 DECLARE_DOUBLE(turnSensLow, 1.1)

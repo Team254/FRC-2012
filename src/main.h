@@ -118,6 +118,11 @@ class MainRobot : public IterativeRobot {
   DriverStationLCD* lcd_;
   bool oldBaseLockSwitch_;
   double shooterTargetVelocity_;
+  double power_;
+
+  // Incremental shoote speed stuff
+  bool oldShooterUpSwitch_;
+  bool oldShooterDownSwitch_;
 };
 
 // Start the actual program

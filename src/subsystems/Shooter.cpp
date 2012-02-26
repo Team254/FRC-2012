@@ -65,16 +65,11 @@ void Shooter::SetPower(double power) {
 }
 
 double Shooter::Linearize(double x) {
-  if(fabs(x) < 0.01 ) {
-      x = 0.0;
-  }
-  if (x > 0.0) {
-    return constants_->linearCoeffA * pow(x, 4) + constants_->linearCoeffB * pow(x, 3) +
-        constants_->linearCoeffC * pow(x, 2) + constants_->linearCoeffD * x + constants_->linearCoeffE;
-  } else if (x < 0.0) {
+  if (x >= 0.0) {
+    return constants_->shooterCoeffA * pow(x, 4) + constants_->shooterCoeffB * pow(x, 3) +
+        constants_->shooterCoeffC * pow(x, 2) + constants_->shooterCoeffD * x;
+  } else {
     // Rotate the linearization function by 180.0 degrees to handle negative input.
     return -Linearize(-x);
-  } else {
-    return 0.0;
   }
 }

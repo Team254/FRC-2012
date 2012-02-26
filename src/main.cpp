@@ -86,7 +86,7 @@ MainRobot::MainRobot() {
 
   testPid_ = new Pid(&constants_->driveKP, &constants_->driveKI, &constants_->driveKD);
   testTimer_ = new Timer();
-  testLogger_ = new Logger("/test.log", 2);
+  testLogger_ = new Logger("/test.log", 1);
 
   // Watchdog
   GetWatchdog().SetExpiration(100);
@@ -98,6 +98,8 @@ MainRobot::MainRobot() {
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
   shooterTargetVelocity_ = 0;
+  oldShooterUpSwitch_ = false;
+  oldShooterDownSwitch_ = false;
 }
 
 void MainRobot::DisabledInit() {
@@ -113,6 +115,7 @@ void MainRobot::AutonomousInit() {
   testTimer_->Reset();
   testTimer_->Start();
   GetWatchdog().SetEnabled(false);
+  power_ = 0;
 }
 
 void MainRobot::TeleopInit() {
@@ -133,15 +136,16 @@ void MainRobot::DisabledPeriodic() {
 
 void MainRobot::AutonomousPeriodic() {
   double time = testTimer_->Get();
-  double inputValue = 1;//Functions::SineWave(time, 5, 2);
-  //double position = drivebase_->GetLeftEncoderDistance();
-  //double signal = testPid_->Update(inputValue, position);
-  double revolutions = (float)shooterEncoder_->Get() / 32;
-  shooter_->SetPower(inputValue);
-  //drivebase_->SetLinearPower(signal, signal);
-  testLogger_->Log("%f,%f,%f,%f\n", time, inputValue, revolutions,
-                   DriverStation::GetInstance()->GetBatteryVoltage());
-//  PidTuner::PushData(inputValue, position, signal);
+  double rate = shooterEncoder_->GetRate();
+
+  if (time > 2.0) {
+    power_ += 0.01;
+    testTimer_->Reset();
+    testLogger_->Log("%f,%f\n", power_, rate);
+  }
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line5,"Pow: %.0f%%", power_ * 100);
+  lcd_->UpdateLCD();
+  shooter_->SetPower(power_);
 }
 
 void MainRobot::TeleopPeriodic() {
@@ -156,13 +160,15 @@ void MainRobot::TeleopPeriodic() {
   // Ghetto shooter control for testing
   if (xbox->GetRawButton(10)) {
     shooterTargetVelocity_ = 0;
-  } else if (xbox->GetRawButton(9)) {
-    shooterTargetVelocity_ = 25;
-  } else if (xbox->GetRawButton(8)) {
-    shooterTargetVelocity_ = 50;
+  } else if (xbox->GetRawButton(9) && !oldShooterDownSwitch_) {
+    shooterTargetVelocity_ -= 2;
+  } else if (xbox->GetRawButton(8) && !oldShooterUpSwitch_) {
+    shooterTargetVelocity_ += 2;
   } else if (xbox->GetRawButton(7)) {
-    shooterTargetVelocity_ = 75;
+    shooterTargetVelocity_ = 100;
   }
+  oldShooterUpSwitch_ = xbox->GetRawButton(8);
+  oldShooterDownSwitch_ = xbox->GetRawButton(9);
   shooter_->SetTargetVelocity(shooterTargetVelocity_);
   shooter_->PIDUpdate();
 
@@ -225,5 +231,6 @@ void MainRobot::TeleopPeriodic() {
   double velocity = shooter_->GetVelocity();
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2,"Pos: %d", shooterEncoder_->Get());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3,"Vel: %f", velocity);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f%%", shooterTargetVelocity_);
   lcd_->UpdateLCD();
 }
