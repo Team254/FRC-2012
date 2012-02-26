@@ -14,19 +14,12 @@
  */
 class Shooter {
  public:
-  enum IntakePositions {
-    INTAKE_UP,
-    INTAKE_DOWN,
-    INTAKE_FLOATING
-  };
-
   /**
    * Constructor
    * Accepts the Victors, Encoders, pneumatics, etc. to be used
    */
-  Shooter(Victor* intakeMotor, Victor* conveyorMotor, Victor* leftShooterMotor,
-          Victor* rightShooterMotor, Encoder* shooterEncoder, Solenoid* hoodSolenoid,
-          DoubleSolenoid* intakeSolenoid);
+  Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightShooterMotor, Encoder* shooterEncoder,
+          Solenoid* hoodSolenoid);
 
   /**
    * Sets the linearized power of the shooter motors
@@ -52,19 +45,6 @@ class Shooter {
    */
   void SetConveyorPower(double pwm);
   
-  /**
-   * Sets the power of the intake motor
-   * @param pwm the power to st
-   */
-  void SetIntakePower(double pwm);
-  
-  /**
-   * Sets the solenoid position for the intake
-   * @param up true to set up, else false
-   */
-  void SetIntakePosition(IntakePositions pos);
-  
-  IntakePositions GetIntakePosition();
   /**
    * Sets the solenoid position for the hood
    * @param up true to set up, else false
@@ -97,7 +77,6 @@ class Shooter {
   double Linearize(double x);
 
   // Motors
-  Victor* intakeMotor_;
   Victor* conveyorMotor_;
   Victor* leftShooterMotor_;
   Victor* rightShooterMotor_;
@@ -107,7 +86,6 @@ class Shooter {
 
   // Solenoids
   Solenoid*  hoodSolenoid_;
-  DoubleSolenoid* intakeSolenoid_;
 
   // Other
   Constants* constants_;

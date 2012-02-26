@@ -7,6 +7,7 @@
 #include "drivers/TeleopDriver.h"
 #include "drivers/BaselockDriver.h"
 #include "subsystems/Drive.h"
+#include "subsystems/Intake.h"
 #include "subsystems/Shooter.h"
 #include "subsystems/OperatorControl.h"
 #include "subsystems/Pid.h"
@@ -65,8 +66,9 @@ MainRobot::MainRobot() {
                          shiftSolenoid_, pizzaWheelSolenoid_, brakeSolenoid_,  leftEncoder_,
                          rightEncoder_, gyro_, accelerometerX_, accelerometerY_,
                          accelerometerZ_, bumpSensor_);
-  shooter_ = new Shooter(intakeMotor_, conveyorMotor_, leftShooterMotor_, rightShooterMotor_,
-                         shooterEncoder_, hoodSolenoid_, intakeSolenoid_);
+  intake_ = new Intake(intakeMotor_, intakeSolenoid_);
+  shooter_ = new Shooter(conveyorMotor_, leftShooterMotor_, rightShooterMotor_, shooterEncoder_,
+                         hoodSolenoid_);
 
   // Control Board
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
@@ -146,11 +148,11 @@ void MainRobot::TeleopPeriodic() {
   // Ghetto shooter control for testing
   shooter_->SetLinearPower(trigger);
   shooter_->SetConveyorPower(ljoy);
-  shooter_->SetIntakePower(rjoy);
+  intake_->SetIntakePower(rjoy);
   if (xbox->GetRawButton(1)) {
-    shooter_->SetIntakePosition(Shooter::INTAKE_UP);
+    intake_->SetIntakePosition(Intake::INTAKE_UP);
   } else if (xbox->GetRawButton(2)) {
-    shooter_->SetIntakePosition(Shooter::INTAKE_DOWN);
+    intake_->SetIntakePosition(Intake::INTAKE_DOWN);
   }
   if (xbox->GetRawButton(3)) {
     shooter_->SetHoodUp(true);
@@ -174,4 +176,3 @@ void MainRobot::TeleopPeriodic() {
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
 }
-

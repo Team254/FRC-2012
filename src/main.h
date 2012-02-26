@@ -9,6 +9,7 @@ class Drive;
 class Logger;
 class OperatorControl;
 class Pid;
+class Intake;
 class Shooter;
 class Driver;
 class TeleopDriver;
@@ -68,6 +69,7 @@ class MainRobot : public IterativeRobot {
 
   // Subsystems
   Drive* drivebase_;
+  Intake* intake_;
   Shooter* shooter_;
   
   // Drivers
