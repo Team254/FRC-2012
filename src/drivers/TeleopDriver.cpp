@@ -44,6 +44,12 @@ bool TeleopDriver::UpdateDriver() {
   }
   drive_->SetPizzaWheelDown(pizzaWheelsDown_);
 
+  // Brake
+  if (rightJoystick_->GetTrigger()) {
+    drive_->SetBrakeOn(true);
+  } else if (leftJoystick_->GetTrigger()) {
+    drive_->SetBrakeOn(false);
+  }
 
   // Drive
   if (pizzaWheelsDown_) {

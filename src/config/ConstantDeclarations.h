@@ -26,10 +26,10 @@ DECLARE_DOUBLE(accelerometerZPort, 4)
 DECLARE_DOUBLE(bumpSensorPort, 1)
 DECLARE_DOUBLE(leftEncoderPortA, 2)
 DECLARE_DOUBLE(leftEncoderPortB, 3)
-DECLARE_DOUBLE(shooterEncoderPortA, 6)
-DECLARE_DOUBLE(shooterEncoderPortB, 7)
 DECLARE_DOUBLE(rightEncoderPortA, 4)
 DECLARE_DOUBLE(rightEncoderPortB, 5)
+DECLARE_DOUBLE(shooterEncoderPortA, 6)
+DECLARE_DOUBLE(shooterEncoderPortB, 7)
 
 // Pneumatics
 DECLARE_DOUBLE(compressorPressureSwitchPort, 14)
@@ -43,7 +43,6 @@ DECLARE_DOUBLE(brakeSolenoidOnPort, 2)
 DECLARE_DOUBLE(brakeSolenoidOffPort, 3)
 DECLARE_DOUBLE(shiftSolenoidPort, 8)
 
-
 // Vision
 DECLARE_DOUBLE(thresholdRMin, 0)
 DECLARE_DOUBLE(thresholdRMax, 50)
@@ -52,16 +51,19 @@ DECLARE_DOUBLE(thresholdGMax, 50)
 DECLARE_DOUBLE(thresholdBMin, 80)
 DECLARE_DOUBLE(thresholdBMax, 255)
 
-// Control Board
+// Driver controls
 DECLARE_DOUBLE(leftJoystickPort, 1)
 DECLARE_DOUBLE(rightJoystickPort, 2)
+DECLARE_DOUBLE(baseLockPort, 1)
+DECLARE_DOUBLE(fineControlLeftPort, 6)
+DECLARE_DOUBLE(fineControlRightPort, 7)
+DECLARE_DOUBLE(intakeDeployPort, 8)
+
+// Operator controls
 DECLARE_DOUBLE(operatorControlPort, 3)
 DECLARE_DOUBLE(conveyorUpPort, 3)
 DECLARE_DOUBLE(conveyorDownPort, 4)
 DECLARE_DOUBLE(conveyorIndexPort, 5)
-DECLARE_DOUBLE(fineControlLeftPort, 6)
-DECLARE_DOUBLE(fineControlRightPort, 7)
-DECLARE_DOUBLE(intakeDeployPort, 8)
 DECLARE_DOUBLE(presetFenderPort, 9)
 DECLARE_DOUBLE(presetKeyPort, 10)
 DECLARE_DOUBLE(presetBridgePort, 11)
@@ -70,7 +72,6 @@ DECLARE_DOUBLE(presetMaxPort, 13)
 DECLARE_DOUBLE(shooterPort, 14)
 DECLARE_DOUBLE(hoodIncrementPort, 15)
 DECLARE_DOUBLE(hoodDecrementPort, 16)
-DECLARE_DOUBLE(baseLockPort, 1)
 DECLARE_DOUBLE(manualOverridePort, 18)
 DECLARE_DOUBLE(bridgeLowererPort, 19)
 DECLARE_DOUBLE(highGearPort, 2);
