@@ -8,6 +8,8 @@
 
 #define TICKS_PER_REV 32
 #define VELOCITY_THRESHOLD 1.0
+#define FILTER_SIZE 5
+#define OUTPUT_FILTER_SIZE 3
 
 /**
  * @author Eric Bakaan
@@ -53,6 +55,10 @@ class Shooter {
    */
   void SetHoodUp(bool up);
 
+  double UpdateFilter(double value);
+
+  double UpdateOutputFilter(double value);
+
   /**
    * Get the shooter wheel's current measured rotational velocity
    * @return the shooter wheel's rotational velocity in rotations/second
@@ -91,6 +97,11 @@ class Shooter {
   int prevEncoderPos_;
   double targetVelocity_;
   double velocity_;
+  double velocityFilter_[FILTER_SIZE];
+  int filterIndex_;
+  double outputValue_;
+  double outputFilter_[OUTPUT_FILTER_SIZE];
+  int outputFilterIndex_;
 };
 
 #endif  // SUBSYSTEMS_SHOOTER_H_

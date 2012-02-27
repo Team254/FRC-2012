@@ -165,7 +165,7 @@ void MainRobot::TeleopPeriodic() {
   } else if (xbox->GetRawButton(8) && !oldShooterUpSwitch_) {
     shooterTargetVelocity_ += 2;
   } else if (xbox->GetRawButton(7)) {
-    shooterTargetVelocity_ = 100;
+    shooterTargetVelocity_ = 70;
   }
   oldShooterUpSwitch_ = xbox->GetRawButton(8);
   oldShooterDownSwitch_ = xbox->GetRawButton(9);
@@ -174,13 +174,12 @@ void MainRobot::TeleopPeriodic() {
 
   if (xbox->GetRawButton(12)) {
     intake_->SetIntakePower(1.0);
-  } else {
+    shooter_->SetConveyorPower(-1.0);
+  } else if (xbox->GetRawButton(11)) {
     intake_->SetIntakePower(0);
-  }
-
-  if (xbox->GetRawButton(11)) {
     shooter_->SetConveyorPower(1.0);
   } else {
+    intake_->SetIntakePower(0);
     shooter_->SetConveyorPower(0);
   }
 

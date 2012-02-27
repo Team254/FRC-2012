@@ -19,6 +19,15 @@ Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightS
   timer_->Reset();
   timer_->Start();
   pid_ = new Pid(&constants_->shooterKP, &constants_->shooterKI, &constants_->shooterKD);
+  for (int i = 0; i < FILTER_SIZE; i++) {
+    velocityFilter_[i] = 0;
+  }
+  filterIndex_ = 0;
+  outputValue_ = 0;
+  for (int i = 0; i < OUTPUT_FILTER_SIZE; i++) {
+    outputFilter_[i] = 0;
+  }
+  outputFilterIndex_ = 0;
 }
 
 void Shooter::SetLinearPower(double pwm) {
@@ -28,18 +37,21 @@ void Shooter::SetLinearPower(double pwm) {
 void Shooter::SetTargetVelocity(double velocity) {
   targetVelocity_ = velocity;
   pid_->ResetError();
+  outputValue_ = 0;
 }
 
 bool Shooter::PIDUpdate() {
   int currEncoderPos = shooterEncoder_->Get();
-  velocity_ = (float)(currEncoderPos - prevEncoderPos_) / TICKS_PER_REV / timer_->Get();
+  double instantVelocity = (float)(currEncoderPos - prevEncoderPos_) / TICKS_PER_REV / timer_->Get();
+  velocity_ = UpdateFilter(instantVelocity);
   prevEncoderPos_ = currEncoderPos;
+
+  outputValue_ += pid_->Update(targetVelocity_, velocity_);
   timer_->Reset();
 
-  double signal = pid_->Update(targetVelocity_, velocity_);
-  //SetLinearPower(signal);
-  SetLinearPower(targetVelocity_ / 100.0);
-  PidTuner::PushData(targetVelocity_, velocity_, signal);
+  double filteredOutput = UpdateOutputFilter(outputValue_);
+  SetLinearPower(filteredOutput);
+  PidTuner::PushData(targetVelocity_, velocity_, filteredOutput);
   return (fabs(targetVelocity_ - velocity_) < VELOCITY_THRESHOLD);
 }
 
@@ -49,6 +61,32 @@ void Shooter::SetConveyorPower(double pwm) {
 
 void Shooter::SetHoodUp(bool up) {
   hoodSolenoid_->Set(up);
+}
+
+double Shooter::UpdateFilter(double value) {
+  velocityFilter_[filterIndex_] = value;
+  filterIndex_++;
+  if (filterIndex_ == FILTER_SIZE) {
+    filterIndex_ = 0;
+  }
+  double sum = 0;
+  for (int i = 0; i < FILTER_SIZE; i++) {
+    sum += velocityFilter_[i];
+  }
+  return sum / (double)FILTER_SIZE;
+}
+
+double Shooter::UpdateOutputFilter(double value) {
+  outputFilter_[outputFilterIndex_] = value;
+  outputFilterIndex_++;
+  if (outputFilterIndex_ == OUTPUT_FILTER_SIZE) {
+    outputFilterIndex_ = 0;
+  }
+  double sum = 0;
+  for (int i = 0; i < OUTPUT_FILTER_SIZE; i++) {
+    sum += outputFilter_[i];
+  }
+  return sum / (double)OUTPUT_FILTER_SIZE;
 }
 
 double Shooter::GetVelocity() {
