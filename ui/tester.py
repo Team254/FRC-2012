@@ -9,7 +9,7 @@ sock = socket.socket( socket.AF_INET, # Internet
                        socket.SOCK_DGRAM ) # UDP
 i = 0
 while True:
-    msg='{"S":%d, "V":%d}' % (((math.sin(i) + 1) *50), ((math.cos(i) + 1) * 50))
+    msg='{"S":%d, "V":%d, "C":%d}' % (((math.sin(i) + 1) *50), ((math.cos(i) + 1) * 50), (math.cos(i)) )
     sock.sendto( msg, (UDP_IP, UDP_PORT) )
     time.sleep(.1)
     i = i + .1

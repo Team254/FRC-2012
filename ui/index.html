@@ -19,13 +19,17 @@
 
 
 <script type="text/javascript">
+min_graph = 0;
+max_graph = 75;
 $(function () {
     var maxPoints = 5 * 50;
     var dataSetpoint = [];
     var dataValue = [];
+    var dataControl = [];
     function getData() {
       var resS = []
       var resV = []
+      var resC = []
       for (var i = 0; i < maxPoints; ++i)
          if( i > dataSetpoint.length)
            resS.push([i, 0]);
@@ -36,28 +40,34 @@ $(function () {
            resV.push([i, 0]);
          else
            resV.push([i, dataValue[i]]);
-      var res = [resS, resV]; //console.log(res);
+
+      for (var i = 0; i < maxPoints; ++i)
+         if( i > dataControl.length)
+           resC.push([i, 0]);
+         else
+           resC.push([i, dataControl[i]]);
+
+      var res = [resS, resV,resC]; //console.log(res);
       return res;
     }
     // setup plot
     var options = {
         series: { shadowSize: 0 }, // drawing is faster without shadows
-        yaxis: { min: 0, max: 100 },
+        yaxis: { min: min_graph, max: max_graph },
         xaxis: { show: false }
     };
     plot = $.plot($("#pid_plot"),getData(), options);
 
-   function push(newS, newV) {
-//console.log(newV);
+   function push(newS, newV, newC) {
         if (dataSetpoint.length > 0)
             dataSetpoint = dataSetpoint.slice(1);
 
         while (dataSetpoint.length < maxPoints) {
             var y = newS
-            if (y < 0)
-                y = 0;
-            if (y > 100)
-                y = 100;
+            if (y < min_graph)
+                y = min_graph;
+            if (y > max_graph)
+                y = max_graph;
             dataSetpoint.push(y);
         }
 
@@ -66,11 +76,23 @@ $(function () {
 
         while (dataValue.length < maxPoints) {
             var y = newV
-            if (y < 0)
-                y = 0;
-            if (y > 100)
-                y = 100;
+            if (y < min_graph)
+                y = min_graph;
+            if (y > max_graph)
+                y = max_graph;
             dataValue.push(y);
+        }
+
+        if (dataControl.length > 0)
+            dataControl = dataControl.slice(1);
+
+        while (dataControl.length < maxPoints) {
+            var y = (newC * ((max_graph-5 - (min_graph+5))/2)) + ((max_graph-5 - (min_graph+5))/2) ;
+            if (y < min_graph)
+                y = min_graph;
+            if (y > max_graph)
+                y = max_graph;
+            dataControl.push(y);
         }
         plot.setData(getData());
         // since the axes don't change, we don't need to call plot.setupGrid()
@@ -80,7 +102,7 @@ $(function () {
 
    var socket = io.connect('http://localhost');
     socket.on('update', function (dataIn) {
-      push(dataIn["S"], dataIn["V"]);
+      push(dataIn["S"], dataIn["V"],dataIn["C"]);
     });
 
 });
