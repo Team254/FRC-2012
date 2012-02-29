@@ -103,7 +103,8 @@ class MainRobot : public IterativeRobot {
   Accelerometer* accelerometerY_;
   Accelerometer* accelerometerZ_;
   DigitalInput* bumpSensor_;
-  
+  DigitalInput* conveyorBallSensor_;
+
   // Pneumatics
   Compressor* compressor_;
   Solenoid* shiftSolenoid_;
@@ -120,9 +121,16 @@ class MainRobot : public IterativeRobot {
   double shooterTargetVelocity_;
   double power_;
 
-  // Incremental shoote speed stuff
+  // Incremental shooter speed stuff
   bool oldShooterUpSwitch_;
   bool oldShooterDownSwitch_;
+
+  enum {
+    CONVEYOR_NO_BALL,
+    CONVEYOR_BALL_DETECTED,
+    CONVEYOR_BALL_STOPPED,
+    CONVEYOR_BALL_CLEARING
+  } conveyorBallState_;
 };
 
 // Start the actual program

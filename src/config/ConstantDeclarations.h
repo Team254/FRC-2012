@@ -30,6 +30,7 @@ DECLARE_DOUBLE(rightEncoderPortA, 4)
 DECLARE_DOUBLE(rightEncoderPortB, 5)
 DECLARE_DOUBLE(shooterEncoderPortA, 6)
 DECLARE_DOUBLE(shooterEncoderPortB, 7)
+DECLARE_DOUBLE(conveyorBallSensorPort, 10)
 
 // Pneumatics
 DECLARE_DOUBLE(compressorPressureSwitchPort, 14)

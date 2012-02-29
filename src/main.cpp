@@ -53,6 +53,8 @@ MainRobot::MainRobot() {
   //accelerometerY_->SetSensitivity(accelerometerSensitivity);
   //accelerometerZ_->SetSensitivity(accelerometerSensitivity);
   bumpSensor_ = new DigitalInput((int)constants_->bumpSensorPort);
+  conveyorBallSensor_ = new DigitalInput((int)constants_->conveyorBallSensorPort);
+  conveyorBallState_ = CONVEYOR_NO_BALL;
 
   // Pneumatics
   compressor_ = new Compressor((int)constants_->compressorPressureSwitchPort,(int)constants_->compressorRelayPort);
@@ -131,7 +133,6 @@ void MainRobot::TeleopInit() {
 }
 
 void MainRobot::DisabledPeriodic() {
-  //drivebase_->SetPizzaWheelDown(false);
 }
 
 void MainRobot::AutonomousPeriodic() {
@@ -172,12 +173,37 @@ void MainRobot::TeleopPeriodic() {
   shooter_->SetTargetVelocity(shooterTargetVelocity_);
   shooter_->PIDUpdate();
 
+  // Handle the case of a ball being detected in the conveyor with a mini state machine.
+  switch (conveyorBallState_) {
+    case CONVEYOR_NO_BALL:
+      if (conveyorBallSensor_->Get()) {
+        conveyorBallState_ = CONVEYOR_BALL_DETECTED;
+      }
+      break;
+    case CONVEYOR_BALL_DETECTED:
+      if (!xbox->GetRawButton(11)) {
+        conveyorBallState_ = CONVEYOR_BALL_STOPPED;
+      }
+      break;
+    case CONVEYOR_BALL_STOPPED:
+      if (xbox->GetRawButton(11) && shooterTargetVelocity_ > 0) {
+        conveyorBallState_ = CONVEYOR_BALL_CLEARING;
+      }
+      break;
+    case CONVEYOR_BALL_CLEARING:
+      if (!conveyorBallSensor_->Get()) {
+        conveyorBallState_ = CONVEYOR_NO_BALL;
+      }
+      break;
+  }
+
   if (xbox->GetRawButton(12)) {
     intake_->SetIntakePower(1.0);
     shooter_->SetConveyorPower(-1.0);
-  } else if (xbox->GetRawButton(11)) {
+  } else if (xbox->GetRawButton(11) &&
+      (conveyorBallState_ == CONVEYOR_NO_BALL || conveyorBallState_ == CONVEYOR_BALL_CLEARING)) {
     intake_->SetIntakePower(0);
-    shooter_->SetConveyorPower(1.0);
+    shooter_->SetConveyorPower(0.5);
   } else {
     intake_->SetIntakePower(0);
     shooter_->SetConveyorPower(0);
