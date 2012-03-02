@@ -103,7 +103,8 @@ class MainRobot : public IterativeRobot {
   Accelerometer* accelerometerY_;
   Accelerometer* accelerometerZ_;
   DigitalInput* bumpSensor_;
-  DigitalInput* conveyorBallSensor_;
+  DigitalInput* conveyorLowBallSensor_;
+  DigitalInput* conveyorHighBallSensor_;
 
   // Pneumatics
   Compressor* compressor_;
@@ -127,6 +128,7 @@ class MainRobot : public IterativeRobot {
 
   enum {
     CONVEYOR_NO_BALL,
+    CONVEYOR_BALL_SLOW,
     CONVEYOR_BALL_DETECTED,
     CONVEYOR_BALL_STOPPED,
     CONVEYOR_BALL_CLEARING

@@ -53,8 +53,8 @@ MainRobot::MainRobot() {
   //accelerometerY_->SetSensitivity(accelerometerSensitivity);
   //accelerometerZ_->SetSensitivity(accelerometerSensitivity);
   bumpSensor_ = new DigitalInput((int)constants_->bumpSensorPort);
-  conveyorBallSensor_ = new DigitalInput((int)constants_->conveyorBallSensorPort);
-  conveyorBallState_ = CONVEYOR_NO_BALL;
+  conveyorLowBallSensor_ = new DigitalInput((int)constants_->conveyorLowBallSensorPort);
+  conveyorHighBallSensor_ = new DigitalInput((int)constants_->conveyorHighBallSensorPort);
 
   // Pneumatics
   compressor_ = new Compressor((int)constants_->compressorPressureSwitchPort,(int)constants_->compressorRelayPort);
@@ -125,6 +125,7 @@ void MainRobot::TeleopInit() {
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
   testTimer_->Start();
+  conveyorBallState_ = CONVEYOR_NO_BALL;
 
   // Start off with the TeleopDriver
   currDriver_ = teleopDriver_;
@@ -133,6 +134,9 @@ void MainRobot::TeleopInit() {
 }
 
 void MainRobot::DisabledPeriodic() {
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Balls: %d %d", conveyorLowBallSensor_->Get(),
+                   conveyorHighBallSensor_->Get());
+  lcd_->UpdateLCD();
 }
 
 void MainRobot::AutonomousPeriodic() {
@@ -176,7 +180,12 @@ void MainRobot::TeleopPeriodic() {
   // Handle the case of a ball being detected in the conveyor with a mini state machine.
   switch (conveyorBallState_) {
     case CONVEYOR_NO_BALL:
-      if (conveyorBallSensor_->Get()) {
+      if (conveyorLowBallSensor_->Get()) {
+        conveyorBallState_ = CONVEYOR_BALL_SLOW;
+      }
+      break;
+    case CONVEYOR_BALL_SLOW:
+      if (conveyorHighBallSensor_->Get()) {
         conveyorBallState_ = CONVEYOR_BALL_DETECTED;
       }
       break;
@@ -191,7 +200,7 @@ void MainRobot::TeleopPeriodic() {
       }
       break;
     case CONVEYOR_BALL_CLEARING:
-      if (!conveyorBallSensor_->Get()) {
+      if (!conveyorHighBallSensor_->Get()) {
         conveyorBallState_ = CONVEYOR_NO_BALL;
       }
       break;
@@ -200,10 +209,15 @@ void MainRobot::TeleopPeriodic() {
   if (xbox->GetRawButton(12)) {
     intake_->SetIntakePower(1.0);
     shooter_->SetConveyorPower(-1.0);
-  } else if (xbox->GetRawButton(11) &&
-      (conveyorBallState_ == CONVEYOR_NO_BALL || conveyorBallState_ == CONVEYOR_BALL_CLEARING)) {
+  } else if (xbox->GetRawButton(11)) {
     intake_->SetIntakePower(0);
-    shooter_->SetConveyorPower(0.5);
+//    if (conveyorBallState_ == CONVEYOR_NO_BALL || conveyorBallState_ == CONVEYOR_BALL_CLEARING) {
+      shooter_->SetConveyorPower(1.0);
+//    } else if (conveyorBallState_ == CONVEYOR_BALL_SLOW) {
+//      shooter_->SetConveyorPower(0.15);
+//    } else {
+//      shooter_->SetConveyorPower(0);
+ //   }
   } else {
     intake_->SetIntakePower(0);
     shooter_->SetConveyorPower(0);
