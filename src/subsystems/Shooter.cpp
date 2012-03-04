@@ -61,6 +61,10 @@ void Shooter::SetLinearConveyorPower(double pwm) {
   conveyorMotor_->Set(ConveyorLinearize(pwm));
 }
 
+void Shooter::SetHoodUp(bool up) {
+  hoodSolenoid_->Set(up);
+}
+
 void Shooter::SetConveyorTarget(double deltaTicks) {
   conveyorTarget_ += deltaTicks;
 }
@@ -128,9 +132,11 @@ double Shooter::Linearize(double x) {
 }
 
 double Shooter::ConveyorLinearize(double x) {
-  if (x >= 0.0) {
-    return constants_->conveyorCoeffA * pow(x, 4) + constants_->conveyorCoeffB * pow(x, 3) +
-        constants_->conveyorCoeffC * pow(x, 2) + constants_->conveyorCoeffD * x;
+  if (fabs(x) < 0.01 ) {
+    return 0;
+  } else if (x > 0) {
+    return constants_->conveyorCoeffA * pow(x, 3) + constants_->conveyorCoeffB * pow(x, 2) +
+        constants_->conveyorCoeffC * x + constants_->conveyorCoeffD;
   } else {
     // Rotate the linearization function by 180.0 degrees to handle negative input.
     return -Linearize(-x);

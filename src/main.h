@@ -128,13 +128,7 @@ class MainRobot : public IterativeRobot {
   bool oldShooterUpSwitch_;
   bool oldShooterDownSwitch_;
 
-  enum {
-    CONVEYOR_NO_BALL,
-    CONVEYOR_BALL_SLOW,
-    CONVEYOR_BALL_DETECTED,
-    CONVEYOR_BALL_STOPPED,
-    CONVEYOR_BALL_CLEARING
-  } conveyorBallState_;
+  bool oldBallQueueSwitch_;
 };
 
 // Start the actual program

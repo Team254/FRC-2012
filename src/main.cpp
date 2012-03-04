@@ -106,6 +106,7 @@ MainRobot::MainRobot() {
   shooterTargetVelocity_ = 0;
   oldShooterUpSwitch_ = false;
   oldShooterDownSwitch_ = false;
+  oldBallQueueSwitch_ = false;
 }
 
 void MainRobot::DisabledInit() {
@@ -129,7 +130,6 @@ void MainRobot::TeleopInit() {
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
   testTimer_->Start();
-  conveyorBallState_ = CONVEYOR_NO_BALL;
 
   // Start off with the TeleopDriver
   currDriver_ = teleopDriver_;
@@ -144,25 +144,22 @@ void MainRobot::DisabledPeriodic() {
 
 void MainRobot::AutonomousPeriodic() {
   double time = testTimer_->Get();
-  double rate = shooterEncoder_->GetRate();
+  double rate = conveyorEncoder_->GetRate();
 
-  if (time > 2.0) {
+  if (time > 0.5) {
     power_ += 0.01;
     testTimer_->Reset();
     testLogger_->Log("%f,%f\n", power_, rate);
   }
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5,"Pow: %.0f%%", power_ * 100);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line6,"Rate: %.0f%%", rate);
   lcd_->UpdateLCD();
-  shooter_->SetPower(power_);
+  shooter_->SetLinearConveyorPower(power_);
 }
 
 void MainRobot::TeleopPeriodic() {
   GetWatchdog().Feed();
   drivebase_->SetBrakeOn(false);
-//  double ljoy = xbox->GetY();
-//  double trigger = -xbox->GetRawAxis(3);
-//  double rjoy = -xbox->GetRawAxis(5);
-  //  printf("%f %f %f\n", ljoy, trigger, rjoy);
 
   // Ghetto shooter control for testing
   if (xbox->GetRawButton(10)) {
@@ -178,82 +175,35 @@ void MainRobot::TeleopPeriodic() {
   oldShooterDownSwitch_ = xbox->GetRawButton(9);
   shooter_->SetTargetVelocity(shooterTargetVelocity_);
   shooter_->PIDUpdate();
-  shooter_->ConveyorPIDUpdate();
 
-  // Handle the case of a ball being detected in the conveyor with a mini state machine.
-  /*
-  switch (conveyorBallState_) {
-    case CONVEYOR_NO_BALL:
-      if (conveyorLowBallSensor_->Get()) {
-        conveyorBallState_ = CONVEYOR_BALL_SLOW;
-      }
-      break;
-    case CONVEYOR_BALL_SLOW:
-      if (conveyorHighBallSensor_->Get()) {
-        conveyorBallState_ = CONVEYOR_BALL_DETECTED;
-      }
-      break;
-    case CONVEYOR_BALL_DETECTED:
-      if (!xbox->GetRawButton(11)) {
-        conveyorBallState_ = CONVEYOR_BALL_STOPPED;
-      }
-      break;
-    case CONVEYOR_BALL_STOPPED:
-      if (xbox->GetRawButton(11) && shooterTargetVelocity_ > 0) {
-        conveyorBallState_ = CONVEYOR_BALL_CLEARING;
-      }
-      break;
-    case CONVEYOR_BALL_CLEARING:
-      if (!conveyorHighBallSensor_->Get()) {
-        conveyorBallState_ = CONVEYOR_NO_BALL;
-      }
-      break;
+  // Automatic ball queueing control.
+  if (xbox->GetTwist() < -0.75) {
+    if (shooter_->QueueBall() && !oldBallQueueSwitch_) {
+      shooter_->ShootBall();
+    }
+    shooter_->ConveyorPIDUpdate();
+  } else {
+    shooter_->SetLinearConveyorPower(0);
   }
-  */
+  oldBallQueueSwitch_ = (xbox->GetTwist() < -0.75);
 
   if (xbox->GetRawButton(12)) {
     intake_->SetIntakePower(1.0);
     shooter_->SetLinearConveyorPower(-1.0);
-//    jumbleMotor_->Set(-1.0);
   } else if (xbox->GetRawButton(11)) {
     intake_->SetIntakePower(1.0);
-//    if (conveyorBallState_ == CONVEYOR_NO_BALL || conveyorBallState_ == CONVEYOR_BALL_CLEARING) {
       if (xbox->GetRawButton(3)) {
         shooter_->SetLinearConveyorPower(0.45);
       } else {
         shooter_->SetLinearConveyorPower(1.0);
       }
-//    } else if (conveyorBallState_ == CONVEYOR_BALL_SLOW) {
-//      shooter_->SetLinearConveyorPower(0.15);
-//    } else {
-//      shooter_->SetLinearConveyorPower(0);
- //   }
-//    jumbleMotor_->Set(-1.0);
   } else if (xbox->GetZ() < -0.75) {
     intake_->SetIntakePower(-1.0);
     shooter_->SetLinearConveyorPower(-1.0);
-//    jumbleMotor_->Set(0);
   } else {
     intake_->SetIntakePower(0);
-    shooter_->SetLinearConveyorPower(0);
-//    jumbleMotor_->Set(0);
   }
 
-//  double tShooter = (trigger > .1) ? trigger : 0;
-//  shooter_->SetLinearPower(trigger);
-
-//  shooter_->SetLinearConveyorPower(ljoy);
-
-  //  intake_->SetIntakePower(rjoy);
-/*  if (xbox->GetRawButton(6)){
-    intake_->SetIntakePower(1);
-  }
-  else if (xbox->GetRawButton(5)){
-    intake_->SetIntakePower(-1);
-  }
-  else {
-    intake_->SetIntakePower(0);
-  }*/
   if (xbox->GetRawButton(6)) {
     intake_->SetIntakePosition(Intake::INTAKE_UP);
   } else if (xbox->GetRawButton(4)) {
@@ -262,7 +212,6 @@ void MainRobot::TeleopPeriodic() {
     intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
   }
 
-//  if (xbox->GetRawButton(2)) {
   if (shooterTargetVelocity_ > 50) {
     shooter_->SetHoodUp(true);
   } else {
