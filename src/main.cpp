@@ -33,6 +33,7 @@ MainRobot::MainRobot() {
   conveyorMotor_ = new Victor((int)constants_->conveyorPwm);
   leftShooterMotor_ = new Victor((int)constants_->leftShooterPwm);
   rightShooterMotor_ = new Victor((int)constants_->rightShooterPwm);
+  jumbleMotor_ = new Victor((int)constants_->jumblePwm);
 
   // Sensors
   leftEncoder_ = new Encoder((int)constants_->leftEncoderPortA, (int)constants_->leftEncoderPortB);
@@ -42,8 +43,12 @@ MainRobot::MainRobot() {
   shooterEncoder_ = new Encoder((int)constants_->shooterEncoderPortA, (int)constants_->shooterEncoderPortB,
                                 false, CounterBase::k1X);
   shooterEncoder_->Start();
+  conveyorEncoder_ = new Encoder((int)constants_->conveyorEncoderPortA,
+                                 (int)constants_->conveyorEncoderPortB);
+  conveyorEncoder_->Start();
   gyro_ = new Gyro((int)constants_->gyroPort);
   gyro_->SetSensitivity(1.0);
+  poofMeter_ = new AnalogChannel((int)constants_->poofMeterPort);
 
   double accelerometerSensitivity = 1.0;
   //accelerometerX_ = new Accelerometer((int)constants_->accelerometerXPort);
@@ -134,8 +139,7 @@ void MainRobot::TeleopInit() {
 }
 
 void MainRobot::DisabledPeriodic() {
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Balls: %d %d", conveyorLowBallSensor_->Get(),
-                   conveyorHighBallSensor_->Get());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Convey: %d", conveyorEncoder_->Get());
   lcd_->UpdateLCD();
 }
 
@@ -160,7 +164,6 @@ void MainRobot::TeleopPeriodic() {
 //  double trigger = -xbox->GetRawAxis(3);
 //  double rjoy = -xbox->GetRawAxis(5);
   //  printf("%f %f %f\n", ljoy, trigger, rjoy);
-  printf("F: %d | r: %d | off: %d\n", intakeSolenoid_->Get() == DoubleSolenoid::kForward, intakeSolenoid_->Get() == DoubleSolenoid::kReverse, intakeSolenoid_->Get() == DoubleSolenoid::kOff  );
 
   // Ghetto shooter control for testing
   if (xbox->GetRawButton(10)) {
@@ -170,7 +173,7 @@ void MainRobot::TeleopPeriodic() {
   } else if (xbox->GetRawButton(8) && !oldShooterUpSwitch_) {
     shooterTargetVelocity_ += 2;
   } else if (xbox->GetRawButton(7)) {
-    shooterTargetVelocity_ = 70;
+    shooterTargetVelocity_ = 38;
   }
   oldShooterUpSwitch_ = xbox->GetRawButton(8);
   oldShooterDownSwitch_ = xbox->GetRawButton(9);
@@ -209,18 +212,29 @@ void MainRobot::TeleopPeriodic() {
   if (xbox->GetRawButton(12)) {
     intake_->SetIntakePower(1.0);
     shooter_->SetConveyorPower(-1.0);
+//    jumbleMotor_->Set(-1.0);
   } else if (xbox->GetRawButton(11)) {
-    intake_->SetIntakePower(0);
+    intake_->SetIntakePower(1.0);
 //    if (conveyorBallState_ == CONVEYOR_NO_BALL || conveyorBallState_ == CONVEYOR_BALL_CLEARING) {
-      shooter_->SetConveyorPower(1.0);
+      if (xbox->GetRawButton(3)) {
+        shooter_->SetConveyorPower(0.3);
+      } else {
+        shooter_->SetConveyorPower(1.0);
+      }
 //    } else if (conveyorBallState_ == CONVEYOR_BALL_SLOW) {
 //      shooter_->SetConveyorPower(0.15);
 //    } else {
 //      shooter_->SetConveyorPower(0);
  //   }
+//    jumbleMotor_->Set(-1.0);
+  } else if (xbox->GetZ() < -0.75) {
+    intake_->SetIntakePower(-1.0);
+    shooter_->SetConveyorPower(-1.0);
+//    jumbleMotor_->Set(0);
   } else {
     intake_->SetIntakePower(0);
     shooter_->SetConveyorPower(0);
+//    jumbleMotor_->Set(0);
   }
 
 //  double tShooter = (trigger > .1) ? trigger : 0;
@@ -267,8 +281,13 @@ void MainRobot::TeleopPeriodic() {
   currDriver_->UpdateDriver();
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
+  // Poof meter
+  int poofiness = poofMeter_->GetValue();
+  testLogger_->Log("%d\n", poofiness);
+  PidTuner::PushData((double)poofiness, 0, 0);
+
   double velocity = shooter_->GetVelocity();
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line2,"Pos: %d", shooterEncoder_->Get());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line2,"Poof: %d", poofiness);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3,"Vel: %f", velocity);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f%%", shooterTargetVelocity_);
   lcd_->UpdateLCD();

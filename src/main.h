@@ -93,15 +93,18 @@ class MainRobot : public IterativeRobot {
   Victor* conveyorMotor_;
   Victor* leftShooterMotor_;
   Victor* rightShooterMotor_;
+  Victor* jumbleMotor_;
 
   // Sensors
   Encoder* leftEncoder_;
   Encoder* rightEncoder_;
   Encoder* shooterEncoder_;
+  Encoder* conveyorEncoder_;
   Gyro* gyro_;
   Accelerometer* accelerometerX_;
   Accelerometer* accelerometerY_;
   Accelerometer* accelerometerZ_;
+  AnalogChannel* poofMeter_;
   DigitalInput* bumpSensor_;
   DigitalInput* conveyorLowBallSensor_;
   DigitalInput* conveyorHighBallSensor_;
