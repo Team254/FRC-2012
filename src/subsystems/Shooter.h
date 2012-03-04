@@ -2,6 +2,7 @@
 #define SUBSYSTEMS_SHOOTER_H_
 
 #include "WPILib.h"
+#include <deque>
 
 #include "config/Constants.h"
 #include "subsystems/Pid.h"
@@ -10,6 +11,14 @@
 #define VELOCITY_THRESHOLD 1.0
 #define FILTER_SIZE 5
 #define OUTPUT_FILTER_SIZE 3
+
+/**
+ * Represents a collection of stats about a given ball in the queue
+ */
+struct ballStats {
+  double pos; // Position on the conveyor relative to the starting position in ticks
+  double poofs; // Arbitrary unit of squishiness
+};
 
 /**
  * @author Eric Bakaan
@@ -23,7 +32,7 @@ class Shooter {
    * Accepts the Victors, Encoders, pneumatics, etc. to be used
    */
   Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightShooterMotor, Encoder* shooterEncoder,
-          Solenoid* hoodSolenoid);
+          Solenoid* hoodSolenoid, Encoder* conveyorEncoder, DigitalInput* ballSensor);
 
   /**
    * Sets the linearized power of the shooter motors
@@ -44,10 +53,27 @@ class Shooter {
   bool PIDUpdate();
 
   /**
-   * Sets the power of the conveyor motor
+   * Sets the linearized power of the conveyor motor
    * @param pwm the power to st
    */
-  void SetConveyorPower(double pwm);
+  void SetLinearConveyorPower(double pwm);
+
+  /**
+   * Sets the RELATIVE target conveyor position in ticks
+   * @param deltaTicks the change in ticks to add to the current target
+   */
+  void SetConveyorTarget(double deltaTicks);
+
+  /**
+   * Sets the conveyor target to the current position
+   */
+  void ResetConveyorTarget();
+
+  /**
+   * Updates the conveyor position PID
+   * @return true if done, else false
+   */
+  bool ConveyorPIDUpdate();
 
   /**
    * Sets the solenoid position for the hood
@@ -71,13 +97,42 @@ class Shooter {
    */
   void SetPower(double power);
 
+  /**
+   * Runs the conveyor belt until a ball has been loaded from the conveyor
+   * @return true if a ball has been detected and added to the queue, else false
+   */
+  bool QueueBall();
+
+  /**
+   * Sets the shooter wheel velocity and pops the ball off the queue
+   */
+  void ShootBall();
+
+  /**
+   * Empties the queue
+   */
+  void ResetQueue();
+
+  /**
+   * Sets the shooter target velocity based on the current ball, distance, etc.
+   * @param ball the stats of the ball we're shooting
+   */
+  void SetBallShooterTarget(ballState ball);
+
  private:
   /**
    * Linearizes the shooter motors
    * @param x the unlinearized input
-   * @return the linearzied output
+   * @return the linearized output
    */
   double Linearize(double x);
+
+  /**
+   * Linearizes the conveyor motor
+   * @param x the unlinearized input
+   * @return the linearized output
+   */
+  double ConveyorLinearize(double x);
 
   // Motors
   Victor* conveyorMotor_;
@@ -86,15 +141,20 @@ class Shooter {
 
   // Sensors
   Encoder* shooterEncoder_;
+  Encoder* conveyorEncoder_;
+  DigitalInput* ballSensor_;
 
   // Solenoids
-  Solenoid*  hoodSolenoid_;
+  Solenoid* hoodSolenoid_;
 
   // Other
   Constants* constants_;
   Timer* timer_;
   Pid* pid_;
+  Pid* conveyorPid_;
+  std::deque<ballStats> ballQ_;
   int prevEncoderPos_;
+  double conveyorTarget_;
   double targetVelocity_;
   double velocity_;
   double velocityFilter_[FILTER_SIZE];

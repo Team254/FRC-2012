@@ -4,8 +4,8 @@
 
 #include "util/PidTuner.h"
 
-Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightShooterMotor,
-                 Encoder* shooterEncoder, Solenoid* hoodSolenoid) {
+Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightShooterMotor, Encoder* shooterEncoder,
+                 Solenoid* hoodSolenoid, Encoder* conveyorEncoder, DigitalInput* ballSensor) {
   constants_ = Constants::GetInstance();
   conveyorMotor_ = conveyorMotor;
   leftShooterMotor_ = leftShooterMotor;
@@ -13,12 +13,15 @@ Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightS
   shooterEncoder_ = shooterEncoder;
   hoodSolenoid_ = hoodSolenoid;
   prevEncoderPos_ = shooterEncoder->Get();
+  conveyorEncoder_ = conveyorEncoder;
+  ballSensor_ = ballSensor;
   targetVelocity_ = 0.0;
   velocity_ = 0.0;
   timer_ = new Timer();
   timer_->Reset();
   timer_->Start();
   pid_ = new Pid(&constants_->shooterKP, &constants_->shooterKI, &constants_->shooterKD);
+  conveyorPid_ = new Pid(&constants_->conveyorKP, &constants_->conveyorKI, &constants_->conveyorKD);
   for (int i = 0; i < FILTER_SIZE; i++) {
     velocityFilter_[i] = 0;
   }
@@ -54,12 +57,25 @@ bool Shooter::PIDUpdate() {
   return (fabs(targetVelocity_ - velocity_) < VELOCITY_THRESHOLD);
 }
 
-void Shooter::SetConveyorPower(double pwm) {
-  conveyorMotor_->Set(PwmLimit(pwm));
+void Shooter::SetLinearConveyorPower(double pwm) {
+  conveyorMotor_->Set(ConveyorLinearize(pwm));
 }
 
-void Shooter::SetHoodUp(bool up) {
-  hoodSolenoid_->Set(up);
+void Shooter::SetConveyorTarget(double deltaTicks) {
+  conveyorTarget_ += deltaTicks;
+}
+
+void Shooter::ResetConveyorTarget() {
+  conveyorTarget_ = conveyorEncoder_->Get();
+}
+
+bool Shooter::ConveyorPIDUpdate() {
+  double currVal = conveyorEncoder_->Get();
+  if(fabs(currVal-conveyorTarget_)<constants_->conveyorPIDThreshold) {
+    return true;
+  }
+  SetLinearConveyorPower(conveyorPid_->Update(conveyorTarget_, currVal));
+  return false;
 }
 
 double Shooter::UpdateFilter(double value) {
@@ -109,4 +125,54 @@ double Shooter::Linearize(double x) {
     // Rotate the linearization function by 180.0 degrees to handle negative input.
     return -Linearize(-x);
   }
+}
+
+double Shooter::ConveyorLinearize(double x) {
+  if (x >= 0.0) {
+    return constants_->conveyorCoeffA * pow(x, 4) + constants_->conveyorCoeffB * pow(x, 3) +
+        constants_->conveyorCoeffC * pow(x, 2) + constants_->conveyorCoeffD * x;
+  } else {
+    // Rotate the linearization function by 180.0 degrees to handle negative input.
+    return -Linearize(-x);
+  }
+}
+
+bool Shooter::QueueBall() {
+  // If we have a ball, check that the conveyor has moved a certain distance so we don't double count a ball
+  if (ballSensor_->Get() && (ballQ_.empty() || fabs(conveyorEncoder_->Get() - ballQ_.front().pos) >
+      constants_->minConveyorBallDist)) {
+    // Just got a ball
+    ballStats ball = {conveyorEncoder_->Get(), 0.0};
+    ballQ_.push_back(ball);
+  } else if (ballQ_.empty()) {
+    // No ball, go full speed
+    SetLinearConveyorPower(1.0);
+  }
+
+  // If we have a ball in the queue, increment the PID goal to the top
+  if (!ballQ_.empty()) {
+    // Set the target to put the top ball at the top minus the buffer
+    double distToTop = fabs(constants_->conveyorHeight - (conveyorEncoder_->Get() - ballQ_.front().pos) -
+        constants_->conveyorIntakeBuffer);
+    if (distToTop > constants_->conveyorPIDThreshold) {
+      SetConveyorTarget(constants_->conveyorPIDIncrement);
+      return false;
+    } else {
+      return true;
+    }
+  }
+}
+
+void Shooter::ShootBall() {
+  if (!ballQ_.empty()) {
+    SetBallShooterTarget(ballQ_.pop_front());
+  }
+}
+
+void Shooter::ResetQueue() {
+  ballQ_.clear();
+}
+
+void Shooter::SetBallShooterTarget(ballState ball) {
+  // do something here...
 }

@@ -58,8 +58,7 @@ MainRobot::MainRobot() {
   //accelerometerY_->SetSensitivity(accelerometerSensitivity);
   //accelerometerZ_->SetSensitivity(accelerometerSensitivity);
   bumpSensor_ = new DigitalInput((int)constants_->bumpSensorPort);
-  conveyorLowBallSensor_ = new DigitalInput((int)constants_->conveyorLowBallSensorPort);
-  conveyorHighBallSensor_ = new DigitalInput((int)constants_->conveyorHighBallSensorPort);
+  conveyorBallSensor_ = new DigitalInput((int)constants_->conveyorBallSensorPort);
 
   // Pneumatics
   compressor_ = new Compressor((int)constants_->compressorPressureSwitchPort,(int)constants_->compressorRelayPort);
@@ -77,7 +76,7 @@ MainRobot::MainRobot() {
                          accelerometerZ_, bumpSensor_);
   intake_ = new Intake(intakeMotor_, intakeSolenoid_);
   shooter_ = new Shooter(conveyorMotor_, leftShooterMotor_, rightShooterMotor_, shooterEncoder_,
-                         hoodSolenoid_);
+                         hoodSolenoid_, conveyorEncoder_, conveyorBallSensor_);
   sc_ = new ShooterController(shooter_, intake_);
 
   // Control Board
@@ -179,8 +178,10 @@ void MainRobot::TeleopPeriodic() {
   oldShooterDownSwitch_ = xbox->GetRawButton(9);
   shooter_->SetTargetVelocity(shooterTargetVelocity_);
   shooter_->PIDUpdate();
+  shooter_->ConveyorPIDUpdate();
 
   // Handle the case of a ball being detected in the conveyor with a mini state machine.
+  /*
   switch (conveyorBallState_) {
     case CONVEYOR_NO_BALL:
       if (conveyorLowBallSensor_->Get()) {
@@ -208,39 +209,40 @@ void MainRobot::TeleopPeriodic() {
       }
       break;
   }
+  */
 
   if (xbox->GetRawButton(12)) {
     intake_->SetIntakePower(1.0);
-    shooter_->SetConveyorPower(-1.0);
+    shooter_->SetLinearConveyorPower(-1.0);
 //    jumbleMotor_->Set(-1.0);
   } else if (xbox->GetRawButton(11)) {
     intake_->SetIntakePower(1.0);
 //    if (conveyorBallState_ == CONVEYOR_NO_BALL || conveyorBallState_ == CONVEYOR_BALL_CLEARING) {
       if (xbox->GetRawButton(3)) {
-        shooter_->SetConveyorPower(0.3);
+        shooter_->SetLinearConveyorPower(0.3);
       } else {
-        shooter_->SetConveyorPower(1.0);
+        shooter_->SetLinearConveyorPower(1.0);
       }
 //    } else if (conveyorBallState_ == CONVEYOR_BALL_SLOW) {
-//      shooter_->SetConveyorPower(0.15);
+//      shooter_->SetLinearConveyorPower(0.15);
 //    } else {
-//      shooter_->SetConveyorPower(0);
+//      shooter_->SetLinearConveyorPower(0);
  //   }
 //    jumbleMotor_->Set(-1.0);
   } else if (xbox->GetZ() < -0.75) {
     intake_->SetIntakePower(-1.0);
-    shooter_->SetConveyorPower(-1.0);
+    shooter_->SetLinearConveyorPower(-1.0);
 //    jumbleMotor_->Set(0);
   } else {
     intake_->SetIntakePower(0);
-    shooter_->SetConveyorPower(0);
+    shooter_->SetLinearConveyorPower(0);
 //    jumbleMotor_->Set(0);
   }
 
 //  double tShooter = (trigger > .1) ? trigger : 0;
 //  shooter_->SetLinearPower(trigger);
 
-//  shooter_->SetConveyorPower(ljoy);
+//  shooter_->SetLinearConveyorPower(ljoy);
 
   //  intake_->SetIntakePower(rjoy);
 /*  if (xbox->GetRawButton(6)){
