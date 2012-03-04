@@ -139,7 +139,7 @@ double Shooter::ConveyorLinearize(double x) {
 
 bool Shooter::QueueBall() {
   // If we have a ball, check that the conveyor has moved a certain distance so we don't double count a ball
-  if (ballSensor_->Get() && (ballQ_.empty() || fabs(conveyorEncoder_->Get() - ballQ_.front().pos) >
+  if (ballSensor_->Get() && (ballQ_.empty() || fabs(conveyorEncoder_->Get() - ballQ_.back().pos) >
       constants_->minConveyorBallDist)) {
     // Just got a ball
     ballStats ball = {conveyorEncoder_->Get(), 0.0};
@@ -165,7 +165,8 @@ bool Shooter::QueueBall() {
 
 void Shooter::ShootBall() {
   if (!ballQ_.empty()) {
-    SetBallShooterTarget(ballQ_.pop_front());
+    SetBallShooterTarget(ballQ_.front());
+    ballQ_.pop_front();
   }
 }
 
@@ -173,6 +174,6 @@ void Shooter::ResetQueue() {
   ballQ_.clear();
 }
 
-void Shooter::SetBallShooterTarget(ballState ball) {
+void Shooter::SetBallShooterTarget(ballStats ball) {
   // do something here...
 }

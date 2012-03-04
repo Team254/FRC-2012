@@ -117,7 +117,7 @@ class Shooter {
    * Sets the shooter target velocity based on the current ball, distance, etc.
    * @param ball the stats of the ball we're shooting
    */
-  void SetBallShooterTarget(ballState ball);
+  void SetBallShooterTarget(ballStats ball);
 
  private:
   /**

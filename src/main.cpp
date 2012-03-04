@@ -219,7 +219,7 @@ void MainRobot::TeleopPeriodic() {
     intake_->SetIntakePower(1.0);
 //    if (conveyorBallState_ == CONVEYOR_NO_BALL || conveyorBallState_ == CONVEYOR_BALL_CLEARING) {
       if (xbox->GetRawButton(3)) {
-        shooter_->SetLinearConveyorPower(0.3);
+        shooter_->SetLinearConveyorPower(0.45);
       } else {
         shooter_->SetLinearConveyorPower(1.0);
       }
@@ -262,7 +262,8 @@ void MainRobot::TeleopPeriodic() {
     intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
   }
 
-  if (xbox->GetRawButton(2)) {
+//  if (xbox->GetRawButton(2)) {
+  if (shooterTargetVelocity_ > 50) {
     shooter_->SetHoodUp(true);
   } else {
     shooter_->SetHoodUp(false);
