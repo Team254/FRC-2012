@@ -44,7 +44,7 @@ MainRobot::MainRobot() {
                                 false, CounterBase::k1X);
   shooterEncoder_->Start();
   conveyorEncoder_ = new Encoder((int)constants_->conveyorEncoderPortA,
-                                 (int)constants_->conveyorEncoderPortB);
+                                 (int)constants_->conveyorEncoderPortB, true);
   conveyorEncoder_->Start();
   gyro_ = new Gyro((int)constants_->gyroPort);
   gyro_->SetSensitivity(1.0);
@@ -121,6 +121,7 @@ void MainRobot::AutonomousInit() {
   testPid_->ResetError();
   testTimer_->Reset();
   testTimer_->Start();
+  conveyorEncoder_->Reset();
   GetWatchdog().SetEnabled(false);
   power_ = 0;
 }
@@ -130,6 +131,7 @@ void MainRobot::TeleopInit() {
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
   testTimer_->Start();
+  shooter_->ResetQueueState();
 
   // Start off with the TeleopDriver
   currDriver_ = teleopDriver_;
@@ -139,10 +141,13 @@ void MainRobot::TeleopInit() {
 
 void MainRobot::DisabledPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Convey: %d", conveyorEncoder_->Get());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Ball: %d", conveyorBallSensor_->Get());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Poof: %d", poofMeter_->GetValue());
   lcd_->UpdateLCD();
 }
 
 void MainRobot::AutonomousPeriodic() {
+/*
   double time = testTimer_->Get();
   double rate = conveyorEncoder_->GetRate();
 
@@ -155,6 +160,11 @@ void MainRobot::AutonomousPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line6,"Rate: %.0f%%", rate);
   lcd_->UpdateLCD();
   shooter_->SetLinearConveyorPower(power_);
+*/
+  int target = (int)Functions::SquareWave(testTimer_->Get(), 10, 500) + 500;
+  shooter_->SetConveyorTarget(target);
+  shooter_->ConveyorPIDUpdate();
+  PidTuner::PushData(target, conveyorEncoder_->Get(), 0);
 }
 
 void MainRobot::TeleopPeriodic() {
@@ -181,7 +191,6 @@ void MainRobot::TeleopPeriodic() {
     if (shooter_->QueueBall() && !oldBallQueueSwitch_) {
       shooter_->ShootBall();
     }
-    shooter_->ConveyorPIDUpdate();
   } else {
     shooter_->SetLinearConveyorPower(0);
   }
@@ -233,19 +242,9 @@ void MainRobot::TeleopPeriodic() {
   currDriver_->UpdateDriver();
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
-
-  static int poofiness = 0;
-  // Poof meter
-  if (shooter_->UpdatePoofometer()) {
-    poofiness = shooter_->GetPoofometer();
-    shooter_->ResetPoofometer();
-  }
-  testLogger_->Log("%d\n", poofiness);
-  PidTuner::PushData((double)poofiness, 0, 0);
-
   double velocity = shooter_->GetVelocity();
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line2,"Poof: %d", poofiness);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3,"Vel: %f", velocity);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f%%", shooterTargetVelocity_);
   lcd_->UpdateLCD();
+  shooter_->DebugBallQueue();
 }

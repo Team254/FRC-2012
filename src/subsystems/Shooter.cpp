@@ -32,7 +32,8 @@ Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightS
   }
   outputFilterIndex_ = 0;
   poofMeter_ = poofMeter;
-  ResetPoofometer();
+  poofCorrectionFactor_ = 1.0;
+  prevBallSensor_ = false;
 }
 
 void Shooter::SetLinearPower(double pwm) {
@@ -51,12 +52,13 @@ bool Shooter::PIDUpdate() {
   velocity_ = UpdateFilter(instantVelocity);
   prevEncoderPos_ = currEncoderPos;
 
-  outputValue_ += pid_->Update(targetVelocity_, velocity_);
+  double correctedTargetVelocity_ = targetVelocity_ * poofCorrectionFactor_;
+  outputValue_ += pid_->Update(correctedTargetVelocity_, velocity_);
   timer_->Reset();
 
   double filteredOutput = UpdateOutputFilter(outputValue_);
   SetLinearPower(filteredOutput);
-  return (fabs(targetVelocity_ - velocity_) < VELOCITY_THRESHOLD);
+  return (fabs(correctedTargetVelocity_ - velocity_) < VELOCITY_THRESHOLD);
 }
 
 void Shooter::SetLinearConveyorPower(double pwm) {
@@ -67,21 +69,12 @@ void Shooter::SetHoodUp(bool up) {
   hoodSolenoid_->Set(up);
 }
 
-void Shooter::SetConveyorTarget(double deltaTicks) {
-  conveyorTarget_ += deltaTicks;
+void Shooter::SetConveyorTarget(int target) {
+  conveyorTarget_ = target;
 }
 
-void Shooter::ResetConveyorTarget() {
-  conveyorTarget_ = conveyorEncoder_->Get();
-}
-
-bool Shooter::ConveyorPIDUpdate() {
-  double currVal = conveyorEncoder_->Get();
-  if(fabs(currVal-conveyorTarget_)<constants_->conveyorPIDThreshold) {
-    return true;
-  }
-  SetLinearConveyorPower(conveyorPid_->Update(conveyorTarget_, currVal));
-  return false;
+void Shooter::ConveyorPIDUpdate() {
+  SetLinearConveyorPower(conveyorPid_->Update(conveyorTarget_, conveyorEncoder_->Get()));
 }
 
 double Shooter::UpdateFilter(double value) {
@@ -147,78 +140,76 @@ double Shooter::ConveyorLinearize(double x) {
 
 bool Shooter::QueueBall() {
   // If we have a ball, check that the conveyor has moved a certain distance so we don't double count a ball
-  if (ballSensor_->Get() && (ballQ_.empty() || fabs(conveyorEncoder_->Get() - ballQ_.back().pos) >
-      constants_->minConveyorBallDist)) {
+  if (ballSensor_->Get() && !prevBallSensor_ &&
+      (ballQ_.empty() || fabs(conveyorEncoder_->Get() - ballQ_.back().position) >
+          constants_->minConveyorBallDist)) {
     // Just got a ball
-    ballStats ball = {conveyorEncoder_->Get(), 0.0};
+    ballStats ball = {conveyorEncoder_->Get(), 0};
     ballQ_.push_back(ball);
-  } else if (ballQ_.empty()) {
-    // No ball, go full speed
-    SetLinearConveyorPower(1.0);
   }
 
-  // If we have a ball in the queue, increment the PID goal to the top
-  if (!ballQ_.empty()) {
+  bool returnValue = false;
+  if (ballQ_.empty()) {
+    // No ball, go full speed
+    SetLinearConveyorPower(1.0);
+  } else {
     // Set the target to put the top ball at the top minus the buffer
-    double distToTop = fabs(constants_->conveyorHeight - (conveyorEncoder_->Get() - ballQ_.front().pos) -
-        constants_->conveyorIntakeBuffer);
-    if (distToTop > constants_->conveyorPIDThreshold) {
-      SetConveyorTarget(constants_->conveyorPIDIncrement);
-      return false;
+    int distToTop = ballQ_.front().position + (int)constants_->conveyorHeight - conveyorEncoder_->Get();
+    if (distToTop < (int)constants_->conveyorPIDThreshold) {
+      SetLinearConveyorPower(0.0);
+      returnValue= true;
     } else {
-      return true;
+      conveyorTarget_ = ballQ_.front().position + (int)constants_->conveyorHeight;
+      ConveyorPIDUpdate(); //+= (int)constants_->conveyorPIDIncrement;
     }
   }
+  prevBallSensor_ = ballSensor_->Get();
+
+  PidTuner::PushData(poofMeter_->GetValue(), 0, 0);
+
+  // Update the poofometer readings if a ball is within the sensor's window.
+  for (std::deque<ballStats>::iterator iter = ballQ_.begin(); iter != ballQ_.end(); ++iter) {
+    int ballPosition = conveyorEncoder_->Get() - iter->position;
+    if (ballPosition > (int)constants_->conveyorPoofWindowLow &&
+        ballPosition < (int)constants_->conveyorPoofWindowHigh) {
+      // Record the peak sensor value for that ball.
+      int poofiness = poofMeter_->GetValue();
+      if (poofiness > iter->poofiness) {
+        iter->poofiness = poofiness;
+      }
+
+      // Only one ball should ever be within the window, so we can exit early.
+      break;
+    }
+  }
+
+  return returnValue;
 }
 
 void Shooter::ShootBall() {
   if (!ballQ_.empty()) {
-    SetBallShooterTarget(ballQ_.front());
+// TODO(pat): Uncomment once we want to do linear interpolation for correction.
+//    SetBallShooterTarget(ballQ_.front());
     ballQ_.pop_front();
   }
 }
 
-void Shooter::ResetQueue() {
+void Shooter::ResetQueueState() {
   ballQ_.clear();
 }
 
 void Shooter::SetBallShooterTarget(ballStats ball) {
-  // do something here...
+  // Do linear interpolation with the poofiness to correct for ball variance.
+  poofCorrectionFactor_ = (ball.poofiness - constants_->poofometerLowPoofiness) /
+      (constants_->poofometerHighPoofiness - constants_->poofometerLowPoofiness) *
+      (constants_->poofometerHighCorrection - constants_->poofometerLowCorrection) +
+      constants_->poofometerLowCorrection;
 }
 
-bool Shooter::UpdatePoofometer() {
-  int newPoof = poofMeter_->GetValue();
-  static const int idlePoof = 400;
-  if (newPoof < idlePoof * 1.1 || fabs(conveyorMotor_->Get()) < .1){
-    newPoof = 0;
+void Shooter::DebugBallQueue() {
+  int i = 0;
+  for (std::deque<ballStats>::const_iterator iter = ballQ_.begin(); iter != ballQ_.end(); ++iter) {
+    printf("Ball %d pos: %d poof: %d\n", i, iter->position, iter->poofiness);
+    i++;
   }
-
-  if (highestPoof_ < newPoof) {
-    highestPoof_ = newPoof; // Grab peak
-  }
-
-  bool newDirection = (newPoof > lastPoof_); // true for up
-  lastPoof_ = newPoof;
-
-  if (newDirection == true){
-    poofDownCounts_ = 0;
-  } else {
-    poofDownCounts_++;
-  }
-  
-  if (newDirection == false && poofDownCounts_ > 5) {
-    return true;
-  }
-  return false; 
-  
-}
-
-void Shooter::ResetPoofometer() {
-  highestPoof_ = 0;
-  poofDownCounts_ = 0;
-  lastPoof_ = 0;
-}
-
-int Shooter::GetPoofometer() {
-  return highestPoof_;
 }

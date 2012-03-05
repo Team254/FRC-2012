@@ -16,8 +16,8 @@
  * Represents a collection of stats about a given ball in the queue
  */
 struct ballStats {
-  double pos; // Position on the conveyor relative to the starting position in ticks
-  double poofs; // Arbitrary unit of squishiness
+  int position; // Position on the conveyor relative to the starting position in ticks
+  int poofiness; // Arbitrary unit of squishiness
 };
 
 /**
@@ -59,21 +59,14 @@ class Shooter {
   void SetLinearConveyorPower(double pwm);
 
   /**
-   * Sets the RELATIVE target conveyor position in ticks
-   * @param deltaTicks the change in ticks to add to the current target
+   * Sets the target conveyor position in ticks
    */
-  void SetConveyorTarget(double deltaTicks);
-
-  /**
-   * Sets the conveyor target to the current position
-   */
-  void ResetConveyorTarget();
+  void SetConveyorTarget(int target);
 
   /**
    * Updates the conveyor position PID
-   * @return true if done, else false
    */
-  bool ConveyorPIDUpdate();
+  void ConveyorPIDUpdate();
 
   /**
    * Sets the solenoid position for the hood
@@ -99,7 +92,7 @@ class Shooter {
 
   /**
    * Runs the conveyor belt until a ball has been loaded from the conveyor
-   * @return true if a ball has been detected and added to the queue, else false
+   * @return true if a ball has been queued and is ready to shoot
    */
   bool QueueBall();
 
@@ -111,7 +104,7 @@ class Shooter {
   /**
    * Empties the queue
    */
-  void ResetQueue();
+  void ResetQueueState();
 
   /**
    * Sets the shooter target velocity based on the current ball, distance, etc.
@@ -119,20 +112,7 @@ class Shooter {
    */
   void SetBallShooterTarget(ballStats ball);
 
-  /**
-   * Samples the ball sensor to see if there is a peak
-   */
-  bool UpdatePoofometer();
-
-  /**
-   * Resets the reading from the poofometer
-   */
-  void ResetPoofometer();
-
-  /**
-   * Gets the higest poofometer reading
-   */
-  int GetPoofometer();
+  void DebugBallQueue();
 
  private:
   /**
@@ -170,7 +150,7 @@ class Shooter {
   Pid* conveyorPid_;
   std::deque<ballStats> ballQ_;
   int prevEncoderPos_;
-  double conveyorTarget_;
+  int conveyorTarget_;
   double targetVelocity_;
   double velocity_;
   double velocityFilter_[FILTER_SIZE];
@@ -178,11 +158,8 @@ class Shooter {
   double outputValue_;
   double outputFilter_[OUTPUT_FILTER_SIZE];
   int outputFilterIndex_;
-
-  // Poof things
-  int highestPoof_;
-  int lastPoof_;
-  int poofDownCounts_;
+  double poofCorrectionFactor_;
+  bool prevBallSensor_;
 };
 
 #endif  // SUBSYSTEMS_SHOOTER_H_
