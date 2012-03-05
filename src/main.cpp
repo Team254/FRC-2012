@@ -76,7 +76,7 @@ MainRobot::MainRobot() {
                          accelerometerZ_, bumpSensor_);
   intake_ = new Intake(intakeMotor_, intakeSolenoid_);
   shooter_ = new Shooter(conveyorMotor_, leftShooterMotor_, rightShooterMotor_, shooterEncoder_,
-                         hoodSolenoid_, conveyorEncoder_, conveyorBallSensor_);
+                         hoodSolenoid_, conveyorEncoder_, conveyorBallSensor_, poofMeter_);
   sc_ = new ShooterController(shooter_, intake_);
 
   // Control Board
@@ -233,8 +233,13 @@ void MainRobot::TeleopPeriodic() {
   currDriver_->UpdateDriver();
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
+
+  static int poofiness = 0;
   // Poof meter
-  int poofiness = poofMeter_->GetValue();
+  if (shooter_->UpdatePoofometer()) {
+    poofiness = shooter_->GetPoofometer();
+    shooter_->ResetPoofometer();
+  }
   testLogger_->Log("%d\n", poofiness);
   PidTuner::PushData((double)poofiness, 0, 0);
 

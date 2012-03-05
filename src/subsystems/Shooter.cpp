@@ -5,7 +5,7 @@
 #include "util/PidTuner.h"
 
 Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightShooterMotor, Encoder* shooterEncoder,
-                 Solenoid* hoodSolenoid, Encoder* conveyorEncoder, DigitalInput* ballSensor) {
+                 Solenoid* hoodSolenoid, Encoder* conveyorEncoder, DigitalInput* ballSensor, AnalogChannel* poofMeter) {
   constants_ = Constants::GetInstance();
   conveyorMotor_ = conveyorMotor;
   leftShooterMotor_ = leftShooterMotor;
@@ -31,6 +31,8 @@ Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightS
     outputFilter_[i] = 0;
   }
   outputFilterIndex_ = 0;
+  poofMeter_ = poofMeter;
+  ResetPoofometer();
 }
 
 void Shooter::SetLinearPower(double pwm) {
@@ -114,7 +116,7 @@ double Shooter::GetVelocity() {
 
 void Shooter::SetPower(double power) {
   // The shooter should only ever spin in one direction.
-  if (power < 0) {
+  if (power < 0 || targetVelocity_ == 0) {
     power = 0;
   }
   leftShooterMotor_->Set(PwmLimit(-power));
@@ -182,4 +184,41 @@ void Shooter::ResetQueue() {
 
 void Shooter::SetBallShooterTarget(ballStats ball) {
   // do something here...
+}
+
+bool Shooter::UpdatePoofometer() {
+  int newPoof = poofMeter_->GetValue();
+  static const int idlePoof = 400;
+  if (newPoof < idlePoof * 1.1 || fabs(conveyorMotor_->Get()) < .1){
+    newPoof = 0;
+  }
+
+  if (highestPoof_ < newPoof) {
+    highestPoof_ = newPoof; // Grab peak
+  }
+
+  bool newDirection = (newPoof > lastPoof_); // true for up
+  lastPoof_ = newPoof;
+
+  if (newDirection == true){
+    poofDownCounts_ = 0;
+  } else {
+    poofDownCounts_++;
+  }
+  
+  if (newDirection == false && poofDownCounts_ > 5) {
+    return true;
+  }
+  return false; 
+  
+}
+
+void Shooter::ResetPoofometer() {
+  highestPoof_ = 0;
+  poofDownCounts_ = 0;
+  lastPoof_ = 0;
+}
+
+int Shooter::GetPoofometer() {
+  return highestPoof_;
 }

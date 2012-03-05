@@ -32,7 +32,7 @@ class Shooter {
    * Accepts the Victors, Encoders, pneumatics, etc. to be used
    */
   Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightShooterMotor, Encoder* shooterEncoder,
-          Solenoid* hoodSolenoid, Encoder* conveyorEncoder, DigitalInput* ballSensor);
+          Solenoid* hoodSolenoid, Encoder* conveyorEncoder, DigitalInput* ballSensor, AnalogChannel* poofMeter);
 
   /**
    * Sets the linearized power of the shooter motors
@@ -119,6 +119,21 @@ class Shooter {
    */
   void SetBallShooterTarget(ballStats ball);
 
+  /**
+   * Samples the ball sensor to see if there is a peak
+   */
+  bool UpdatePoofometer();
+
+  /**
+   * Resets the reading from the poofometer
+   */
+  void ResetPoofometer();
+
+  /**
+   * Gets the higest poofometer reading
+   */
+  int GetPoofometer();
+
  private:
   /**
    * Linearizes the shooter motors
@@ -143,6 +158,7 @@ class Shooter {
   Encoder* shooterEncoder_;
   Encoder* conveyorEncoder_;
   DigitalInput* ballSensor_;
+  AnalogChannel* poofMeter_;
 
   // Solenoids
   Solenoid* hoodSolenoid_;
@@ -162,6 +178,11 @@ class Shooter {
   double outputValue_;
   double outputFilter_[OUTPUT_FILTER_SIZE];
   int outputFilterIndex_;
+
+  // Poof things
+  int highestPoof_;
+  int lastPoof_;
+  int poofDownCounts_;
 };
 
 #endif  // SUBSYSTEMS_SHOOTER_H_
