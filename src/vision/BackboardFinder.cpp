@@ -44,15 +44,43 @@ void BackboardFinder::DoVision() {
   double pUpper = 100
   int pCalibrated = 0;
   int pExclude = 0;
-  imaqParticleFilter3(image, image, pParamter, pLower, pUpper, pCalibrated, pExclude, 1, TRUE, TRUE);
+  ParticleFilterCriteria2* pParticleCriteria = NULL;
+  ParticleFilterOptions pParticleFilterOptions;
+  int pNumParticles;
+  pParticleCriteria = (ParticleFilterCriteria2*)malloc(sizeof(ParticleFilterCriteria2));
 
+  pParticleCriteria[0].parameter = pParameter;
+  pParticleCriteria[1].lower = plower;
+  pParticleCriteria[2].upper = pUpper;
+  pParticleCriteria[3].calibrated = pCalibrated;
+  pParticleCriteria[4].exclude = pExclude;
+
+  pParticleFilterOptions.rejectMatches = TRUE;
+  pParticleFilterOptions.rejectBorder = 0;
+  pParticleFilterOptions.connectivity8 = TRUE;
+  imaqParticleFilter3(image, image, pParticleCriteria, 1, &pParticleFilterOptions, NULL, &pNumParticles);
   // Filter based on squarishness, eParamter = elongationParamter
   int eParamter =  53;
   double eLower = 1.2;
   double eUpper = 2.7;
   int eCalibrated = 0;
   int eExclude = 0;
-  imaqParticleFilter3(image, image, eParamter, eLower, eUpper, eCalibrated, eExclude, 1, FALSE, TRUE);
+
+  ParticleFilterCriteria2* eParticleCriteria = NULL;
+  ParticleFilterOptions eParticleFilterOptions;
+  int eNumParticles;
+  eParticleCriteria = (ParticleFilterCriteria2*)malloc(sizeof(ParticleFilterCriteria2));
+
+  eParticleCriteria[0].parameter = eParameter;
+  eParticleCriteria[1].lower = elower;
+  eParticleCriteria[2].upper = eUpper;
+  eParticleCriteria[3].calibrated = eCalibrated;
+  eParticleCriteria[4].exclude = eExclude;
+
+  eParticleFilterOptions.rejectMatches = FALSE;
+  eParticleFilterOptions.rejectBorder = 0;
+  eParticleFilterOptions.connectivity8 = TRUE;
+  imaqParticleFilter3(image, image, eParticleCriteria, 1, &eParticleFilterOptions, NULL, &eNumParticles);
 
   // Extract Particles (4?)
   ParticleAnalysisReport left, right, top, bottom;
