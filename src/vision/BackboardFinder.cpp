@@ -38,8 +38,21 @@ void BackboardFinder::DoVision() {
   // Convex Hull
   imaqConvexHull(image, image, true);
 
-  // filter on shape of partice (only let squarish thing through)
-  // Do we want to do this still?
+  // Convex Hull Perimeter, pParamter = perimeter Paramater
+  int pParameter = 20;
+  double pLower = 0;
+  double pUpper = 100
+  int pCalibrated = 0;
+  int pExclude = 0;
+  imaqParticleFilter3(image, image, pParamter, pLower, pUpper, pCalibrated, pExclude, 1, TRUE, TRUE);
+
+  // Filter based on squarishness, eParamter = elongationParamter
+  int eParamter =  53;
+  double eLower = 1.2;
+  double eUpper = 2.7;
+  int eCalibrated = 0;
+  int eExclude = 0;
+  imaqParticleFilter3(image, image, eParamter, eLower, eUpper, eCalibrated, eExclude, 1, FALSE, TRUE);
 
   // Extract Particles (4?)
   ParticleAnalysisReport left, right, top, bottom;
