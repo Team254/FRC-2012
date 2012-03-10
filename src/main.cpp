@@ -104,6 +104,10 @@ MainRobot::MainRobot() {
 
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
+  // Vision Tasks
+  target_ = new BackboardFinder();
+  target_->Start();
+
   shooterTargetVelocity_ = 0;
   oldShooterUpSwitch_ = false;
   oldShooterDownSwitch_ = false;
@@ -165,7 +169,7 @@ void MainRobot::AutonomousPeriodic() {
   int target = (int)Functions::SquareWave(testTimer_->Get(), 10, 500) + 500;
   shooter_->SetConveyorTarget(target);
   shooter_->ConveyorPIDUpdate();
-  PidTuner::PushData(target, conveyorEncoder_->Get(), 0);
+  //  PidTuner::PushData(target, conveyorEncoder_->Get(), 0);
 }
 
 void MainRobot::TeleopPeriodic() {
@@ -248,4 +252,6 @@ void MainRobot::TeleopPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f%%", shooterTargetVelocity_);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Ranger: %d", ballRanger_->GetValue());
   lcd_->UpdateLCD();
+
+  PidTuner::PushData(target_->GetX(), 0, 0);
 }

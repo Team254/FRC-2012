@@ -12,7 +12,7 @@ bool BackboardFinder::SeesTarget() {
 
 void BackboardFinder::DoVision() {
   // Get image from camera
-  AxisCamera &camera = AxisCamera::GetInstance("10.2.52.90");
+  AxisCamera &camera = AxisCamera::GetInstance("10.2.54.11");
   ColorImage img(IMAQ_IMAGE_RGB);
   if (!camera.GetImage(&img))
     return;
@@ -62,6 +62,8 @@ void BackboardFinder::DoVision() {
       left = p;
     else if (p.center_mass_x_normalized > right.center_mass_x_normalized)
       right = p;
+    else if (p.center_mass_y_normalized > top.center_mass_y_normalized)
+      top = p;
   }
   //  printf("Left | X: %f | Y: %f | A: %f\n", (float)left.center_mass_x_normalized, (float) left.center_mass_x_normalized, (float) left.particleArea);
   //  printf("Right | X: %f | Y: %f | A: %f\n", (float)right.center_mass_x_normalized, (float) right.center_mass_x_normalized, (float) right.particleArea);
@@ -69,7 +71,7 @@ void BackboardFinder::DoVision() {
   // Calculate distance
 
   // Calculate x offset from target center
-  x_ = left.center_mass_x_normalized;
+  x_ = top.center_mass_x_normalized;
   // Calculate angle on fieled based on ?
 
   delete bimg;
@@ -77,7 +79,10 @@ void BackboardFinder::DoVision() {
   double diff = Timer::GetFPGATimestamp() - t;
   t = Timer::GetFPGATimestamp();
   lastUpdate_ = t;
-  //  printf("up: %f Hz | left comx: %f\n", 1.0/diff,(float) left.center_mass_x_normalized);
+  //  printf("Top | X: %f | Y: %f | A: %f | dt: %f\n", (float)top.center_mass_x_normalized, (float) top.center_mass_y_normalized, (float) top.particleArea, 1.0/diff);
+  // printf("up: %f Hz | left comx: %f\n", 1.0/diff,(float) left.center_mass_x_normalized);
+  double middleGap = right.boundingRect.left - (left.boundingRect.left + left.boundingRect.width);
+  printf("tX: %f | Gap: %f | Width: %f | Hz: %f\n", (float)top.center_mass_x_normalized, (float) middleGap, (float) top.boundingRect.width, 1.0/diff);
 }
 
 bool BackboardFinder::HasFreshTarget() {
