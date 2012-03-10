@@ -13,33 +13,42 @@
 </script>
  </head>
     <body>
-    <h1>PID Tuning</h1>
+    <h1>Poofometer</h1>
 
     <div id="pid_plot" style="width:800px;height:400px;"></div>
-
+    <label>Min</label><input type="text" id="min_y"></input>
+    <label>Max</label><input type="text" id="max_y"></input>
 
 <script type="text/javascript">
-min_graph = 0;
-max_graph = 75;
+min_graph = -100;
+max_graph = 1500;
 $(function () {
+    var lowV = 1000;
+    var lowS = 1000
     var maxPoints = 5 * 50;
     var dataSetpoint = [];
     var dataValue = [];
     var dataControl = [];
+    lowest = 1000000;
+    highest = 0;
     function getData() {
       var resS = []
       var resV = []
       var resC = []
+
       for (var i = 0; i < maxPoints; ++i)
          if( i > dataSetpoint.length)
            resS.push([i, 0]);
-         else
+         else {
            resS.push([i, dataSetpoint[i]]);
+
+         }
       for (var i = 0; i < maxPoints; ++i)
          if( i > dataValue.length)
            resV.push([i, 0]);
-         else
-           resV.push([i, dataValue[i]]);
+         else {
+           resV.push([i, dataValue[i]]); 
+         }
 
       for (var i = 0; i < maxPoints; ++i)
          if( i > dataControl.length)
@@ -62,6 +71,13 @@ $(function () {
         if (dataSetpoint.length > 0)
             dataSetpoint = dataSetpoint.slice(1);
 
+           if (newS < lowest) {
+             lowest = newS;
+
+           }
+           if (newS > highest) {
+             highest = newS;
+           }
         while (dataSetpoint.length < maxPoints) {
             var y = newS
             if (y < min_graph)
