@@ -32,7 +32,8 @@ class Shooter {
    * Accepts the Victors, Encoders, pneumatics, etc. to be used
    */
   Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightShooterMotor, Encoder* shooterEncoder,
-          Solenoid* hoodSolenoid, Encoder* conveyorEncoder, DigitalInput* ballSensor, AnalogChannel* poofMeter);
+          Solenoid* hoodSolenoid, Encoder* conveyorEncoder, DigitalInput* ballSensor, AnalogChannel* poofMeter,
+          AnalogChannel* ballRanger);
 
   /**
    * Sets the linearized power of the shooter motors
@@ -139,6 +140,7 @@ class Shooter {
   Encoder* conveyorEncoder_;
   DigitalInput* ballSensor_;
   AnalogChannel* poofMeter_;
+  AnalogChannel* ballRanger_;
 
   // Solenoids
   Solenoid* hoodSolenoid_;

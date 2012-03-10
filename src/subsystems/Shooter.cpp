@@ -5,7 +5,8 @@
 #include "util/PidTuner.h"
 
 Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightShooterMotor, Encoder* shooterEncoder,
-                 Solenoid* hoodSolenoid, Encoder* conveyorEncoder, DigitalInput* ballSensor, AnalogChannel* poofMeter) {
+                 Solenoid* hoodSolenoid, Encoder* conveyorEncoder, DigitalInput* ballSensor, AnalogChannel* poofMeter,
+                 AnalogChannel* ballRanger) {
   constants_ = Constants::GetInstance();
   conveyorMotor_ = conveyorMotor;
   leftShooterMotor_ = leftShooterMotor;
@@ -34,6 +35,7 @@ Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightS
   poofMeter_ = poofMeter;
   poofCorrectionFactor_ = 1.0;
   prevBallSensor_ = false;
+  ballRanger_ = ballRanger;
 }
 
 void Shooter::SetLinearPower(double pwm) {
@@ -62,7 +64,7 @@ bool Shooter::PIDUpdate() {
 }
 
 void Shooter::SetLinearConveyorPower(double pwm) {
-  conveyorMotor_->Set(ConveyorLinearize(pwm));
+  conveyorMotor_->Set(pwm);
 }
 
 void Shooter::SetHoodUp(bool up) {
@@ -149,6 +151,7 @@ bool Shooter::QueueBall() {
   }
 
   bool returnValue = false;
+#if 0 // Pat's old logic, maybe pull this back in later
   if (ballQ_.empty()) {
     // No ball, go full speed
     SetLinearConveyorPower(1.0);
@@ -163,9 +166,15 @@ bool Shooter::QueueBall() {
       ConveyorPIDUpdate(); //+= (int)constants_->conveyorPIDIncrement;
     }
   }
+#endif
+
+  double ballRange = (double) ballRanger_->GetValue();
+  double val = conveyorPid_->Update(200.0, ballRange);
+  SetLinearConveyorPower(val);
+  PidTuner::PushData(ballRanger_->GetValue(), 200, val);
   prevBallSensor_ = ballSensor_->Get();
 
-  PidTuner::PushData(poofMeter_->GetValue(), 0, 0);
+
 
   // Update the poofometer readings if a ball is within the sensor's window.
   for (std::deque<ballStats>::iterator iter = ballQ_.begin(); iter != ballQ_.end(); ++iter) {

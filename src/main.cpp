@@ -49,6 +49,7 @@ MainRobot::MainRobot() {
   gyro_ = new Gyro((int)constants_->gyroPort);
   gyro_->SetSensitivity(1.0);
   poofMeter_ = new AnalogChannel((int)constants_->poofMeterPort);
+  ballRanger_ = new AnalogChannel((int)constants_->ballRangerPort);
 
   double accelerometerSensitivity = 1.0;
   //accelerometerX_ = new Accelerometer((int)constants_->accelerometerXPort);
@@ -76,7 +77,7 @@ MainRobot::MainRobot() {
                          accelerometerZ_, bumpSensor_);
   intake_ = new Intake(intakeMotor_, intakeSolenoid_);
   shooter_ = new Shooter(conveyorMotor_, leftShooterMotor_, rightShooterMotor_, shooterEncoder_,
-                         hoodSolenoid_, conveyorEncoder_, conveyorBallSensor_, poofMeter_);
+                         hoodSolenoid_, conveyorEncoder_, conveyorBallSensor_, poofMeter_, ballRanger_);
   sc_ = new ShooterController(shooter_, intake_);
 
   // Control Board
@@ -245,6 +246,6 @@ void MainRobot::TeleopPeriodic() {
   double velocity = shooter_->GetVelocity();
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3,"Vel: %f", velocity);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f%%", shooterTargetVelocity_);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Ranger: %d", ballRanger_->GetValue());
   lcd_->UpdateLCD();
-  shooter_->DebugBallQueue();
 }

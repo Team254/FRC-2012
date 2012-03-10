@@ -32,8 +32,6 @@ void Drive::SetLinearPower(double left, double right) {
   double linearLeft=Linearize(left);
   double linearRight=Linearize(right);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "l: %d r: %d", left==0.0, right==0.0);
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "li:%.4f lo:%.4f", left, linearLeft);
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "ri:%.4f ro:%.4f", right, linearRight);
   SetPower(linearLeft, linearRight);
 }
 

@@ -107,6 +107,7 @@ class MainRobot : public IterativeRobot {
   AnalogChannel* poofMeter_;
   DigitalInput* bumpSensor_;
   DigitalInput* conveyorBallSensor_;
+  AnalogChannel* ballRanger_;
 
   // Pneumatics
   Compressor* compressor_;
