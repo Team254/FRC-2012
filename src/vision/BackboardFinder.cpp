@@ -39,49 +39,52 @@ void BackboardFinder::DoVision() {
   imaqConvexHull(image, image, true);
 
   // Convex Hull Perimeter, pParamter = perimeter Paramater
-  int pParameter = 20;
-  double pLower = 0;
-  double pUpper = 100
-  int pCalibrated = 0;
-  int pExclude = 0;
+  int pParameter[1] = {20};
+  double pLower[1] = {0};
+  double pUpper[1] = {100};
+  int pCalibrated[1] = {0};
+  int pExclude[1] = {0};
+  
   ParticleFilterCriteria2* pParticleCriteria = NULL;
   ParticleFilterOptions pParticleFilterOptions;
   int pNumParticles;
+  
   pParticleCriteria = (ParticleFilterCriteria2*)malloc(sizeof(ParticleFilterCriteria2));
-
-  pParticleCriteria[0].parameter = pParameter;
-  pParticleCriteria[1].lower = plower;
-  pParticleCriteria[2].upper = pUpper;
-  pParticleCriteria[3].calibrated = pCalibrated;
-  pParticleCriteria[4].exclude = pExclude;
+  pParticleCriteria[0].parameter = (MeasurementType)pParameter[0];
+  pParticleCriteria[0].lower = pLower[0];
+  pParticleCriteria[0].upper = pUpper[0];
+  pParticleCriteria[0].calibrated = pCalibrated[0];
+  pParticleCriteria[0].exclude = pExclude[0];
 
   pParticleFilterOptions.rejectMatches = TRUE;
   pParticleFilterOptions.rejectBorder = 0;
   pParticleFilterOptions.connectivity8 = TRUE;
   imaqParticleFilter3(image, image, pParticleCriteria, 1, &pParticleFilterOptions, NULL, &pNumParticles);
+  free(pParticleCriteria);
+  
   // Filter based on squarishness, eParamter = elongationParamter
-  int eParamter =  53;
+  int eParameter =  53;
   double eLower = 1.2;
   double eUpper = 2.7;
   int eCalibrated = 0;
   int eExclude = 0;
-
   ParticleFilterCriteria2* eParticleCriteria = NULL;
   ParticleFilterOptions eParticleFilterOptions;
   int eNumParticles;
   eParticleCriteria = (ParticleFilterCriteria2*)malloc(sizeof(ParticleFilterCriteria2));
 
-  eParticleCriteria[0].parameter = eParameter;
-  eParticleCriteria[1].lower = elower;
-  eParticleCriteria[2].upper = eUpper;
-  eParticleCriteria[3].calibrated = eCalibrated;
-  eParticleCriteria[4].exclude = eExclude;
+  eParticleCriteria[0].parameter = (MeasurementType) eParameter;
+  eParticleCriteria[0].lower = eLower;
+  eParticleCriteria[0].upper = eUpper;
+  eParticleCriteria[0].calibrated = eCalibrated;
+  eParticleCriteria[0].exclude = eExclude;
 
   eParticleFilterOptions.rejectMatches = FALSE;
   eParticleFilterOptions.rejectBorder = 0;
   eParticleFilterOptions.connectivity8 = TRUE;
   imaqParticleFilter3(image, image, eParticleCriteria, 1, &eParticleFilterOptions, NULL, &eNumParticles);
-
+  free(eParticleCriteria);
+  
   // Extract Particles (4?)
   ParticleAnalysisReport left, right, top, bottom;
   vector<ParticleAnalysisReport>* particles = bimg->GetOrderedParticleAnalysisReports();
