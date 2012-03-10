@@ -59,7 +59,7 @@ MainRobot::MainRobot() {
   //accelerometerY_->SetSensitivity(accelerometerSensitivity);
   //accelerometerZ_->SetSensitivity(accelerometerSensitivity);
   bumpSensor_ = new DigitalInput((int)constants_->bumpSensorPort);
-  conveyorBallSensor_ = new DigitalInput((int)constants_->conveyorBallSensorPort);
+  conveyorBallSensor_ = new AnalogChannel((int)constants_->conveyorBallSensorPort);
 
   // Pneumatics
   compressor_ = new Compressor((int)constants_->compressorPressureSwitchPort,(int)constants_->compressorRelayPort);
@@ -142,7 +142,7 @@ void MainRobot::TeleopInit() {
 
 void MainRobot::DisabledPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Convey: %d", conveyorEncoder_->Get());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Ball: %d", conveyorBallSensor_->Get());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Ball: %d", conveyorBallSensor_->GetValue());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Poof: %d", poofMeter_->GetValue());
   lcd_->UpdateLCD();
 }

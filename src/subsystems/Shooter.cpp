@@ -5,7 +5,7 @@
 #include "util/PidTuner.h"
 
 Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightShooterMotor, Encoder* shooterEncoder,
-                 Solenoid* hoodSolenoid, Encoder* conveyorEncoder, DigitalInput* ballSensor, AnalogChannel* poofMeter,
+                 Solenoid* hoodSolenoid, Encoder* conveyorEncoder, AnalogChannel* ballSensor, AnalogChannel* poofMeter,
                  AnalogChannel* ballRanger) {
   constants_ = Constants::GetInstance();
   conveyorMotor_ = conveyorMotor;
@@ -142,7 +142,7 @@ double Shooter::ConveyorLinearize(double x) {
 
 bool Shooter::QueueBall() {
   // If we have a ball, check that the conveyor has moved a certain distance so we don't double count a ball
-  if (ballSensor_->Get() && !prevBallSensor_ &&
+  if (ballSensor_->GetValue() > 100 && !prevBallSensor_ &&
       (ballQ_.empty() || fabs(conveyorEncoder_->Get() - ballQ_.back().position) >
           constants_->minConveyorBallDist)) {
     // Just got a ball
@@ -172,7 +172,7 @@ bool Shooter::QueueBall() {
   double val = conveyorPid_->Update(200.0, ballRange);
   SetLinearConveyorPower(val);
   PidTuner::PushData(ballRanger_->GetValue(), 200, val);
-  prevBallSensor_ = ballSensor_->Get();
+  prevBallSensor_ = ballSensor_->GetValue() > 100;
 
 
 

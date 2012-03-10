@@ -18,12 +18,13 @@ DECLARE_DOUBLE(rightShooterPwm, 8)
 DECLARE_DOUBLE(jumblePwm, 10)
 
 // Analog Sensors
-DECLARE_DOUBLE(gyroPort, 2)
+DECLARE_DOUBLE(gyroPort, 1)
 DECLARE_DOUBLE(accelerometerXPort, 5)
 DECLARE_DOUBLE(accelerometerYPort, 6)
 DECLARE_DOUBLE(accelerometerZPort, 7)
-DECLARE_DOUBLE(poofMeterPort, 3)
-DECLARE_DOUBLE(ballRangerPort, 1)
+DECLARE_DOUBLE(poofMeterPort, 4)
+DECLARE_DOUBLE(ballRangerPort, 2)
+DECLARE_DOUBLE(conveyorBallSensorPort, 3)
 
 // Digital Sensors
 DECLARE_DOUBLE(bumpSensorPort, 1)
@@ -35,7 +36,6 @@ DECLARE_DOUBLE(shooterEncoderPortA, 6)
 DECLARE_DOUBLE(shooterEncoderPortB, 7)
 DECLARE_DOUBLE(conveyorEncoderPortA, 8)
 DECLARE_DOUBLE(conveyorEncoderPortB, 9)
-DECLARE_DOUBLE(conveyorBallSensorPort, 11)
 
 // Pneumatics
 DECLARE_DOUBLE(compressorPressureSwitchPort, 14)
