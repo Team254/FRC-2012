@@ -68,6 +68,7 @@ class MainRobot : public IterativeRobot {
 
   // Vision
   BackboardFinder* target_;
+  DigitalOutput* ledRingSwitch_;
 
   // Subsystems
   Drive* drivebase_;

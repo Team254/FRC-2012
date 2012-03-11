@@ -36,6 +36,7 @@ DECLARE_DOUBLE(shooterEncoderPortA, 6)
 DECLARE_DOUBLE(shooterEncoderPortB, 7)
 DECLARE_DOUBLE(conveyorEncoderPortA, 8)
 DECLARE_DOUBLE(conveyorEncoderPortB, 9)
+DECLARE_DOUBLE(ledRingSwitchPort, 10)
 
 // Pneumatics
 DECLARE_DOUBLE(compressorPressureSwitchPort, 14)
@@ -121,6 +122,10 @@ DECLARE_DOUBLE(shooterKD, -0.15)
 DECLARE_DOUBLE(conveyorKP, 0.002)
 DECLARE_DOUBLE(conveyorKI, 0.00000006)
 DECLARE_DOUBLE(conveyorKD, 0.005)
+DECLARE_DOUBLE(breakStaticOffset, 0.4)
+DECLARE_DOUBLE(autoAlignKP, .85)
+DECLARE_DOUBLE(autoAlignKI, 0)
+DECLARE_DOUBLE(autoAlignKD, 0)
 
 // Shooter constants
 DECLARE_DOUBLE(minConveyorBallDist, 700)

@@ -91,12 +91,7 @@ void BackboardFinder::DoVision() {
 
   // Find L,R,T,B based on CoM X,Y
   int i = 0;
-  if (particles->size() == 0) {
-    seesTarget_ = false;
-  }
-  else {
-    seesTarget_ = true;
-  }
+
   switch (particles->size()) {
 
   case 4:
@@ -155,8 +150,8 @@ void BackboardFinder::DoVision() {
   // Calculate distance
 
   // Calculate x offset from target center
-  bool foundTarget = (particles->size() == 3 || particles->size() == 4);
-  x_ = foundTarget ? top.center_mass_x_normalized : -2.0;
+  seesTarget_ = (particles->size() == 3 || particles->size() == 4);
+  x_ = seesTarget_ ? top.center_mass_x_normalized : 0.0;
 
   // Calculate angle on fieled based on ?
 
@@ -168,15 +163,12 @@ void BackboardFinder::DoVision() {
   static int counts = 0;
   counts++;
   if (counts % 20 == 0) {
-
     for (int i = 0; i < particles->size() ; i++) {
       printf("i: %d | x: %f | y: %f\n", i,  (float) particles->at(i).center_mass_x_normalized, (float) particles->at(i).center_mass_y_normalized); 
     }
     printf("\n\n");
   }
-  if (counts%2==0) {
-     printf("#: %d | X: %f | Y: %f | A: %f | dt: %f\n", particles->size(), (float)top.center_mass_x_normalized, (float) top.center_mass_y_normalized, (float) top.particleArea, 1.0/diff);
-  }
+
   double middleGap = right.boundingRect.left - (left.boundingRect.left + left.boundingRect.width);
 
 }

@@ -86,10 +86,15 @@ MainRobot::MainRobot() {
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
   operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
 
+  // Vision Tasks
+  target_ = new BackboardFinder();
+  target_->Start();
+  ledRingSwitch_ = new DigitalOutput((int)constants_->ledRingSwitchPort);
+
   // Drivers
   teleopDriver_ = new TeleopDriver(drivebase_, leftJoystick_, rightJoystick_, operatorControl_);
   baselockDriver_ = new BaselockDriver(drivebase_, leftJoystick_);
-  autoAlignDriver_ = new AutoTurnDriver(drivebase_);
+  autoAlignDriver_ = new AutoTurnDriver(drivebase_, target_);
 
   // Set the current Driver to teleop, though this will change later
   currDriver_ = teleopDriver_;
@@ -106,9 +111,6 @@ MainRobot::MainRobot() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line1,"***Teleop Ready!***");
 
 
-  // Vision Tasks
-  //  target_ = new BackboardFinder();
-  //  target_->Start();
 
   shooterTargetVelocity_ = 0;
   oldShooterUpSwitch_ = false;
@@ -195,11 +197,13 @@ void MainRobot::TeleopPeriodic() {
 
   // Automatic ball queueing control.
   if (xbox->GetTwist() < -0.75) {
-    if (shooter_->QueueBall() && !oldBallQueueSwitch_) {
-      shooter_->ShootBall();
-    }
+    //    if (shooter_->QueueBall() && !oldBallQueueSwitch_) {
+    //      shooter_->ShootBall();
+    //    }
+    intake_->SetIntakePower(1.0);
   } else {
     shooter_->SetLinearConveyorPower(0);
+    intake_->SetIntakePower(0);
   }
   oldBallQueueSwitch_ = (xbox->GetTwist() < -0.75);
 
@@ -208,11 +212,9 @@ void MainRobot::TeleopPeriodic() {
     shooter_->SetLinearConveyorPower(-1.0);
   } else if (xbox->GetRawButton(11)) {
     intake_->SetIntakePower(1.0);
-      if (xbox->GetRawButton(3)) {
-        shooter_->SetLinearConveyorPower(0.45);
-      } else {
-        shooter_->SetLinearConveyorPower(1.0);
-      }
+    shooter_->SetLinearConveyorPower(1.0);
+  } else if (xbox->GetTwist() < -0.75) {
+    intake_->SetIntakePower(1.0);
   } else if (xbox->GetZ() < -0.75) {
     intake_->SetIntakePower(-1.0);
     shooter_->SetLinearConveyorPower(-1.0);
@@ -234,6 +236,7 @@ void MainRobot::TeleopPeriodic() {
     shooter_->SetHoodUp(false);
   }
 
+  ledRingSwitch_->Set(shooterTargetVelocity_ > 0);
 
   // Only have Teleop and Baselock Drivers right now
   if (leftJoystick_->GetRawButton(4) && !oldAutoAlignButton_) {

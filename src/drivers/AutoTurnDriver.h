@@ -9,6 +9,7 @@ class Gyro;
 class MovingAverageFilter;
 class Pid;
 class Constants;
+class BackboardFinder;
 
 /**
  * @author Eric Bakan
@@ -18,7 +19,7 @@ class Constants;
  */
 class AutoTurnDriver : public Driver {
  public:
-  AutoTurnDriver(Drive* drive);
+  AutoTurnDriver(Drive* drive, BackboardFinder* target);
   virtual void Reset();
   void SetAngle(double angle);
   virtual bool UpdateDriver();
@@ -36,9 +37,12 @@ class AutoTurnDriver : public Driver {
   MovingAverageFilter* filterR_;
   Pid* pidL_;
   Pid* pidR_;
+  Pid* pid_;
   double outputValueL_;
   double outputValueR_;
   Constants* constants_;
+  bool staticFriction_;
+  BackboardFinder* target_;
 };
 
 #endif
