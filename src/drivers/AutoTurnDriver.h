@@ -6,6 +6,9 @@
 class Timer;
 class Encoder;
 class Gyro;
+class MovingAverageFilter;
+class Pid;
+class Constants;
 
 /**
  * @author Eric Bakan
@@ -26,7 +29,16 @@ class AutoTurnDriver : public Driver {
   Encoder* rightEncoder_;
   Timer* timer_;
   double lastPosL_;
+  double lastPosR_;
   double lastTimer_;
+  bool justReset_;
+  MovingAverageFilter* filterL_;
+  MovingAverageFilter* filterR_;
+  Pid* pidL_;
+  Pid* pidR_;
+  double outputValueL_;
+  double outputValueR_;
+  Constants* constants_;
 };
 
 #endif

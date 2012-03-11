@@ -18,7 +18,7 @@ bool TeleopDriver::UpdateDriver() {
   DriverStationLCD* lcd = DriverStationLCD::GetInstance();
 
   // Operator drive control
-  bool wantHighGear = leftJoystick_->GetRawButton((int)constants_->highGearPort);
+  bool wantHighGear = !leftJoystick_->GetRawButton((int)constants_->highGearPort);
   bool quickTurning = rightJoystick_->GetRawButton((int)constants_->quickTurnPort);
   drive_->SetHighGear(wantHighGear);
   double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);

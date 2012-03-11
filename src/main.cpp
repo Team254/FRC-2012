@@ -259,5 +259,5 @@ void MainRobot::TeleopPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f%%", shooterTargetVelocity_);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Ranger: %d", ballRanger_->GetValue());
   lcd_->UpdateLCD();
-  //  PidTuner::PushData(target_->GetX(), 0, 0);
+  //  
 }

@@ -57,7 +57,7 @@ void Drive::ResetEncoders() {
 }
 
 void Drive::SetHighGear(bool highGear) {
-  shiftSolenoid_->Set(highGear);
+  shiftSolenoid_->Set(!highGear);
 }
 
 void Drive::SetPizzaWheelDown(bool down) {
