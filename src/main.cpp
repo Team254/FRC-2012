@@ -242,7 +242,7 @@ void MainRobot::TeleopPeriodic() {
   if (leftJoystick_->GetRawButton(4) && !oldAutoAlignButton_) {
     currDriver_ = autoAlignDriver_;
     currDriver_->Reset();
-  } else if (!leftJoystick_->GetRawButton(4) && !operatorControl_->GetBaseLockSwitch() ) {
+  } else if (!leftJoystick_->GetRawButton(4)) {
       // If the baselock switch has been flipped off, switch back to teleop
       currDriver_ = teleopDriver_;
       currDriver_->Reset();
