@@ -1,5 +1,5 @@
 #include "vision/BackboardFinder.h"
-
+#include <math.h>
 #include "WPILib.h"
 
 double BackboardFinder::GetX() {
@@ -97,25 +97,67 @@ void BackboardFinder::DoVision() {
   else {
     seesTarget_ = true;
   }
-  for (i = 0; i < particles->size(); i++) {
-    ParticleAnalysisReport p = (*particles)[i];
-    if (i == 0) {
-      left = top = right = bottom = p;
+  switch (particles->size()) {
+
+  case 4:
+    for (i = 0; i < particles->size(); i++) {
+      ParticleAnalysisReport p = (*particles)[i];
+      if (i == 0) {
+        left = top = right = bottom = p;
+      }
+      if (p.center_mass_x_normalized < left.center_mass_x_normalized)
+        left = p;
+      if (p.center_mass_x_normalized > right.center_mass_x_normalized)
+        right = p;
+      if (p.center_mass_y_normalized < top.center_mass_y_normalized)
+        top = p;
+      if (p.center_mass_y_normalized > bottom.center_mass_y_normalized)
+        bottom = p;
     }
-    if (p.center_mass_x_normalized < left.center_mass_x_normalized)
-      left = p;
-    else if (p.center_mass_x_normalized > right.center_mass_x_normalized)
-      right = p;
-    else if (p.center_mass_y_normalized > top.center_mass_y_normalized)
-      top = p;
+    break;
+#define X_DELTA .05
+#define Y_DELTA .1
+#define IN_LINE_X(a,b)  (fabs(a.center_mass_x_normalized  - b.center_mass_x_normalized) < X_DELTA)
+#define IN_LINE_Y(a,b)  (fabs(a.center_mass_y_normalized  - b.center_mass_y_normalized) < Y_DELTA)
+#define HIGHEST(a,b)    ((a.center_mass_y_normalized < b.center_mass_y_normalized) ? a : b)
+  case 3: 
+    // Two Horizontal or two vertical targets
+    if (IN_LINE_Y(particles->at(0), particles->at(1))){
+      //printf("case A\n");
+      top = particles->at(2);
+    } else if (IN_LINE_Y(particles->at(1), particles->at(2))) {
+      //printf("case B\n");
+      top = particles->at(0);
+    } else if (IN_LINE_Y(particles->at(0), particles->at(2))){
+      //printf("case C\n");
+      top = particles->at(1);
+    } else if (IN_LINE_X(particles->at(0), particles->at(1))){
+      //printf("case D\n");
+      top = HIGHEST(particles->at(0), particles->at(1));
+    } else if (IN_LINE_X(particles->at(1), particles->at(2))){
+      //printf("case E\n");
+      top = HIGHEST(particles->at(1), particles->at(2));
+    } else if (IN_LINE_X(particles->at(0), particles->at(2))){
+      //printf("case F\n");
+      top = HIGHEST(particles->at(0), particles->at(2));
+    } else {
+      // wtf, mate?
+    }
+    break;
+  default:
+    break;
   }
-  //  printf("Left | X: %f | Y: %f | A: %f\n", (float)left.center_mass_x_normalized, (float) left.center_mass_x_normalized, (float) left.particleArea);
-  //  printf("Right | X: %f | Y: %f | A: %f\n", (float)right.center_mass_x_normalized, (float) right.center_mass_x_normalized, (float) right.particleArea);
+#undef X_DELTA
+#undef Y_DELTA
+#undef IN_LINE_X
+#undef IN_LINE_Y
 
   // Calculate distance
 
   // Calculate x offset from target center
-  x_ = top.center_mass_x_normalized;
+  bool foundTarget = (particles->size() == 3 || particles->size() == 4);
+  x_ = foundTarget ? top.center_mass_x_normalized : -2.0;
+
   // Calculate angle on fieled based on ?
 
   delete bimg;
@@ -123,10 +165,20 @@ void BackboardFinder::DoVision() {
   double diff = Timer::GetFPGATimestamp() - t;
   t = Timer::GetFPGATimestamp();
   lastUpdate_ = t;
-  //  printf("Top | X: %f | Y: %f | A: %f | dt: %f\n", (float)top.center_mass_x_normalized, (float) top.center_mass_y_normalized, (float) top.particleArea, 1.0/diff);
-  // printf("up: %f Hz | left comx: %f\n", 1.0/diff,(float) left.center_mass_x_normalized);
+  static int counts = 0;
+  counts++;
+  if (counts % 20 == 0) {
+
+    for (int i = 0; i < particles->size() ; i++) {
+      printf("i: %d | x: %f | y: %f\n", i,  (float) particles->at(i).center_mass_x_normalized, (float) particles->at(i).center_mass_y_normalized); 
+    }
+    printf("\n\n");
+  }
+  if (counts%2==0) {
+     printf("#: %d | X: %f | Y: %f | A: %f | dt: %f\n", particles->size(), (float)top.center_mass_x_normalized, (float) top.center_mass_y_normalized, (float) top.particleArea, 1.0/diff);
+  }
   double middleGap = right.boundingRect.left - (left.boundingRect.left + left.boundingRect.width);
-  printf("tX: %f | Gap: %f | Width: %f | Hz: %f\n", (float)top.center_mass_x_normalized, (float) middleGap, (float) top.boundingRect.width, 1.0/diff);
+
 }
 
 bool BackboardFinder::HasFreshTarget() {
