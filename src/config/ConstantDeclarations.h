@@ -67,20 +67,22 @@ DECLARE_DOUBLE(intakeDeployPort, 8)
 
 // Operator controls
 DECLARE_DOUBLE(operatorControlPort, 3)
-DECLARE_DOUBLE(conveyorUpPort, 3)
-DECLARE_DOUBLE(conveyorDownPort, 4)
-DECLARE_DOUBLE(conveyorIndexPort, 5)
-DECLARE_DOUBLE(presetFenderPort, 9)
-DECLARE_DOUBLE(presetKeyPort, 10)
-DECLARE_DOUBLE(presetBridgePort, 11)
-DECLARE_DOUBLE(presetHalfCourtPort, 12)
-DECLARE_DOUBLE(presetMaxPort, 13)
-DECLARE_DOUBLE(shooterPort, 14)
-DECLARE_DOUBLE(hoodIncrementPort, 15)
-DECLARE_DOUBLE(hoodDecrementPort, 16)
-DECLARE_DOUBLE(manualOverridePort, 18)
-DECLARE_DOUBLE(bridgeLowererPort, 19)
+DECLARE_DOUBLE(autonSelectPort,11)
+DECLARE_DOUBLE(unjamPort,10)
+DECLARE_DOUBLE(shootPort,9)
+DECLARE_DOUBLE(autoShootPort,8)
+DECLARE_DOUBLE(intakePort,7)
+DECLARE_DOUBLE(increasePort,6)
+DECLARE_DOUBLE(decreasePort,5)
+DECLARE_DOUBLE(keyFarPort,4)
+DECLARE_DOUBLE(keyClosePort,3)
+DECLARE_DOUBLE(farFenderPort,2)
+DECLARE_DOUBLE(fenderPort,1)
+
+// Left Joystick
 DECLARE_DOUBLE(highGearPort, 2);
+
+// RightJoystick
 DECLARE_DOUBLE(quickTurnPort, 4);
 DECLARE_DOUBLE(pizzaSwitchPort, 2);
 

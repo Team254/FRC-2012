@@ -4,9 +4,11 @@
 #include "WPILib.h"
 
 #include "config/Constants.h"
+#include "subsystems/Intake.h"
 
 /**
  * @author Art Kalb
+ * @author Eric Bakan
  *
  * Convenience class that wraps a Joystick to provide access to the buttons on the control board.
  */
@@ -26,22 +28,22 @@ class OperatorControl {
   /**
    * Return the value of the specified button
    */
-  bool GetConveyorUpButton();
-  bool GetConveyorIndexButton();
-  bool GetConveyorDownButton();
-  bool GetFineControlLeftButton();
-  bool GetFineControlRightButton();
-  bool GetIntakeDeploySwitch();
-  bool GetPresetFenderButton();
-  bool GetPresetKeyButton();
-  bool GetPresetHalfCourtButton();
-  bool GetPresetFullCourtButton();
+  bool GetControlLoopsSwitch();
+  bool GetBrakeSwitch();
+  Intake::IntakePositions GetIntakePositionSwitch();
+  bool GetAutonSelectButton();
+  bool GetUnjamButton();
+  bool GetShootButton();
+  bool GetAutoShootButton();
+  bool GetIntakeButton();
+  bool GetIncreaseButton();
+  bool GetDecreaseButton();
+  bool GetKeyFarButton();
+  bool GetKeyCloseButton();
+  bool GetFarFenderButton();
+  bool GetFenderButton();
   bool GetShooterSwitch();
-  bool GetHoodIncrementButton();
-  bool GetHoodDecrementButton();
-  bool GetBaseLockSwitch();
-  bool GetManualOverrideSwitch();
-  bool GetBridgeLowererButton();
+
 
  private:
   Joystick* operatorJoystick_;
