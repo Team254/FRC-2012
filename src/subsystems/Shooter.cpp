@@ -171,10 +171,7 @@ bool Shooter::QueueBall() {
   double ballRange = (double) ballRanger_->GetValue();
   double val = conveyorPid_->Update(200.0, ballRange);
   SetLinearConveyorPower(val);
-  PidTuner::PushData(ballRanger_->GetValue(), 200, val);
   prevBallSensor_ = ballSensor_->GetValue() > 100;
-
-
 
   // Update the poofometer readings if a ball is within the sensor's window.
   for (std::deque<ballStats>::iterator iter = ballQ_.begin(); iter != ballQ_.end(); ++iter) {

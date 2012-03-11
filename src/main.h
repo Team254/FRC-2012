@@ -15,6 +15,7 @@ class Driver;
 class TeleopDriver;
 class BaselockDriver;
 class ShooterController;
+class AutoTurnDriver;
 
 /**
  * @author Eric Caldwell
@@ -78,6 +79,7 @@ class MainRobot : public IterativeRobot {
   Driver* currDriver_;
   TeleopDriver* teleopDriver_;
   BaselockDriver* baselockDriver_;
+  AutoTurnDriver* autoAlignDriver_;
 
   // Joysticks
   Joystick* leftJoystick_;
@@ -122,6 +124,7 @@ class MainRobot : public IterativeRobot {
   Logger* testLogger_;
   DriverStationLCD* lcd_;
   bool oldBaseLockSwitch_;
+  bool oldAutoAlignButton_;
   double shooterTargetVelocity_;
   double power_;
 

@@ -17,6 +17,7 @@
 #include "util/Logger.h"
 #include "util/PidTuner.h"
 #include "vision/BackboardFinder.h"
+#include "drivers/AutoTurnDriver.h"
 
 Joystick* xbox = new Joystick(3);
 
@@ -88,6 +89,8 @@ MainRobot::MainRobot() {
   // Drivers
   teleopDriver_ = new TeleopDriver(drivebase_, leftJoystick_, rightJoystick_, operatorControl_);
   baselockDriver_ = new BaselockDriver(drivebase_, leftJoystick_);
+  autoAlignDriver_ = new AutoTurnDriver(drivebase_);
+
   // Set the current Driver to teleop, though this will change later
   currDriver_ = teleopDriver_;
 
@@ -105,8 +108,8 @@ MainRobot::MainRobot() {
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
   // Vision Tasks
-  target_ = new BackboardFinder();
-  target_->Start();
+  //  target_ = new BackboardFinder();
+  //  target_->Start();
 
   shooterTargetVelocity_ = 0;
   oldShooterUpSwitch_ = false;
@@ -237,7 +240,10 @@ void MainRobot::TeleopPeriodic() {
       // If the baselock switch has been flipped on, switch to baselock
       currDriver_ = baselockDriver_;
       currDriver_->Reset();
-  } else if (!operatorControl_->GetBaseLockSwitch() && oldBaseLockSwitch_) {
+  } else if (leftJoystick_->GetRawButton(4) && !oldAutoAlignButton_) {
+    currDriver_ = autoAlignDriver_;
+    currDriver_->Reset();
+  } else if (!leftJoystick_->GetRawButton(4) && !operatorControl_->GetBaseLockSwitch() ) {
       // If the baselock switch has been flipped off, switch back to teleop
       currDriver_ = teleopDriver_;
       currDriver_->Reset();
@@ -246,12 +252,12 @@ void MainRobot::TeleopPeriodic() {
   // Update the driver and the baselock switch status
   currDriver_->UpdateDriver();
   oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
+  oldAutoAlignButton_ = leftJoystick_->GetRawButton(4);
 
   double velocity = shooter_->GetVelocity();
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3,"Vel: %f", velocity);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f%%", shooterTargetVelocity_);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Ranger: %d", ballRanger_->GetValue());
   lcd_->UpdateLCD();
-
-  PidTuner::PushData(target_->GetX(), 0, 0);
+  //  PidTuner::PushData(target_->GetX(), 0, 0);
 }
