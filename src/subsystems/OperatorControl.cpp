@@ -9,66 +9,71 @@ OperatorControl::~OperatorControl() {
   delete operatorJoystick_;
 }
 
-bool OperatorControl::GetConveyorUpButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->conveyorUpPort);
+bool OperatorControl::GetControlLoopsSwitch() {
+  return operatorJoystick_->GetX()>0.0;
 }
 
-bool OperatorControl::GetConveyorIndexButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->conveyorIndexPort);
+bool OperatorControl::GetBrakeSwitch() {
+  return operatorJoystick_->GetY()>0.0;
 }
 
-bool OperatorControl::GetConveyorDownButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->conveyorDownPort);
+Intake::IntakePositions OperatorControl::GetIntakePositionSwitch() {
+  bool axis = operatorJoystick_->GetRawAxis(4)>0.0;
+  bool button = operatorJoystick_->GetRawButton(12);
+  if(axis) {
+    return Intake::INTAKE_UP;
+  }
+  if(button) {
+    return Intake::INTAKE_DOWN;
+  }
+  return Intake::INTAKE_FLOATING;
 }
 
-bool OperatorControl::GetFineControlLeftButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->fineControlLeftPort);
+bool OperatorControl::GetAutonSelectButton() {
+  return (bool)operatorJoystick_->GetRawButton((int)constants_->autonSelectPort);
 }
 
-bool OperatorControl::GetFineControlRightButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->fineControlRightPort);
+bool OperatorControl::GetUnjamButton() {
+  return (bool)operatorJoystick_->GetRawButton((int)constants_->unjamPort);
 }
 
-bool OperatorControl::GetIntakeDeploySwitch() {
-  return operatorJoystick_->GetRawButton((int)constants_->intakeDeployPort);
+bool OperatorControl::GetShootButton() {
+  return (bool)operatorJoystick_->GetRawButton((int)constants_->shootPort);
 }
 
-bool OperatorControl::GetPresetFenderButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->presetFenderPort);
+bool OperatorControl::GetAutoShootButton() {
+  return (bool)operatorJoystick_->GetRawButton((int)constants_->autoShootPort);
 }
 
-bool OperatorControl::GetPresetKeyButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->presetKeyPort);
+bool OperatorControl::GetIntakeButton() {
+  return (bool)operatorJoystick_->GetRawButton((int)constants_->intakePort);
 }
 
-bool OperatorControl::GetPresetHalfCourtButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->presetHalfCourtPort);
+bool OperatorControl::GetIncreaseButton() {
+  return (bool)operatorJoystick_->GetRawButton((int)constants_->increasePort);
 }
 
-bool OperatorControl::GetPresetFullCourtButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->presetMaxPort);
+bool OperatorControl::GetDecreaseButton() {
+  return (bool)operatorJoystick_->GetRawButton((int)constants_->decreasePort);
+}
+
+bool OperatorControl::GetKeyFarButton() {
+  return (bool)operatorJoystick_->GetRawButton((int)constants_->keyFarPort);
+}
+
+bool OperatorControl::GetKeyCloseButton() {
+  return (bool)operatorJoystick_->GetRawButton((int)constants_->keyClosePort);
+}
+
+bool OperatorControl::GetFarFenderButton() {
+  return (bool)operatorJoystick_->GetRawButton((int)constants_->farFenderPort);
+}
+
+bool OperatorControl::GetFenderButton() {
+  return (bool)operatorJoystick_->GetRawButton((int)constants_->fenderPort);
 }
 
 bool OperatorControl::GetShooterSwitch() {
-  return operatorJoystick_->GetRawButton((int)constants_->shooterPort);
+  return (bool)operatorJoystick_->GetRawAxis(3)<0.0;
 }
 
-bool OperatorControl::GetHoodIncrementButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->hoodIncrementPort);
-}
-
-bool OperatorControl::GetHoodDecrementButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->hoodDecrementPort);
-}
-
-bool OperatorControl::GetBaseLockSwitch() {
-  return operatorJoystick_->GetRawButton((int)constants_->baseLockPort);
-}
-
-bool OperatorControl::GetManualOverrideSwitch() {
-  return operatorJoystick_->GetRawButton((int)constants_->manualOverridePort);
-}
-
-bool OperatorControl::GetBridgeLowererButton() {
-  return operatorJoystick_->GetRawButton((int)constants_->bridgeLowererPort);
-}

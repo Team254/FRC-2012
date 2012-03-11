@@ -102,7 +102,6 @@ MainRobot::MainRobot() {
   lcd_ = DriverStationLCD::GetInstance();
   lcd_->PrintfLine(DriverStationLCD::kUser_Line1,"***Teleop Ready!***");
 
-  oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
   // Vision Tasks
   target_ = new BackboardFinder();
@@ -232,6 +231,7 @@ void MainRobot::TeleopPeriodic() {
     shooter_->SetHoodUp(false);
   }
 
+  /*
   // Only have Teleop and Baselock Drivers right now
   if (operatorControl_->GetBaseLockSwitch() && !oldBaseLockSwitch_) {
       // If the baselock switch has been flipped on, switch to baselock
@@ -242,10 +242,13 @@ void MainRobot::TeleopPeriodic() {
       currDriver_ = teleopDriver_;
       currDriver_->Reset();
   }
+  */
+  // Just kidding, we don't have a baselock switch anymore
+  currDriver_ = teleopDriver_;
 
   // Update the driver and the baselock switch status
   currDriver_->UpdateDriver();
-  oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
+  //oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
   double velocity = shooter_->GetVelocity();
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3,"Vel: %f", velocity);

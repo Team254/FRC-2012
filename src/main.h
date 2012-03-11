@@ -121,7 +121,6 @@ class MainRobot : public IterativeRobot {
   Timer* testTimer_;
   Logger* testLogger_;
   DriverStationLCD* lcd_;
-  bool oldBaseLockSwitch_;
   double shooterTargetVelocity_;
   double power_;
 
