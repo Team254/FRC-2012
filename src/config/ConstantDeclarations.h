@@ -107,33 +107,33 @@ DECLARE_DOUBLE(turnSensLow, 1.1)
 DECLARE_DOUBLE(turnSensHigh, 1.4)
 
 // PID constants
-DECLARE_DOUBLE(driveKP, 1.2)
-DECLARE_DOUBLE(driveKI, 0.003)
-DECLARE_DOUBLE(driveKD, 8)
-DECLARE_DOUBLE(driveVelKP, 0)
-DECLARE_DOUBLE(driveVelKI, 0)
-DECLARE_DOUBLE(driveVelKD, 0)
+DECLARE_DOUBLE(driveKP, 0.12)
+DECLARE_DOUBLE(driveKI, 0.0)
+DECLARE_DOUBLE(driveKD, 1.2)
+DECLARE_DOUBLE(driveVelKP, 0.0006)
+DECLARE_DOUBLE(driveVelKI, 0.0000)
+DECLARE_DOUBLE(driveVelKD, 0.0005)
 DECLARE_DOUBLE(baseLockKP, 1.5)
 DECLARE_DOUBLE(baseLockKI, 0.01)
 DECLARE_DOUBLE(baseLockKD, 0)
 DECLARE_DOUBLE(shooterKP, 0.1)
 DECLARE_DOUBLE(shooterKI, 0.3)
 DECLARE_DOUBLE(shooterKD, -0.15)
-DECLARE_DOUBLE(conveyorKP, 0.002)
-DECLARE_DOUBLE(conveyorKI, 0.00000006)
+DECLARE_DOUBLE(conveyorKP, 0.003)
+DECLARE_DOUBLE(conveyorKI, 0.000)
 DECLARE_DOUBLE(conveyorKD, 0.005)
 DECLARE_DOUBLE(breakStaticOffset, 0.4)
-DECLARE_DOUBLE(autoAlignKP, .85)
-DECLARE_DOUBLE(autoAlignKI, 0)
-DECLARE_DOUBLE(autoAlignKD, 0)
+DECLARE_DOUBLE(autoAlignKP, 0.8)
+DECLARE_DOUBLE(autoAlignKI, -0.001)
+DECLARE_DOUBLE(autoAlignKD, -0.35)
 
 // Shooter constants
 DECLARE_DOUBLE(minConveyorBallDist, 700)
 DECLARE_DOUBLE(conveyorPIDThreshold, 50)
 DECLARE_DOUBLE(conveyorHeight, 1440)
 DECLARE_DOUBLE(conveyorPIDIncrement, 10)
-DECLARE_DOUBLE(conveyorPoofWindowLow, 230)
-DECLARE_DOUBLE(conveyorPoofWindowHigh, 580)
+DECLARE_DOUBLE(conveyorPoofWindowLow, 0)
+DECLARE_DOUBLE(conveyorPoofWindowHigh, 600)
 
 // Poofometer calibration
 DECLARE_DOUBLE(poofometerLowPoofiness, 400)
@@ -143,4 +143,4 @@ DECLARE_DOUBLE(poofometerHighCorrection, 1.0)
 
 
 // Automomous
-DECLARE_DOUBLE(autoShootKeyVel, 60);
+DECLARE_DOUBLE(autoShootKeyVel, 64);

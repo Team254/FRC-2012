@@ -47,6 +47,7 @@ class DriveCommand : public AutoCommand {
   // Should pizza wheels be down?
   bool usePizza_;
   bool resetPizza_;
+  double oldLeftDist_;
 };
 
 #endif  // AUTO_DRIVE_COMMAND_H_

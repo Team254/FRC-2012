@@ -83,7 +83,7 @@ bool Drive::GetBrakeOn() {
 }
 
 bool Drive::GetPizzaUp() {
-  return (pizzaWheelSolenoid_->Get() == DoubleSolenoid::kForward);
+  return !(pizzaWheelSolenoid_->Get() == DoubleSolenoid::kForward);
 }
 
 double Drive::GetGyroAngle() {

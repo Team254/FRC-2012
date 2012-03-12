@@ -46,6 +46,12 @@ void Shooter::SetTargetVelocity(double velocity) {
   targetVelocity_ = velocity;
   pid_->ResetError();
   outputValue_ = 0;
+  if (velocity > 50) {
+    SetHoodUp(true);
+  } else {
+    SetHoodUp(false);
+  }
+
 }
 
 bool Shooter::PIDUpdate() {

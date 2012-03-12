@@ -20,6 +20,8 @@
 #include "drivers/AutoTurnDriver.h"
 #include "auto/SequentialCommand.h"
 #include "auto/ShootCommand.h"
+#include "auto/DriveCommand.h"
+#include "auto/BridgeBallsCommand.h"
 
 Joystick* xbox = new Joystick(3);
 
@@ -90,7 +92,7 @@ MainRobot::MainRobot() {
 
   // Vision Tasks
   target_ = new BackboardFinder();
-  target_->Start();
+  //target_->Start();
   ledRingSwitch_ = new DigitalOutput((int)constants_->ledRingSwitchPort);
 
   // Drivers
@@ -125,7 +127,6 @@ void MainRobot::DisabledInit() {
 }
 
 void MainRobot::AutonomousInit() {
-	  static ShootCommand* scommand = new ShootCommand(shooter_, 10);
 
   constants_->LoadFile();
   GetWatchdog().SetEnabled(false);
@@ -133,9 +134,16 @@ void MainRobot::AutonomousInit() {
   printf("auto init\n");
   if(autoBaseCmd_) {
 	  delete autoBaseCmd_;
-  }
-  autoBaseCmd_ = new SequentialCommand(1, scommand);
+  }printf("1\n");
+  autoBaseCmd_ = new SequentialCommand(5, new ShootCommand(shooter_, intake_, false, 3.75),
+		             new DriveCommand(drivebase_, 45,  false),
+		             new BridgeBallsCommand(intake_, shooter_, 5.0),
+		             new DriveCommand(drivebase_, -45, false),
+		             new ShootCommand(shooter_, intake_, true, 6.0)
+                 );
+  printf("2\n");
   autoBaseCmd_->Initialize();
+  printf("3\n");
 }
 
 void MainRobot::TeleopInit() {
@@ -159,10 +167,7 @@ void MainRobot::DisabledPeriodic() {
 }
 
 void MainRobot::AutonomousPeriodic() {
-  printf("auto periodic\n");
-  //  autoBaseCmd_->Run();
-  //  static ShootCommand s(shooter_, 10);
-  //  s.Run();
+  autoBaseCmd_->Run();
 }
 
 void MainRobot::TeleopPeriodic() {
@@ -219,11 +224,6 @@ void MainRobot::TeleopPeriodic() {
     intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
   }
 
-  if (shooterTargetVelocity_ > 50) {
-    shooter_->SetHoodUp(true);
-  } else {
-    shooter_->SetHoodUp(false);
-  }
 
   ledRingSwitch_->Set(shooterTargetVelocity_ > 0);
 

@@ -6,13 +6,14 @@
 class Drive;
 class Pid;
 class Shooter;
+class Intake;
 
 class ShootCommand : public AutoCommand {
  public:
   /**
    * Constructor. Takes a drive object and the angle to turn.
    */
-  ShootCommand(Shooter* shooter, double timeout);
+  ShootCommand(Shooter* shooter, Intake* intake, bool runIntake, double timeout);
 
   /**
    * Initializes 
@@ -23,9 +24,14 @@ class ShootCommand : public AutoCommand {
    * Uses PID to turn to the wanted angle. Returns true when complete.
    */
   bool Run();
+  
+  ~ShootCommand();
 
  private:
   Shooter* shooter_;
+  Intake* intake_;
+  bool runIntake_;
+  
 };
 
 #endif

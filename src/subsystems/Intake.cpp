@@ -13,9 +13,9 @@ void Intake::SetIntakePower(double pwm) {
 }
 
 void Intake::SetIntakePosition(IntakePositions pos) {
-  if(pos == INTAKE_UP)
+  if(pos == INTAKE_DOWN)
     intakeSolenoid_->Set(DoubleSolenoid::kForward);
-  else if (pos == INTAKE_DOWN)
+  else if (pos == INTAKE_UP)
     intakeSolenoid_->Set(DoubleSolenoid::kReverse);
   else if (pos == INTAKE_FLOATING)
     intakeSolenoid_->Set(DoubleSolenoid::kOff);
