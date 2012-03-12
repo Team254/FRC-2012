@@ -19,7 +19,7 @@ class AutoCommand {
    * Is called the first time the AutoCommand is processed
    * Used to set control loop goals, etc.
    */
-  void Initialize();
+  virtual void Initialize();
 
   /**
    * Run method

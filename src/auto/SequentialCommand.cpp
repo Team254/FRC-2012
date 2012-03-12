@@ -3,6 +3,7 @@
 #include <stdarg.h>
 
 SequentialCommand::SequentialCommand(int numCommands, ...) {
+	printf("%p\n",&commands_);
   commands_.reserve(numCommands);
   va_list vl;
   va_start(vl, numCommands);
@@ -23,7 +24,10 @@ SequentialCommand::~SequentialCommand() {
 
 void SequentialCommand::Initialize() {
   // Only initialize the first command
-  commands_[0]->Initialize();
+	//printf("command size: %d\n", commands_.size());
+	if(commands_.size()>0) {
+		commands_[0]->Initialize();
+	}
 }
 
 bool SequentialCommand::Run() {

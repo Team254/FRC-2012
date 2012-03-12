@@ -118,19 +118,23 @@ MainRobot::MainRobot() {
   oldShooterUpSwitch_ = false;
   oldShooterDownSwitch_ = false;
   oldBallQueueSwitch_ = false;
+  autoBaseCmd_ = NULL;
 }
 
 void MainRobot::DisabledInit() {
 }
 
 void MainRobot::AutonomousInit() {
+	  static ShootCommand* scommand = new ShootCommand(shooter_, 10);
+
   constants_->LoadFile();
   GetWatchdog().SetEnabled(false);
   power_ = 0;
   printf("auto init\n");
-
-  delete autoBaseCmd_;
-  autoBaseCmd_ = new SequentialCommand(0);
+  if(autoBaseCmd_) {
+	  delete autoBaseCmd_;
+  }
+  autoBaseCmd_ = new SequentialCommand(1, scommand);
   autoBaseCmd_->Initialize();
 }
 
