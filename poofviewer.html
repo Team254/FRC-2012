@@ -4,22 +4,32 @@
     <title>PoofViewer</title>
     <style type="text/css">
       #img {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin: -120px 0 0 -160px;
       }
       #center {
         left: 50%;
         position: absolute;
         width: 5px;
-        height: 240px;
+        height: 100%;
         margin-left: -2.5px;
+        background-color: red;
+      }
+      #middle {
+        top: 50%;
+        width: 100%;
+        position: absolute;
+        height: 5px;
+        margin-top: -2.5px;
         background-color: red;
       }
     </style>
   </head>
   <body>
-   <div id="center"></div>
    <img id="img" src="http://10.2.54.11/mjpg/video.mjpg" />
+   <div id="center"></div>
+   <div id="middle"></div>
   </body>
 </html>
