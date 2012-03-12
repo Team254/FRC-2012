@@ -60,6 +60,7 @@ bool Shooter::PIDUpdate() {
 
   double filteredOutput = UpdateOutputFilter(outputValue_);
   SetLinearPower(filteredOutput);
+  PidTuner::PushData(targetVelocity_, velocity_, filteredOutput);
   return (fabs(correctedTargetVelocity_ - velocity_) < VELOCITY_THRESHOLD);
 }
 

@@ -18,6 +18,8 @@
 #include "util/PidTuner.h"
 #include "vision/BackboardFinder.h"
 #include "drivers/AutoTurnDriver.h"
+#include "auto/SequentialCommand.h"
+#include "auto/ShootCommand.h"
 
 Joystick* xbox = new Joystick(3);
 
@@ -123,16 +125,13 @@ void MainRobot::DisabledInit() {
 
 void MainRobot::AutonomousInit() {
   constants_->LoadFile();
-  delete testPid_;
-  testPid_ = new Pid(&constants_->driveKP, &constants_->driveKI, &constants_->driveKD);
-  drivebase_->ResetGyro();
-  drivebase_->ResetEncoders();
-  testPid_->ResetError();
-  testTimer_->Reset();
-  testTimer_->Start();
-  conveyorEncoder_->Reset();
   GetWatchdog().SetEnabled(false);
   power_ = 0;
+  printf("auto init\n");
+
+  delete autoBaseCmd_;
+  autoBaseCmd_ = new SequentialCommand(0);
+  autoBaseCmd_->Initialize();
 }
 
 void MainRobot::TeleopInit() {
@@ -156,24 +155,10 @@ void MainRobot::DisabledPeriodic() {
 }
 
 void MainRobot::AutonomousPeriodic() {
-/*
-  double time = testTimer_->Get();
-  double rate = conveyorEncoder_->GetRate();
-
-  if (time > 0.5) {
-    power_ += 0.01;
-    testTimer_->Reset();
-    testLogger_->Log("%f,%f\n", power_, rate);
-  }
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line5,"Pow: %.0f%%", power_ * 100);
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line6,"Rate: %.0f%%", rate);
-  lcd_->UpdateLCD();
-  shooter_->SetLinearConveyorPower(power_);
-*/
-  int target = (int)Functions::SquareWave(testTimer_->Get(), 10, 500) + 500;
-  shooter_->SetConveyorTarget(target);
-  shooter_->ConveyorPIDUpdate();
-  //  PidTuner::PushData(target, conveyorEncoder_->Get(), 0);
+  printf("auto periodic\n");
+  //  autoBaseCmd_->Run();
+  //  static ShootCommand s(shooter_, 10);
+  //  s.Run();
 }
 
 void MainRobot::TeleopPeriodic() {

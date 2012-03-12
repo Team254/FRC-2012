@@ -140,3 +140,7 @@ DECLARE_DOUBLE(poofometerLowPoofiness, 400)
 DECLARE_DOUBLE(poofometerLowCorrection, 1.1)
 DECLARE_DOUBLE(poofometerHighPoofiness, 500)
 DECLARE_DOUBLE(poofometerHighCorrection, 1.0)
+
+
+// Automomous
+DECLARE_DOUBLE(autoShootKeyVel, 60);

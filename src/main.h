@@ -16,6 +16,7 @@ class TeleopDriver;
 class BaselockDriver;
 class ShooterController;
 class AutoTurnDriver;
+class SequentialCommand;
 
 /**
  * @author Eric Caldwell
@@ -133,6 +134,9 @@ class MainRobot : public IterativeRobot {
   bool oldShooterDownSwitch_;
 
   bool oldBallQueueSwitch_;
+
+  // Autonomous
+  SequentialCommand* autoBaseCmd_;
 };
 
 // Start the actual program
