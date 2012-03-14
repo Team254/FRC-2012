@@ -131,11 +131,10 @@ void MainRobot::AutonomousInit() {
   constants_->LoadFile();
   GetWatchdog().SetEnabled(false);
   power_ = 0;
-  printf("auto init\n");
   if(autoBaseCmd_) {
-	  delete autoBaseCmd_;
-  }printf("1\n");
-  
+      delete autoBaseCmd_;
+  }
+  /*
   autoBaseCmd_ = new SequentialCommand(5, new ShootCommand(shooter_, intake_, false, 3.75),
 		             new DriveCommand(drivebase_, 50,  false),
 		             new BridgeBallsCommand(intake_, shooter_, 5.0),
@@ -143,12 +142,10 @@ void MainRobot::AutonomousInit() {
 		             new ShootCommand(shooter_, intake_, true, 10.0)
                  );
                  
-  /*
   autoBaseCmd_ = new SequentialCommand(2, new DriveCommand(drivebase_, 150, false),
 		                                  new DriveCommand(drivebase_, -150, false));*/
-  printf("2\n");
+  autoBaseCmd_ = new SequentialCommand(1, new TurnCommand(drive_, 90, 10));
   autoBaseCmd_->Initialize();
-  printf("3\n");
 }
 
 void MainRobot::TeleopInit() {
