@@ -30,10 +30,16 @@ void AutoTurnDriver::Reset() {
   staticFriction_ = true;
   filterL_->Reset();
   filterR_->Reset();
+  target_->DoVision();
 }
 
 
 bool AutoTurnDriver::UpdateDriver() {
+  static int eltaco = 0;
+  if(eltaco%10==0) {
+	  target_->DoVision();
+  }
+  eltaco++;	
   if (justReset_) {
     justReset_ = false;
     timer_->Reset();
@@ -41,12 +47,14 @@ bool AutoTurnDriver::UpdateDriver() {
     lastTimer_ = -1; // fix this later
     lastPosL_ = drive_->GetLeftEncoderDistance();
     lastPosR_ = drive_->GetRightEncoderDistance();
+    printf("RESET FARGAGAGJADGAHGDSGDHFGASG\n");
   }
   drive_->SetHighGear(false); 
 
   double curX = 0;
   if (target_->SeesTarget()) {
     curX = target_->GetX();
+    printf("curX: %f\n", curX);
   }
 
   double output = pid_->Update(0, curX);
@@ -54,7 +62,7 @@ bool AutoTurnDriver::UpdateDriver() {
   //  double setpointL = setpoint * constants_->autoAlignKP;
   //  double setpointR = -setpointL * constants_->autoAlignKP;
 
-  drive_->SetLinearPower(output, -output);
+  drive_->SetLinearPower(-output, output);
   PidTuner::PushData(target_->GetX(), 0.0, output);
   return 0;
 #if 0

@@ -3,7 +3,12 @@
 #include "WPILib.h"
 
 double BackboardFinder::GetX() {
-  return x_;
+	if(-1.0 <= x_ && x_ <= 1.0) {
+		return x_;
+	} else {
+		printf("Bad x val :( %f\n", x_);
+		return 0;
+	}
 }
 
 bool BackboardFinder::SeesTarget() {
@@ -162,7 +167,7 @@ void BackboardFinder::DoVision() {
   lastUpdate_ = t;
   static int counts = 0;
   counts++;
-  if (counts % 20 == 0) {
+  if (counts % 10 == 0) {
     for (int i = 0; i < particles->size() ; i++) {
       printf("i: %d | x: %f | y: %f\n", i,  (float) particles->at(i).center_mass_x_normalized, (float) particles->at(i).center_mass_y_normalized); 
     }

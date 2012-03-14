@@ -81,11 +81,11 @@ DECLARE_DOUBLE(farFenderPort,2)
 DECLARE_DOUBLE(fenderPort,1)
 
 // Left Joystick
-DECLARE_DOUBLE(highGearPort, 2);
+DECLARE_DOUBLE(highGearPort, 3);
 
 // RightJoystick
-DECLARE_DOUBLE(quickTurnPort, 4);
-DECLARE_DOUBLE(pizzaSwitchPort, 2);
+DECLARE_DOUBLE(quickTurnPort, 2);
+DECLARE_DOUBLE(pizzaSwitchPort, 3);
 
 // Linearization
 DECLARE_DOUBLE(linearCoeffA, 4.5504)
@@ -122,9 +122,9 @@ DECLARE_DOUBLE(shooterKD, -0.15)
 DECLARE_DOUBLE(conveyorKP, 0.003)
 DECLARE_DOUBLE(conveyorKI, 0.000)
 DECLARE_DOUBLE(conveyorKD, 0.005)
-DECLARE_DOUBLE(turnKP, 0.003)
+DECLARE_DOUBLE(turnKP, 0.074)
 DECLARE_DOUBLE(turnKI, 0.000)
-DECLARE_DOUBLE(turnKD, 0.005)
+DECLARE_DOUBLE(turnKD, 0.550)
 DECLARE_DOUBLE(breakStaticOffset, 0.4)
 DECLARE_DOUBLE(autoAlignKP, 0.8)
 DECLARE_DOUBLE(autoAlignKI, -0.001)
@@ -145,6 +145,7 @@ DECLARE_DOUBLE(poofometerLowCorrection, 1.1)
 DECLARE_DOUBLE(poofometerHighPoofiness, 500)
 DECLARE_DOUBLE(poofometerHighCorrection, 1.0)
 
+DECLARE_DOUBLE(gyroSensitivity, 0.0005)
 
 // Automomous
 DECLARE_DOUBLE(autoShootKeyVel, 64);

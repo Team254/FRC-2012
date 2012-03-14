@@ -22,6 +22,7 @@
 #include "auto/ShootCommand.h"
 #include "auto/DriveCommand.h"
 #include "auto/BridgeBallsCommand.h"
+#include "auto/TurnCommand.h"
 
 Joystick* xbox = new Joystick(3);
 
@@ -52,7 +53,7 @@ MainRobot::MainRobot() {
                                  (int)constants_->conveyorEncoderPortB, true);
   conveyorEncoder_->Start();
   gyro_ = new Gyro((int)constants_->gyroPort);
-  gyro_->SetSensitivity(1.0);
+  gyro_->SetSensitivity(constants_->gyroSensitivity);
   poofMeter_ = new AnalogChannel((int)constants_->poofMeterPort);
   ballRanger_ = new AnalogChannel((int)constants_->ballRangerPort);
 
@@ -144,7 +145,7 @@ void MainRobot::AutonomousInit() {
                  
   autoBaseCmd_ = new SequentialCommand(2, new DriveCommand(drivebase_, 150, false),
 		                                  new DriveCommand(drivebase_, -150, false));*/
-  autoBaseCmd_ = new SequentialCommand(1, new TurnCommand(drive_, 90, 10));
+  autoBaseCmd_ = new SequentialCommand(1, new TurnCommand(drivebase_, 90, 10));
   autoBaseCmd_->Initialize();
 }
 
@@ -162,6 +163,13 @@ void MainRobot::TeleopInit() {
 }
 
 void MainRobot::DisabledPeriodic() {
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Gyro: %f\n", gyro_->GetAngle());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Sens: %f\n", constants_->gyroSensitivity);
+  if(operatorControl_->GetIntakeButton()) {
+	  constants_->LoadFile();
+	  gyro_->SetSensitivity(constants_->gyroSensitivity);
+	  gyro_->Reset();
+  }
   lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Convey: %d", conveyorEncoder_->Get());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Ball: %d", conveyorBallSensor_->GetValue());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Poof: %d", poofMeter_->GetValue());
@@ -230,11 +238,13 @@ void MainRobot::TeleopPeriodic() {
   ledRingSwitch_->Set(shooterTargetVelocity_ > 0);
 
   // Only have Teleop and Baselock Drivers right now
-  if (leftJoystick_->GetRawButton(4) && !oldAutoAlignButton_) {
+  if (operatorControl_->GetFenderButton() && !oldAutoAlignButton_) {
+	  printf("Going to AutoAlign\n");
     currDriver_ = autoAlignDriver_;
     currDriver_->Reset();
-  } else if (!leftJoystick_->GetRawButton(4)) {
+  } else if (!operatorControl_->GetFenderButton() && oldAutoAlignButton_) {
       // If the baselock switch has been flipped off, switch back to teleop
+	  printf("Teleopping\n");
       currDriver_ = teleopDriver_;
       currDriver_->Reset();
   }
@@ -242,7 +252,7 @@ void MainRobot::TeleopPeriodic() {
 
   // Update the driver and the baselock switch status
   currDriver_->UpdateDriver();
-  oldAutoAlignButton_ = leftJoystick_->GetRawButton(4);
+  oldAutoAlignButton_ = operatorControl_->GetFenderButton();
   //oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
 

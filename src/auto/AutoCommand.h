@@ -47,9 +47,11 @@ class AutoCommand {
 
  private:
 
-  double timeout_;
+
  protected:
 
+  double timeout_;
+  
   Timer* timer_;
 };
 
