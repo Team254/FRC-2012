@@ -126,6 +126,7 @@ DECLARE_DOUBLE(breakStaticOffset, 0.4)
 DECLARE_DOUBLE(autoAlignKP, 0.8)
 DECLARE_DOUBLE(autoAlignKI, -0.001)
 DECLARE_DOUBLE(autoAlignKD, -0.35)
+DECLARE_DOUBLE(straightDriveGain, 0.6)
 
 // Shooter constants
 DECLARE_DOUBLE(minConveyorBallDist, 700)

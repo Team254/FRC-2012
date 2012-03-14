@@ -2,6 +2,7 @@
 #define AUTO_DRIVE_COMMAND_H_
 
 #include "auto/AutoCommand.h"
+#include "util/MovingAverageFilter.h"
 
 class Drive;
 class Pid;
@@ -48,6 +49,9 @@ class DriveCommand : public AutoCommand {
   bool usePizza_;
   bool resetPizza_;
   double oldLeftDist_;
+  double oldRightDist_;
+  MovingAverageFilter leftFilter;
+  MovingAverageFilter rightFilter;
 };
 
 #endif  // AUTO_DRIVE_COMMAND_H_

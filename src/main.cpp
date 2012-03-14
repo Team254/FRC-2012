@@ -135,12 +135,17 @@ void MainRobot::AutonomousInit() {
   if(autoBaseCmd_) {
 	  delete autoBaseCmd_;
   }printf("1\n");
+  
   autoBaseCmd_ = new SequentialCommand(5, new ShootCommand(shooter_, intake_, false, 3.75),
-		             new DriveCommand(drivebase_, 45,  false),
+		             new DriveCommand(drivebase_, 50,  false),
 		             new BridgeBallsCommand(intake_, shooter_, 5.0),
-		             new DriveCommand(drivebase_, -45, false),
-		             new ShootCommand(shooter_, intake_, true, 6.0)
+		             new DriveCommand(drivebase_, -50, false),
+		             new ShootCommand(shooter_, intake_, true, 10.0)
                  );
+                 
+  /*
+  autoBaseCmd_ = new SequentialCommand(2, new DriveCommand(drivebase_, 150, false),
+		                                  new DriveCommand(drivebase_, -150, false));*/
   printf("2\n");
   autoBaseCmd_->Initialize();
   printf("3\n");
