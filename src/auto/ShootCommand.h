@@ -11,7 +11,7 @@ class Intake;
 class ShootCommand : public AutoCommand {
  public:
   /**
-   * Constructor. Takes a drive object and the angle to turn.
+   * Constructor. Takes shooter and intake objects and whether or not to run the intake
    */
   ShootCommand(Shooter* shooter, Intake* intake, bool runIntake, double timeout);
 
@@ -21,10 +21,13 @@ class ShootCommand : public AutoCommand {
   void Initialize();
 
   /**
-   * Uses PID to turn to the wanted angle. Returns true when complete.
+   * Runs conveyor, and runs intake if specified
    */
   bool Run();
   
+  /**
+   * Destructor
+   */
   ~ShootCommand();
 
  private:
