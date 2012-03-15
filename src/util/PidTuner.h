@@ -3,9 +3,15 @@
 
 #include "inetLib.h"
 
+/**
+ * Singleton class which connects to the robot and gives PID output. 
+ */
 class PidTuner {
  public:
   static void PushData(double setpoint, double value, double control);
+  /**
+   * Returns the current instance of the PidTuner object.
+   */
   static PidTuner* GetInstance();
 
  private:

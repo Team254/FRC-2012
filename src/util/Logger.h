@@ -29,7 +29,14 @@ class Logger {
    * Empties the log file of data.
    */
   void ClearLog();
-
+  
+  /**
+   * Returns the Logger of the entire system.
+   *
+   * Instantiates the Logger instance if not yet defined. Writes output
+   * to file "robot.log".
+   * @return static system Logger instance
+   */
   static Logger* GetSysLog();
 
  private:
