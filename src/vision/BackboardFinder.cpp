@@ -1,6 +1,12 @@
 #include "vision/BackboardFinder.h"
 #include <math.h>
 #include "WPILib.h"
+#include "util/Logger.h"
+
+BackboardFinder::BackboardFinder() : VisionProcess() {
+	cameraLog_ = new Logger("/cameraLog.log");
+	printf("Initting camera\n");
+}
 
 double BackboardFinder::GetX() {
 	if(-1.0 <= x_ && x_ <= 1.0) {
@@ -158,8 +164,13 @@ void BackboardFinder::DoVision() {
   seesTarget_ = (particles->size() == 3 || particles->size() == 4);
   x_ = seesTarget_ ? top.center_mass_x_normalized : 0.0;
 
+  printf("CAMERA FAKFDSAJFADSOJG \n");
   // Calculate angle on fieled based on ?
-
+  double hDiff = right.center_mass_x_normalized - left.center_mass_x_normalized;
+  double vDiff = top.center_mass_y_normalized - bottom.center_mass_y_normalized;
+  cameraLog_->Log("Offset: %f, Horizontal Diff: %f, Vertical Diff: %f\n", top.center_mass_x_normalized, hDiff, vDiff);
+  printf("Offset: %f, Horizontal Diff: %f, Vertical Diff: %f\n", top.center_mass_x_normalized, hDiff, vDiff);
+  
   delete bimg;
   static double t = 0;
   double diff = Timer::GetFPGATimestamp() - t;

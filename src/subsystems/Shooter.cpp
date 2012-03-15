@@ -46,7 +46,7 @@ void Shooter::SetTargetVelocity(double velocity) {
   targetVelocity_ = velocity;
   pid_->ResetError();
   outputValue_ = 0;
-  if (velocity > 50) {
+  if (velocity > 44) {
     SetHoodUp(true);
   } else {
     SetHoodUp(false);
@@ -177,6 +177,10 @@ bool Shooter::QueueBall() {
 
   double ballRange = (double) ballRanger_->GetValue();
   double val = conveyorPid_->Update(200.0, ballRange);
+  //Conveyor was jamming low down
+  if(ballRange < 100) {
+	  val = 1;
+  }
   SetLinearConveyorPower(val);
   prevBallSensor_ = ballSensor_->GetValue() > 100;
 

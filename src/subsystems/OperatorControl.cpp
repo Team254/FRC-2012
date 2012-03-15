@@ -18,8 +18,9 @@ bool OperatorControl::GetBrakeSwitch() {
 }
 
 Intake::IntakePositions OperatorControl::GetIntakePositionSwitch() {
-  bool axis = operatorJoystick_->GetRawAxis(4)>0.0;
+  bool axis = operatorJoystick_->GetRawAxis(4)<0.0;
   bool button = operatorJoystick_->GetRawButton(12);
+  printf("axis: %d button: %d\n",axis,button);
   if(axis) {
     return Intake::INTAKE_UP;
   }
@@ -74,6 +75,6 @@ bool OperatorControl::GetFenderButton() {
 }
 
 bool OperatorControl::GetShooterSwitch() {
-  return (bool)operatorJoystick_->GetRawAxis(3)<0.0;
+  return (bool)(operatorJoystick_->GetRawAxis(3)<0.0);
 }
 

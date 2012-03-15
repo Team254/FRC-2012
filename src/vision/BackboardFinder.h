@@ -8,8 +8,11 @@
  *
  * Task which updates information regarding distance, angle, and other vision-targeting information.
  */
+class Logger;
+
 class BackboardFinder : public VisionProcess {
  public:
+	BackboardFinder();
   /**
    * The current distance offset from the target's center axis.
    * @return offset from target center
@@ -52,6 +55,7 @@ class BackboardFinder : public VisionProcess {
   double angle_;
   bool seesTarget_;
   double lastUpdate_;
+  Logger* cameraLog_;
 };
 
 #endif  // VISION_BACKBOARD_FINDER_H_
