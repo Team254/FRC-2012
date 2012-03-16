@@ -66,7 +66,9 @@ bool Shooter::PIDUpdate() {
 
   double filteredOutput = UpdateOutputFilter(outputValue_);
   SetLinearPower(filteredOutput);
-  PidTuner::PushData(targetVelocity_, velocity_, filteredOutput);
+  double t = GetTime();
+  PidTuner::PushData(targetVelocity_, velocity_, t);
+  printf("target: %f vel: %f corrected: %f\n",targetVelocity_,velocity_,t);
   return (fabs(correctedTargetVelocity_ - velocity_) < VELOCITY_THRESHOLD);
 }
 
