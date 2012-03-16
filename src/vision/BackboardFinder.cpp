@@ -111,14 +111,18 @@ void BackboardFinder::DoVision() {
       if (i == 0) {
         left = top = right = bottom = p;
       }
-      if (p.center_mass_x_normalized < left.center_mass_x_normalized)
+      if (p.center_mass_x_normalized < left.center_mass_x_normalized) {
         left = p;
-      if (p.center_mass_x_normalized > right.center_mass_x_normalized)
+      }
+      if (p.center_mass_x_normalized > right.center_mass_x_normalized) {
         right = p;
-      if (p.center_mass_y_normalized < top.center_mass_y_normalized)
+      }
+      if (p.center_mass_y_normalized < top.center_mass_y_normalized) {
         top = p;
-      if (p.center_mass_y_normalized > bottom.center_mass_y_normalized)
+      }
+      if (p.center_mass_y_normalized > bottom.center_mass_y_normalized) {
         bottom = p;
+      }
     }
     break;
 #define X_DELTA .05

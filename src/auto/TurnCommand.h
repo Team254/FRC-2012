@@ -23,13 +23,10 @@ class TurnCommand : public AutoCommand {
    */
   bool Run();
 
-  
-
  private:
   Drive* drive_;
   Pid* turnPid_;
   double angle_, oldAngle_;
-
 };
 
 #endif

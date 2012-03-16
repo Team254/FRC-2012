@@ -17,28 +17,27 @@ void ShootCommand::Initialize() {
 
 bool ShootCommand::Run() {
   if (shooter_->PIDUpdate()) {
-	  shooter_->SetLinearConveyorPower(1);
-	  if(runIntake_) {
-	  	  intake_->SetIntakePower(1);
-	  } else {
-	     intake_->SetIntakePower(0);
-	  }
-  }
-  else {
-	  shooter_->SetLinearConveyorPower(0);
-	  intake_->SetIntakePower(0);
+      shooter_->SetLinearConveyorPower(1);
+    if (runIntake_) {
+      intake_->SetIntakePower(1);
+    } else {
+       intake_->SetIntakePower(0);
+    }
+  } else {
+    shooter_->SetLinearConveyorPower(0);
+    intake_->SetIntakePower(0);
   }
   bool done = TimeoutExpired();
   if (done) {
-	shooter_->SetTargetVelocity(0);
-	shooter_->PIDUpdate();
-	shooter_->SetLinearConveyorPower(0.0);
-	intake_->SetIntakePower(0);
+    shooter_->SetTargetVelocity(0);
+    shooter_->PIDUpdate();
+    shooter_->SetLinearConveyorPower(0.0);
+    intake_->SetIntakePower(0);
   }
   return done;
 }
 
 ShootCommand::~ShootCommand()  {
-	printf("destrcutor for shoot command\n");
+  printf("destrcutor for shoot command\n");
 }
 

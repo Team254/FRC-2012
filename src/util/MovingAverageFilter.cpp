@@ -9,8 +9,9 @@ void MovingAverageFilter::Reset() {
 }
 
 double MovingAverageFilter::Update(double val) {
-  if ((int) vals_.size() >= taps_)
+  if ((int) vals_.size() >= taps_) {
     vals_.pop_front();
+  }
 
   vals_.push_back(val);
   double avg = 0;

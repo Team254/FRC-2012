@@ -33,7 +33,6 @@ bool DriveCommand::Run() {
   oldRightDist_ = currRightDist;
   double offset = currLeftDist - currRightDist;
   
-  
   // If the goal has been reached, this command is done.
   if (fabs(currLeftDist - distanceGoal_ ) < 3 && fabs(currRightDist- distanceGoal_) < 3 && fabs(velL) < .1) {
     drive_->SetPizzaWheelDown(resetPizza_);

@@ -45,13 +45,8 @@ class AutoCommand {
    */
   virtual ~AutoCommand();
 
- private:
-
-
  protected:
-
   double timeout_;
-  
   Timer* timer_;
 };
 

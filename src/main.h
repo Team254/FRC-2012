@@ -128,10 +128,9 @@ class MainRobot : public IterativeRobot {
   bool oldAutoAlignButton_;
   double shooterTargetVelocity_;
   double power_;
-
-  // Incremental shooter speed stuff
-  bool oldShooterUpSwitch_;
-  bool oldShooterDownSwitch_;
+  bool oldShooterSwitch;
+  bool increaseButton;
+  bool decreaseButton;
 
   bool oldBallQueueSwitch_;
 
