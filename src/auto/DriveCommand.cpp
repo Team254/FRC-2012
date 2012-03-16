@@ -42,10 +42,10 @@ bool DriveCommand::Run() {
   // Get PID feedback and send back to the motors.
   /*
   static const double gainCap = 0.3;
-  if(straightGain>gainCap) {
-	  straightGain=gainCap;
-  } else if(straightGain<-gainCap) {
-	  straightGain=-gainCap;
+  if (straightGain>gainCap) {
+    straightGain=gainCap;
+  } else if (straightGain<-gainCap) {
+    straightGain=-gainCap;
   }
   */
   double leftPIDOutput = PwmLimit(leftPid_->Update(distanceGoal_, currLeftDist));

@@ -4,17 +4,17 @@
 #include "util/Logger.h"
 
 BackboardFinder::BackboardFinder() : VisionProcess() {
-	cameraLog_ = new Logger("/cameraLog.log");
-	printf("Initting camera\n");
+  cameraLog_ = new Logger("/cameraLog.log");
+  printf("Initting camera\n");
 }
 
 double BackboardFinder::GetX() {
-	if(-1.0 <= x_ && x_ <= 1.0) {
-		return x_;
-	} else {
-		printf("Bad x val :( %f\n", x_);
-		return 0;
-	}
+  if (-1.0 <= x_ && x_ <= 1.0) {
+    return x_;
+  } else {
+    printf("Bad x val :( %f\n", x_);
+    return 0;
+  }
 }
 
 bool BackboardFinder::SeesTarget() {

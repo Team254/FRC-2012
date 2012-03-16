@@ -180,8 +180,8 @@ bool Shooter::QueueBall() {
   double ballRange = (double) ballRanger_->GetValue();
   double val = conveyorPid_->Update(200.0, ballRange);
   //Conveyor was jamming low down
-  if(ballRange < 100) {
-	  val = 1;
+  if (ballRange < 100) {
+    val = 1;
   }
   SetLinearConveyorPower(val);
   prevBallSensor_ = ballSensor_->GetValue() > 100;

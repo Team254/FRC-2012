@@ -36,10 +36,10 @@ void AutoTurnDriver::Reset() {
 
 bool AutoTurnDriver::UpdateDriver() {
   static int eltaco = 0;
-  if(eltaco%10==0) {
-	  target_->DoVision();
+  if (eltaco%10==0) {
+    target_->DoVision();
   }
-  eltaco++;	
+  eltaco++;
   if (justReset_) {
     justReset_ = false;
     timer_->Reset();

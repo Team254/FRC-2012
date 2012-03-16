@@ -56,7 +56,7 @@ void PidTuner::Push(double setpoint, double value, double control) {
   char myRequest[50];
   sprintf(myRequest, "{\"S\":%f, \"V\":%f, \"C\":%f}\0", (float) setpoint, (float) value, (float) control);
   if (sendto(sFd_, (caddr_t) myRequest, strlen(myRequest), 0,
-	     (struct sockaddr *) &serverAddr_, sockAddrSize_) == ERROR) {
+     (struct sockaddr *) &serverAddr_, sockAddrSize_) == ERROR) {
     perror ("sendto");
     close (sFd_);
    }

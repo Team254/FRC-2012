@@ -21,7 +21,7 @@ void TurnCommand::Initialize() {
 
 bool TurnCommand::Run() {
 
-  if(timer_->Get() > timeout_) {
+  if (timer_->Get() > timeout_) {
     angle_*=-1;
     timer_->Reset();
     Constants* constants = Constants::GetInstance();

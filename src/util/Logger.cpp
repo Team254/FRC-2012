@@ -39,7 +39,7 @@ void Logger::ClearLog() {
 }
 
 Logger* Logger::GetSysLog() {
-  if(Logger::instance_ == NULL) {
+  if (Logger::instance_ == NULL) {
     Logger::instance_ = new Logger("robot.log");
   }
   return Logger::instance_;

@@ -25,7 +25,7 @@ SequentialCommand::~SequentialCommand() {
 void SequentialCommand::Initialize() {
   // Only initialize the first command
   printf("command size: %d\n", commands_.size());
-  if(commands_.size()>0) {
+  if (commands_.size()>0) {
     commands_[0]->Initialize();
   }
 }

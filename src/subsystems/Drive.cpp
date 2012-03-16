@@ -123,7 +123,7 @@ void Drive::SetPower(double left, double right) {
 }
 
 double Drive::Linearize(double x) {
-  if(fabs(x) < 0.01 ) {
+  if (fabs(x) < 0.01 ) {
       x = 0.0;
   }
   if (x > 0.0) {
@@ -149,7 +149,7 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
   else
     sensitivity = constants_->turnSensLow;
 
-  if(quickTurn) {
+  if (quickTurn) {
     overPower = 1.0;
     sensitivity = 1.0;
     angularPower = wheel;
@@ -163,19 +163,19 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
   lPower += angularPower;
   rPower -= angularPower;
 
-  if(lPower > 1.0) {
+  if (lPower > 1.0) {
     rPower -= overPower * (lPower - 1.0);
     lPower = 1.0;
   }
-  else if(rPower > 1.0) {
+  else if (rPower > 1.0) {
     lPower -= overPower * (rPower - 1.0);
     rPower = 1.0;
   }
-  else if(lPower < -1.0) {
+  else if (lPower < -1.0) {
     rPower += overPower * (-1.0 - lPower);
     lPower = -1.0;
   }
-  else if(rPower < -1.0) {
+  else if (rPower < -1.0) {
     lPower += overPower * (-1.0 - rPower);
     rPower = -1.0;
   }

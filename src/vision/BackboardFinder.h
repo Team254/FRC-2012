@@ -12,7 +12,7 @@ class Logger;
 
 class BackboardFinder : public VisionProcess {
  public:
-	BackboardFinder();
+  BackboardFinder();
   /**
    * The current distance offset from the target's center axis.
    * @return offset from target center

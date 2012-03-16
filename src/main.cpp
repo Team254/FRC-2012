@@ -150,7 +150,7 @@ void MainRobot::AutonomousInit() {
                  */
                  
   /*autoBaseCmd_ = new SequentialCommand(2, new DriveCommand(drivebase_, 150, false),
-		                                  new DriveCommand(drivebase_, -150, false));*/
+                                         new DriveCommand(drivebase_, -150, false));*/
   autoBaseCmd_ = new SequentialCommand(1, new TurnCommand(drivebase_, 90, 10));
   autoBaseCmd_->Initialize();
 }
@@ -194,7 +194,7 @@ void MainRobot::TeleopPeriodic() {
   // Logging stuff
   static int counter = 0;
   static Logger* driveLog = new Logger("/driveLog.log");
-  if(counter % 10 == 0) {
+  if (counter % 10 == 0) {
     double left = drivebase_->GetLeftEncoderDistance();
     double right = drivebase_->GetRightEncoderDistance();
     driveLog->Log("Angle: %f, Distance: %f\n", drivebase_->GetGyroAngle(), (left - right)/2);
@@ -209,7 +209,7 @@ void MainRobot::TeleopPeriodic() {
     } else {
       if (operatorControl_->GetIncreaseButton() && !increaseButton) {
         shooterTargetVelocity_+=1;
-      } else if(operatorControl_->GetDecreaseButton() && !decreaseButton) {
+      } else if (operatorControl_->GetDecreaseButton() && !decreaseButton) {
         shooterTargetVelocity_-=1;
       }
     }
@@ -229,20 +229,20 @@ void MainRobot::TeleopPeriodic() {
   shooter_->SetTargetVelocity(shooterTargetVelocity_);
   bool shooterDone = shooter_->PIDUpdate();
   
-  if(operatorControl_->GetShooterSwitch() && shooterDone && 
+  if (operatorControl_->GetShooterSwitch() && shooterDone && 
     operatorControl_->GetAutoShootButton()) {
     shooter_->SetLinearConveyorPower(1);
     intake_->SetIntakePower(1);
   } else if (operatorControl_->GetAutoShootButton()) {
     shooter_->QueueBall();
     intake_->SetIntakePower(1);
-  } else if(operatorControl_->GetShootButton()) {
+  } else if (operatorControl_->GetShootButton()) {
     shooter_->SetLinearConveyorPower(1.0);
     intake_->SetIntakePower(1.0);
-  } else if(operatorControl_->GetUnjamButton()) {
+  } else if (operatorControl_->GetUnjamButton()) {
     intake_->SetIntakePower(-1.0);
     shooter_->SetLinearConveyorPower(-1.0);
-  } else if(operatorControl_->GetIntakeButton()) {
+  } else if (operatorControl_->GetIntakeButton()) {
     intake_->SetIntakePower(1.0);
     shooter_->SetLinearConveyorPower(-1.0);
   } else {

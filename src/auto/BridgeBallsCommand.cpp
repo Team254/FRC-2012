@@ -25,14 +25,14 @@ bool BridgeBallsCommand::Run(){
       break;
     case 1:
       intake_->SetIntakePower(1);
-      if(timer_->Get() - initTime_ > 1.5) {
+      if (timer_->Get() - initTime_ > 1.5) {
         intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
         state_ = 2;
       }
       break;
     case 2:
       intake_->SetIntakePower(1);
-      if(timer_->Get() - initTime_ > 3.5) {
+      if (timer_->Get() - initTime_ > 3.5) {
         intake_->SetIntakePosition(Intake::INTAKE_UP);
         state_ = 3;
         intake_->SetIntakePower(0);
