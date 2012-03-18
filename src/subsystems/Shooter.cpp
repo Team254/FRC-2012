@@ -66,9 +66,9 @@ bool Shooter::PIDUpdate() {
 
   double filteredOutput = UpdateOutputFilter(outputValue_);
   SetLinearPower(filteredOutput);
-  double t = GetTime();
-  PidTuner::PushData(targetVelocity_, velocity_, t);
-  printf("target: %f vel: %f corrected: %f\n",targetVelocity_,velocity_,t);
+  //double t = GetTime();
+  //PidTuner::PushData(targetVelocity_, velocity_, t);
+  //printf("target: %f vel: %f corrected: %f\n",targetVelocity_,velocity_,t);
   return (fabs(correctedTargetVelocity_ - velocity_) < VELOCITY_THRESHOLD);
 }
 
@@ -178,6 +178,7 @@ bool Shooter::QueueBall() {
 #endif
 
   double ballRange = (double) ballRanger_->GetValue();
+  PidTuner::PushData(ballRange, conveyorEncoder_->Get(), 0.0);
   double val = conveyorPid_->Update(200.0, ballRange);
   //Conveyor was jamming low down
   if (ballRange < 100) {

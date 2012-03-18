@@ -18,6 +18,9 @@ class BackboardFinder : public VisionProcess {
    * @return offset from target center
    */
   double GetX();
+  
+  double GetHDiff();
+  double GetVDiff();
 
   /**
    * The current distance to the target.
@@ -48,6 +51,11 @@ class BackboardFinder : public VisionProcess {
    * @return true if we have fresh data
    */
   bool HasFreshTarget();
+  
+  /**
+   * Logs camera information
+   */
+  void LogCamera();
 
  private:
   double x_;
@@ -55,6 +63,8 @@ class BackboardFinder : public VisionProcess {
   double angle_;
   bool seesTarget_;
   double lastUpdate_;
+  double hDiff_;
+  double vDiff_;
   Logger* cameraLog_;
 };
 

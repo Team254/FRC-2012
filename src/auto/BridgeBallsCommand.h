@@ -10,7 +10,7 @@ class BridgeBallsCommand : public AutoCommand {
 
  public:
   
-  BridgeBallsCommand(Intake* intake, Shooter* shooter, double timeout);
+  BridgeBallsCommand(Intake* intake, Shooter* shooter, bool runIntake, double timeout);
   
   void Initialize();
   
@@ -25,6 +25,7 @@ class BridgeBallsCommand : public AutoCommand {
   double timeout_;
   int state_;
   double initTime_;
+  bool runIntake_;
   
 };
 

@@ -133,6 +133,8 @@ class MainRobot : public IterativeRobot {
   bool decreaseButton;
 
   bool oldBallQueueSwitch_;
+  
+  
 
   // Autonomous
   SequentialCommand* autoBaseCmd_;

@@ -11,6 +11,8 @@ TeleopDriver::TeleopDriver(Drive* drive, Joystick* leftJoystick, Joystick* right
   rightJoystick_ = rightJoystick;
   operatorControl_ = operatorControl;
   Reset();
+  leftJoystickInit_ = leftJoystick_->GetY();
+  rightJoystickInit_ = rightJoystick_->GetX();
 }
 
 bool TeleopDriver::UpdateDriver() {
@@ -45,17 +47,15 @@ bool TeleopDriver::UpdateDriver() {
   drive_->SetPizzaWheelDown(pizzaWheelsDown_);
 
   // Brake
-  if (rightJoystick_->GetTrigger()) {
-    drive_->SetBrakeOn(true);
-  } else if (leftJoystick_->GetTrigger()) {
-    drive_->SetBrakeOn(false);
-  }
+  drive_->SetBrakeOn(operatorControl_->GetBrakeSwitch());
 
   // Drive
   if (pizzaWheelsDown_) {
     turnPower = 0;
   }
   drive_->CheesyDrive(straightPower, turnPower, quickTurning);
+  
+  //printf("Left Joystick %f, Right Joystick %f\n", leftJoystick_->GetY(), rightJoystick_->GetX());
 
   // Teleop is always ready to be broken out of
   return true;

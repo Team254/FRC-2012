@@ -36,7 +36,7 @@ DECLARE_DOUBLE(shooterEncoderPortA, 6)
 DECLARE_DOUBLE(shooterEncoderPortB, 7)
 DECLARE_DOUBLE(conveyorEncoderPortA, 8)
 DECLARE_DOUBLE(conveyorEncoderPortB, 9)
-DECLARE_DOUBLE(ledRingSwitchPort, 10)
+DECLARE_DOUBLE(ledRingSwitchPort, 13)
 
 // Pneumatics
 DECLARE_DOUBLE(compressorPressureSwitchPort, 14)
@@ -81,6 +81,7 @@ DECLARE_DOUBLE(farFenderPort,2)
 DECLARE_DOUBLE(fenderPort,1)
 
 // Left Joystick
+DECLARE_DOUBLE(autoAlignPort, 2);
 DECLARE_DOUBLE(highGearPort, 3);
 
 // RightJoystick
@@ -101,6 +102,11 @@ DECLARE_DOUBLE(conveyorCoeffA, 0.5021)
 DECLARE_DOUBLE(conveyorCoeffB, 0.16)
 DECLARE_DOUBLE(conveyorCoeffC, 0.3228)
 DECLARE_DOUBLE(conveyorCoeffD, 1.1347)
+
+//Camera Relations
+DECLARE_DOUBLE(distanceCoeffA, .00002)
+DECLARE_DOUBLE(distanceCoeffB, -.0077)
+DECLARE_DOUBLE(distanceCoeffC, 1.4524)
 
 // Drive tuning
 DECLARE_DOUBLE(turnSensLow, 1.1)

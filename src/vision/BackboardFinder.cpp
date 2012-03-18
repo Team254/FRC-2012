@@ -5,7 +5,9 @@
 
 BackboardFinder::BackboardFinder() : VisionProcess() {
   cameraLog_ = new Logger("/cameraLog.log");
-  printf("Initting camera\n");
+  printf("Initting camera\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+  hDiff_ = 0;
+  vDiff_ = 0;
 }
 
 double BackboardFinder::GetX() {
@@ -17,8 +19,19 @@ double BackboardFinder::GetX() {
   }
 }
 
+double BackboardFinder::GetHDiff() {
+	return hDiff_;
+}
+double BackboardFinder::GetVDiff() {
+	return vDiff_;
+}
+
 bool BackboardFinder::SeesTarget() {
   return seesTarget_;
+}
+
+void BackboardFinder::LogCamera() {
+  cameraLog_->Log("%f,%f,%f\n", GetX(), hDiff_, vDiff_);
 }
 
 void BackboardFinder::DoVision() {
@@ -168,12 +181,12 @@ void BackboardFinder::DoVision() {
   seesTarget_ = (particles->size() == 3 || particles->size() == 4);
   x_ = seesTarget_ ? top.center_mass_x_normalized : 0.0;
 
-  printf("CAMERA FAKFDSAJFADSOJG \n");
+  //printf("CAMERA FAKFDSAJFADSOJG \n");
   // Calculate angle on fieled based on ?
-  double hDiff = right.center_mass_x_normalized - left.center_mass_x_normalized;
-  double vDiff = top.center_mass_y_normalized - bottom.center_mass_y_normalized;
-  cameraLog_->Log("Offset: %f, Horizontal Diff: %f, Vertical Diff: %f\n", top.center_mass_x_normalized, hDiff, vDiff);
-  printf("Offset: %f, Horizontal Diff: %f, Vertical Diff: %f\n", top.center_mass_x_normalized, hDiff, vDiff);
+  //printf("left %f, center %f, right %f\n", left.center_mass_x_normalized, top.center_mass_x_normalized, right.center_mass_x_normalized);
+  hDiff_ = right.center_mass_x_normalized - left.center_mass_x_normalized;
+  vDiff_ = fabs(top.center_mass_y_normalized - bottom.center_mass_y_normalized);
+  //printf("Offset: %f, Horizontal Diff: %f, Vertical Diff: %f\n", top.center_mass_x_normalized, hDiff, vDiff);
   
   delete bimg;
   static double t = 0;

@@ -118,21 +118,28 @@ MainRobot::MainRobot() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line1,"***Teleop Ready!***");
 
   shooterTargetVelocity_ = 0;
-  oldShooterUpSwitch_ = false;
-  oldShooterDownSwitch_ = false;
   autoBaseCmd_ = NULL;
-  oldShooterSwitch= operatorControl_->GetShooterSwitch();
+  
+  oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
+  // Shooter button guards
+  oldShooterSwitch = operatorControl_->GetShooterSwitch();
   increaseButton = operatorControl_->GetIncreaseButton();
   decreaseButton = operatorControl_->GetDecreaseButton();
+  fenderButton = operatorControl_->GetFenderButton();
+  farFenderButton = operatorControl_->GetFarFenderButton();
+  keyCloseButton = operatorControl_->GetKeyCloseButton();
+  keyFarButton = operatorControl_->GetKeyFarButton();
 }
 
 void MainRobot::DisabledInit() {
   drivebase_->ResetEncoders();
   drivebase_->ResetGyro();
+  target_->Stop();
 }
 
 void MainRobot::AutonomousInit() {
   constants_->LoadFile();
+  target_->Start();
   GetWatchdog().SetEnabled(false);
   power_ = 0;
   // This no workey :(
@@ -149,6 +156,30 @@ void MainRobot::AutonomousInit() {
                  );
                  */
                  
+  //coopertition bridge
+  /*
+  autoBaseCmd_ = new SequentialCommand(5, new ShootCommand(shooter_, intake_, false, 3.75),
+		             new DriveCommand(drivebase_, 50,  false),
+		             new BridgeBallsCommand(intake_, shooter_, true, 5.0),
+		             new DriveCommand(drivebase_, -50, false),
+		             new ShootCommand(shooter_, intake_, true, 10.0)
+                 );
+                 */
+  //alliance bridge
+  /*
+  autoBaseCmd_ = new SequentialCommand(11, new ShootCommand(shooter_, intake_, false, 3.75),
+                     new TurnCommand(drivebase_, 90, 3),
+                     new DriveCommand(drivebase_, 132, false),
+                     new TurnCommand(drivebase_, -90, 3),
+                     new DriveCommand(drivebase_, 50, false),
+                     new BridgeBallsCommand(intake_, shooter_, true, 5.0),
+                     new DriveCommand(drivebase_, -50, false),
+                     new TurnCommand(drivebase_, 90, 3),
+                     new DriveCommand(drivebase_, -132, false),
+                     new TurnCommand(drivebase_, -90, 3),
+                     new ShootCommand(shooter_, intake_, true, 10.0)
+                 );
+  */
   /*autoBaseCmd_ = new SequentialCommand(2, new DriveCommand(drivebase_, 150, false),
                                          new DriveCommand(drivebase_, -150, false));*/
   autoBaseCmd_ = new SequentialCommand(1, new TurnCommand(drivebase_, 90, 10));
@@ -165,6 +196,7 @@ void MainRobot::TeleopInit() {
   // Start off with the TeleopDriver
   currDriver_ = teleopDriver_;
   currDriver_->Reset();
+  target_->Start();
   GetWatchdog().SetEnabled(true);
 }
 
@@ -191,28 +223,52 @@ void MainRobot::TeleopPeriodic() {
   drivebase_->SetBrakeOn(false);
 
   /*
-  // Logging stuff
   static int counter = 0;
   static Logger* driveLog = new Logger("/driveLog.log");
   if (counter % 10 == 0) {
     double left = drivebase_->GetLeftEncoderDistance();
     double right = drivebase_->GetRightEncoderDistance();
-    driveLog->Log("Angle: %f, Distance: %f\n", drivebase_->GetGyroAngle(), (left - right)/2);
-    target_->DoVision();
+    double currX = 0;
+    double currV = 0;
+    double currH = 0;
+    if(target_->SeesTarget()) {
+    	currX = target_->GetX();
+    	currV = target_->GetVDiff();
+    	currH = target_->GetHDiff();
+    }
+    //angle, distance
+    driveLog->Log("%f,%f,%f,%f\n", left, currX, currV, currH);
+    //PidTuner::PushData(drivebase_->GetGyroAngle(), currX, 0);
+    //target_->LogCamera();
   }
   counter++;
   */
+  
+  
   // Update shooter power/manual control
   if (operatorControl_->GetShooterSwitch()) {
-    if (!oldShooterSwitch) {
-      shooterTargetVelocity_ = 38;
-    } else {
-      if (operatorControl_->GetIncreaseButton() && !increaseButton) {
-        shooterTargetVelocity_+=1;
-      } else if (operatorControl_->GetDecreaseButton() && !decreaseButton) {
-        shooterTargetVelocity_-=1;
-      }
-    }
+  	  //printf("switch on\n");
+  	  if(operatorControl_->GetFenderButton() && !fenderButton) {
+  		  shooterTargetVelocity_ = 38;
+  	  } else if(operatorControl_->GetFarFenderButton() && !farFenderButton) {
+  		  shooterTargetVelocity_ = 46;
+  	  } else if(operatorControl_->GetKeyCloseButton() && !keyCloseButton) {
+  		  shooterTargetVelocity_ = 48;
+  	  } else if(operatorControl_->GetKeyFarButton() && !keyFarButton) {
+  		  shooterTargetVelocity_ = 53;
+  	  }
+  	  if(!oldShooterSwitch) {
+  		  shooterTargetVelocity_ = 38;
+  		  printf("flipped\n");
+  		  constants_->LoadFile();
+  	  } else {
+  		  //printf("lawlnope\n");
+  		  if(operatorControl_->GetIncreaseButton() && !increaseButton) {
+  		  	  shooterTargetVelocity_+=1;
+  		    } else if(operatorControl_->GetDecreaseButton() && !decreaseButton) {
+  		  	  shooterTargetVelocity_-=1;
+  		    }
+  	  }
   } else {
     shooterTargetVelocity_ = 0;
   }
@@ -225,6 +281,10 @@ void MainRobot::TeleopPeriodic() {
   oldShooterSwitch = operatorControl_->GetShooterSwitch();
   increaseButton = operatorControl_->GetIncreaseButton();
   decreaseButton = operatorControl_->GetDecreaseButton();
+  fenderButton = operatorControl_->GetFenderButton();
+  farFenderButton = operatorControl_->GetFarFenderButton();
+  keyCloseButton = operatorControl_->GetKeyCloseButton();
+  keyFarButton = operatorControl_->GetKeyFarButton();
   
   shooter_->SetTargetVelocity(shooterTargetVelocity_);
   bool shooterDone = shooter_->PIDUpdate();
@@ -265,22 +325,22 @@ void MainRobot::TeleopPeriodic() {
 
   intake_->SetIntakePosition(operatorControl_->GetIntakePositionSwitch());
 
-  // Only have Teleop and Baselock Drivers right now
-  if (operatorControl_->GetFenderButton() && !oldAutoAlignButton_) {
-    printf("Going to AutoAlign\n");
+  // Only have Teleop and AutoAlign Drivers right now
+  if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
+	  printf("Going to AutoAlign\n");
     currDriver_ = autoAlignDriver_;
     currDriver_->Reset();
-  } else if (!operatorControl_->GetFenderButton() && oldAutoAlignButton_) {
-    // If the baselock switch has been flipped off, switch back to teleop
-    printf("Teleopping\n");
-    currDriver_ = teleopDriver_;
-    currDriver_->Reset();
+  } else if (!leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && oldAutoAlignButton_) {
+      // If the baselock switch has been flipped off, switch back to teleop
+	  printf("Teleopping\n");
+      currDriver_ = teleopDriver_;
+      currDriver_->Reset();
   }
 
   // Update the driver and the baselock switch status
   currDriver_->UpdateDriver();
   // Temp auto align control
-  oldAutoAlignButton_ = operatorControl_->GetFenderButton();
+  oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
   //oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
   // LCD display
@@ -288,5 +348,6 @@ void MainRobot::TeleopPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3,"Vel: %f", velocity);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f rps", shooterTargetVelocity_);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Ranger: %d", ballRanger_->GetValue());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "Gyro: %f", gyro_->GetAngle());
   lcd_->UpdateLCD();
 }
