@@ -11,8 +11,6 @@ TeleopDriver::TeleopDriver(Drive* drive, Joystick* leftJoystick, Joystick* right
   rightJoystick_ = rightJoystick;
   operatorControl_ = operatorControl;
   Reset();
-  leftJoystickInit_ = leftJoystick_->GetY();
-  rightJoystickInit_ = rightJoystick_->GetX();
 }
 
 bool TeleopDriver::UpdateDriver() {
@@ -38,7 +36,7 @@ bool TeleopDriver::UpdateDriver() {
     pizzaWheelsDown_ = !pizzaWheelsDown_;
   }
   // Update the button
-  oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
+  oldPizzaWheelsButton_ = currPizzaWheelsButton;
 
   // If we've run over the bump
   if (pizzaWheelsDown_ && drive_->GetBumpSensorValue()) {

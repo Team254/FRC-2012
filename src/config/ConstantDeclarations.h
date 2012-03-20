@@ -15,7 +15,6 @@ DECLARE_DOUBLE(intakePwm, 2)
 DECLARE_DOUBLE(conveyorPwm, 9)
 DECLARE_DOUBLE(leftShooterPwm, 3)
 DECLARE_DOUBLE(rightShooterPwm, 8)
-DECLARE_DOUBLE(jumblePwm, 10)
 
 // Analog Sensors
 DECLARE_DOUBLE(gyroPort, 1)
@@ -80,11 +79,11 @@ DECLARE_DOUBLE(keyClosePort,3)
 DECLARE_DOUBLE(farFenderPort,2)
 DECLARE_DOUBLE(fenderPort,1)
 
-// Left Joystick
+// Left joystick
 DECLARE_DOUBLE(autoAlignPort, 2);
 DECLARE_DOUBLE(highGearPort, 3);
 
-// RightJoystick
+// Right joystick
 DECLARE_DOUBLE(quickTurnPort, 2);
 DECLARE_DOUBLE(pizzaSwitchPort, 3);
 
@@ -103,9 +102,9 @@ DECLARE_DOUBLE(conveyorCoeffB, 0.16)
 DECLARE_DOUBLE(conveyorCoeffC, 0.3228)
 DECLARE_DOUBLE(conveyorCoeffD, 1.1347)
 
-//Camera Relations
-DECLARE_DOUBLE(distanceCoeffA, .00002)
-DECLARE_DOUBLE(distanceCoeffB, -.0077)
+// Camera relations
+DECLARE_DOUBLE(distanceCoeffA, 0.00002)
+DECLARE_DOUBLE(distanceCoeffB, -0.0077)
 DECLARE_DOUBLE(distanceCoeffC, 1.4524)
 
 // Drive tuning

@@ -97,7 +97,6 @@ class MainRobot : public IterativeRobot {
   Victor* conveyorMotor_;
   Victor* leftShooterMotor_;
   Victor* rightShooterMotor_;
-  Victor* jumbleMotor_;
 
   // Sensors
   Encoder* leftEncoder_;
@@ -133,8 +132,6 @@ class MainRobot : public IterativeRobot {
   bool decreaseButton;
 
   bool oldBallQueueSwitch_;
-  
-  
 
   // Autonomous
   SequentialCommand* autoBaseCmd_;

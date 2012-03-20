@@ -10,11 +10,11 @@ OperatorControl::~OperatorControl() {
 }
 
 bool OperatorControl::GetControlLoopsSwitch() {
-  return operatorJoystick_->GetX()>0.0;
+  return operatorJoystick_->GetX() > 0.0;
 }
 
 bool OperatorControl::GetBrakeSwitch() {
-  return operatorJoystick_->GetY()>0.0;
+  return operatorJoystick_->GetY() < 0.0;
 }
 
 Intake::IntakePositions OperatorControl::GetIntakePositionSwitch() {
