@@ -311,18 +311,16 @@ void MainRobot::TeleopPeriodic() {
   }
   */
 
-  intake_->SetIntakePosition(operatorControl_->GetIntakePositionSwitch());
-
   // Only have Teleop and AutoAlign Drivers right now
   if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
-	  printf("Going to AutoAlign\n");
+    printf("Going to AutoAlign\n");
     currDriver_ = autoAlignDriver_;
     currDriver_->Reset();
   } else if (!leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && oldAutoAlignButton_) {
-      // If the baselock switch has been flipped off, switch back to teleop
-	  printf("Teleopping\n");
-      currDriver_ = teleopDriver_;
-      currDriver_->Reset();
+    // If the baselock switch has been flipped off, switch back to teleop
+    printf("Teleopping\n");
+    currDriver_ = teleopDriver_;
+    currDriver_->Reset();
   }
 
   // Update the driver and the baselock switch status
@@ -330,6 +328,13 @@ void MainRobot::TeleopPeriodic() {
   // Temp auto align control
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
   //oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
+
+  // If pizza wheels are up, set intake up
+  if(drivebase_->GetPizzaUp()) {
+    intake_->SetIntakePosition(Intake::INTAKE_UP);
+  } else {
+    intake_->SetIntakePosition(operatorControl_->GetIntakePositionSwitch());
+  }
 
   // LCD display
   double velocity = shooter_->GetVelocity();

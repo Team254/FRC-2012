@@ -25,7 +25,6 @@ class AutoTurnDriver : public Driver {
   virtual bool UpdateDriver();
  private:
   double angle_;
-  Gyro* gyro_;
   Encoder* leftEncoder_;
   Encoder* rightEncoder_;
   Timer* timer_;
@@ -43,6 +42,7 @@ class AutoTurnDriver : public Driver {
   Constants* constants_;
   bool staticFriction_;
   BackboardFinder* target_;
+  double angleGoal_;
 };
 
 #endif

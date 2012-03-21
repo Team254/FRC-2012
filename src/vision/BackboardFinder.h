@@ -57,8 +57,6 @@ class BackboardFinder : public VisionProcess {
    */
   void LogCamera();
   
-  double GetAngle();
-
  private:
   double x_;
   double distance_;
