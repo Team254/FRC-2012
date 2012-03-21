@@ -1,128 +1,17 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
- <head>
+  <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>PID Tuning</title>
     <link href="style/layout.css" rel="stylesheet" type="text/css">
     <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../excanvas.min.js"></script><![endif]-->
     <script language="javascript" type="text/javascript" src="js/jquery.js"></script>
     <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-
-</script>
- </head>
-    <body>
-    <h1>Poofometer</h1>
-
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/pidgraph.js"></script>
+  </head>
+  <body>
+    <h1>Robot Tuning</h1>
     <div id="pid_plot" style="width:800px;height:400px;"></div>
-    <label>Min</label><input type="text" id="min_y"></input>
-    <label>Max</label><input type="text" id="max_y"></input>
-
-<script type="text/javascript">
-min_graph = -10.0;
-max_graph = 60.0;
-$(function () {
-    var lowV = 1000;
-    var lowS = 1000;
-    var maxPoints = 5 * 50;
-    var dataSetpoint = [];
-    var dataValue = [];
-    var dataControl = [];
-    lowest = 1000000;
-    highest = 0;
-    function getData() {
-      var resS = []
-      var resV = []
-      var resC = []
-
-      for (var i = 0; i < maxPoints; ++i)
-         if( i > dataSetpoint.length)
-           resS.push([i, 0]);
-         else {
-           resS.push([i, dataSetpoint[i]]);
-
-         }
-      for (var i = 0; i < maxPoints; ++i)
-         if( i > dataValue.length)
-           resV.push([i, 0]);
-         else {
-           resV.push([i, dataValue[i]]); 
-         }
-
-      for (var i = 0; i < maxPoints; ++i)
-         if( i > dataControl.length)
-           resC.push([i, 0]);
-         else
-           resC.push([i, dataControl[i]]);
-
-      var res = [resS, resV,resC]; //console.log(res);
-      return res;
-    }
-    // setup plot
-    var options = {
-        series: { shadowSize: 0 }, // drawing is faster without shadows
-        yaxis: { min: min_graph, max: max_graph },
-        xaxis: { show: false }
-    };
-    plot = $.plot($("#pid_plot"),getData(), options);
-
-   function push(newS, newV, newC) {
-        if (dataSetpoint.length > 0)
-            dataSetpoint = dataSetpoint.slice(1);
-
-           if (newS < lowest) {
-             lowest = newS;
-
-           }
-           if (newS > highest) {
-             highest = newS;
-           }
-        while (dataSetpoint.length < maxPoints) {
-            var y = newS
-            if (y < min_graph)
-                y = min_graph;
-            if (y > max_graph)
-                y = max_graph;
-            dataSetpoint.push(y);
-        }
-
-        if (dataValue.length > 0)
-            dataValue = dataValue.slice(1);
-
-        while (dataValue.length < maxPoints) {
-            var y = newV
-            if (y < min_graph)
-                y = min_graph;
-            if (y > max_graph)
-                y = max_graph;
-            dataValue.push(y);
-        }
-
-        if (dataControl.length > 0)
-            dataControl = dataControl.slice(1);
-
-        while (dataControl.length < maxPoints) {
-            var y = (newC * ((max_graph-5 - (min_graph+5))/2)) + ((max_graph-5 - (min_graph+5))/2) ;
-            if (y < min_graph)
-                y = min_graph;
-            if (y > max_graph)
-                y = max_graph;
-            dataControl.push(y);
-        }
-        plot.setData(getData());
-        // since the axes don't change, we don't need to call plot.setupGrid()
-        plot.draw();
-        
-    }
-
-   var socket = io.connect('http://localhost');
-    socket.on('update', function (dataIn) {
-      push(dataIn["S"], dataIn["V"],dataIn["C"]);
-    });
-
-});
-</script>
-
- </body>
+  </body>
 </html>
