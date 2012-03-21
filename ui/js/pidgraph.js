@@ -1,5 +1,9 @@
 min_graph = 0;
 max_graph = 0;
+options = {
+  series: { shadowSize: 0 }, // drawing is faster without shadows
+  xaxis: { show: false }
+};
 
 $(function () {
     var lowV = 1000;
@@ -49,11 +53,19 @@ $(function () {
       return res;
     }
     // setup plot
-    var options = {
-        series: { shadowSize: 0 }, // drawing is faster without shadows
-        xaxis: { show: false }
-    };
-    plot = $.plot($("#pid_plot"),getData(), options);
+    
+
+    function makeplot() {
+      $('#pid_plot').css('width', function(index) {
+         return $(window).width() * .9;
+      });
+      $('#pid_plot').css('height', function(index) {
+	      return $(window).height() * .8;
+      });
+      plot = $.plot($("#pid_plot"), getData(), options);
+    }
+    makeplot();
+    $(window).resize(makeplot);
 
    function push(newS, newV, newC) {
         var min 
@@ -88,7 +100,7 @@ $(function () {
             dataControl.push(y);
         }
    
-        plot.setupGrid(); console.log("changing");
+        plot.setupGrid();
         plot.setData(getData());
         plot.draw();
     }
