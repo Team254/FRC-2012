@@ -34,6 +34,14 @@ void BackboardFinder::LogCamera() {
   cameraLog_->Log("%f,%f,%f\n", GetX(), hDiff_, vDiff_);
 }
 
+double BackboardFinder::GetAngle() {
+	//normalized x location (-1 to 1) times the pixels along
+	//that one side = number of pixels off
+	//47/320 = degree/pixel based on fov/horizontal resolution
+	//pixels * degrees / pixels = degrees
+	return x_ * 160 * 47 / 320;
+}
+
 void BackboardFinder::DoVision() {
   // Get image from camera
   AxisCamera &camera = AxisCamera::GetInstance("10.2.54.11");
