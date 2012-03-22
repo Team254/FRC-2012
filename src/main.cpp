@@ -119,9 +119,12 @@ MainRobot::MainRobot() {
 
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
   // Shooter button guards
-  oldShooterSwitch = operatorControl_->GetShooterSwitch();
-  increaseButton = operatorControl_->GetIncreaseButton();
-  decreaseButton = operatorControl_->GetDecreaseButton();
+  oldShooterSwitch_ = operatorControl_->GetShooterSwitch();
+  oldIncreaseButton_ = operatorControl_->GetIncreaseButton();
+  oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
+
+  autonDelay_ = 0.0;
+  autonMode_ = AUTON_NONE;
 }
 
 void MainRobot::DisabledInit() {
@@ -194,6 +197,46 @@ void MainRobot::TeleopInit() {
 }
 
 void MainRobot::DisabledPeriodic() {
+  // Autonomous delay
+  if (operatorControl_->GetIncreaseButton() && !oldIncreaseButton_) {
+    autonDelay_ += 0.5;
+  } else if (operatorControl_->GetDecreaseButton() && !oldDecreaseButton_) {
+    autonDelay_ = max(autonDelay_ - 0.5, 0.0);
+  }
+
+  // Autonomous mode selection
+  if (operatorControl_->GetIncreaseButton() && !oldAutonSelectButton_) {
+    autonMode_ = (AutonMode)(autonMode_ + 1);
+    if (autonMode_ == NUM_AUTON_MODES) {
+      autonMode_ = AUTON_NONE;
+    }
+  }
+
+  oldIncreaseButton_ = operatorControl_->GetIncreaseButton();
+  oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
+  oldAutonSelectButton_ = operatorControl_->GetAutonSelectButton();
+
+  switch (autonMode_) {
+    case AUTON_NONE:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "No auton", conveyorEncoder_->Get());
+      break;
+    case AUTON_FENDER:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Fender", conveyorEncoder_->Get());
+      break;
+    case AUTON_BRIDGE_SLOW:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Bridge slow", conveyorEncoder_->Get());
+      break;
+    case AUTON_BRIDGE_FAST:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Bridge fast", conveyorEncoder_->Get());
+      break;
+    case AUTON_ALLIANCE_BRIDGE:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Alliance bridge", conveyorEncoder_->Get());
+      break;
+    default:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Invalid auton", conveyorEncoder_->Get());
+  }
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Delay: %.1f", autonDelay_);
+
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Gyro: %f\n", gyro_->GetAngle());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Sens: %f\n", constants_->gyroSensitivity);
   if (operatorControl_->GetIntakeButton()) {
@@ -201,9 +244,6 @@ void MainRobot::DisabledPeriodic() {
     gyro_->SetSensitivity(constants_->gyroSensitivity);
     gyro_->Reset();
   }
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Convey: %d", conveyorEncoder_->Get());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Ball: %d", conveyorBallSensor_->GetValue());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Poof: %d", poofMeter_->GetValue());
   lcd_->UpdateLCD();
 }
 
@@ -246,9 +286,9 @@ void MainRobot::TeleopPeriodic() {
     shooterTargetVelocity_ = 48;
   } else if (operatorControl_->GetKeyFarButton()) {
     shooterTargetVelocity_ = 53;
-  } else if (operatorControl_->GetIncreaseButton() && !increaseButton) {
+  } else if (operatorControl_->GetIncreaseButton() && !oldIncreaseButton_) {
     shooterTargetVelocity_ += 1;
-  } else if (operatorControl_->GetDecreaseButton() && !decreaseButton) {
+  } else if (operatorControl_->GetDecreaseButton() && !oldDecreaseButton_) {
     shooterTargetVelocity_ -= 1;
   }
 
@@ -257,7 +297,7 @@ void MainRobot::TeleopPeriodic() {
 
   if (operatorControl_->GetShooterSwitch()) {
     // Re-load the shooter PID constants whenever the shooter is turned on.
-    if (!oldShooterSwitch) {
+    if (!oldShooterSwitch_) {
       constants_->LoadFile();
     }
     shooter_->SetTargetVelocity(shooterTargetVelocity_);
@@ -267,9 +307,9 @@ void MainRobot::TeleopPeriodic() {
   bool shooterDone = shooter_->PIDUpdate();
 
   // Update shooter button guards
-  oldShooterSwitch = operatorControl_->GetShooterSwitch();
-  increaseButton = operatorControl_->GetIncreaseButton();
-  decreaseButton = operatorControl_->GetDecreaseButton();
+  oldShooterSwitch_ = operatorControl_->GetShooterSwitch();
+  oldIncreaseButton_ = operatorControl_->GetIncreaseButton();
+  oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
 
   if (operatorControl_->GetAutoShootButton()) {
     if (operatorControl_->GetShooterSwitch() && shooterDone) {
@@ -319,7 +359,7 @@ void MainRobot::TeleopPeriodic() {
 
   // LCD display
   double velocity = shooter_->GetVelocity();
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f rps", shooterTargetVelocity_);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Shoot: %.0f rps", shooterTargetVelocity_);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Ranger: %d", ballRanger_->GetValue());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "Gyro: %f", gyro_->GetAngle());
   lcd_->UpdateLCD();

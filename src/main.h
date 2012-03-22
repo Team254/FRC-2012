@@ -127,13 +127,24 @@ class MainRobot : public IterativeRobot {
   bool oldAutoAlignButton_;
   double shooterTargetVelocity_;
   double power_;
-  bool oldShooterSwitch;
-  bool increaseButton;
-  bool decreaseButton;
+  bool oldShooterSwitch_;
+  bool oldIncreaseButton_;
+  bool oldDecreaseButton_;
+  bool oldAutonSelectButton_;
 
   bool oldBallQueueSwitch_;
 
   // Autonomous
+  double autonDelay_;
+  enum AutonMode {
+    AUTON_NONE = 0,
+    AUTON_FENDER,
+    AUTON_BRIDGE_SLOW,
+    AUTON_BRIDGE_FAST,
+    AUTON_ALLIANCE_BRIDGE,
+    NUM_AUTON_MODES
+  };
+  AutonMode autonMode_;
   SequentialCommand* autoBaseCmd_;
 };
 
