@@ -143,45 +143,45 @@ void MainRobot::AutonomousInit() {
 
   if (autoBaseCmd_) {
     delete autoBaseCmd_;
+    autoBaseCmd_ = NULL;
   }
 
-  /*
-  autoBaseCmd_ = new SequentialCommand(5, new ShootCommand(shooter_, intake_, false, 3.75),
-                 new DriveCommand(drivebase_, 50,  false),
-                 new BridgeBallsCommand(intake_, shooter_, 5.0),
-                 new DriveCommand(drivebase_, -50, false),
-                 new ShootCommand(shooter_, intake_, true, 10.0)
-                 );
-                 */
+  switch (autonMode_) {
+    case AUTON_NONE:
+      break;
+    case AUTON_FENDER:
+      break;
+    case AUTON_BRIDGE_SLOW:
+      break;
+    case AUTON_BRIDGE_FAST:
+      autoBaseCmd_ = new SequentialCommand(5,
+          new ShootCommand(shooter_, intake_, false, 3.75),
+          new DriveCommand(drivebase_, 50,  false),
+          new BridgeBallsCommand(intake_, shooter_, true, 5.0),
+          new DriveCommand(drivebase_, -50, false),
+          new ShootCommand(shooter_, intake_, true, 10.0));
+      break;
+    case AUTON_ALLIANCE_BRIDGE:
+      autoBaseCmd_ = new SequentialCommand(11,
+          new ShootCommand(shooter_, intake_, false, 3.75),
+          new TurnCommand(drivebase_, 90, 3),
+          new DriveCommand(drivebase_, 132, false),
+          new TurnCommand(drivebase_, -90, 3),
+          new DriveCommand(drivebase_, 50, false),
+          new BridgeBallsCommand(intake_, shooter_, true, 5.0),
+          new DriveCommand(drivebase_, -50, false),
+          new TurnCommand(drivebase_, 90, 3),
+          new DriveCommand(drivebase_, -132, false),
+          new TurnCommand(drivebase_, -90, 3),
+          new ShootCommand(shooter_, intake_, true, 10.0));
+      break;
+    default:
+      autoBaseCmd_ = NULL;
+  }
 
-  //coopertition bridge
-  /*
-  autoBaseCmd_ = new SequentialCommand(5, new ShootCommand(shooter_, intake_, false, 3.75),
-		             new DriveCommand(drivebase_, 50,  false),
-		             new BridgeBallsCommand(intake_, shooter_, true, 5.0),
-		             new DriveCommand(drivebase_, -50, false),
-		             new ShootCommand(shooter_, intake_, true, 10.0)
-                 );
-                 */
-  //alliance bridge
-  /*
-  autoBaseCmd_ = new SequentialCommand(11, new ShootCommand(shooter_, intake_, false, 3.75),
-                     new TurnCommand(drivebase_, 90, 3),
-                     new DriveCommand(drivebase_, 132, false),
-                     new TurnCommand(drivebase_, -90, 3),
-                     new DriveCommand(drivebase_, 50, false),
-                     new BridgeBallsCommand(intake_, shooter_, true, 5.0),
-                     new DriveCommand(drivebase_, -50, false),
-                     new TurnCommand(drivebase_, 90, 3),
-                     new DriveCommand(drivebase_, -132, false),
-                     new TurnCommand(drivebase_, -90, 3),
-                     new ShootCommand(shooter_, intake_, true, 10.0)
-                 );
-  */
-  /*autoBaseCmd_ = new SequentialCommand(2, new DriveCommand(drivebase_, 150, false),
-                                         new DriveCommand(drivebase_, -150, false));*/
-  autoBaseCmd_ = new SequentialCommand(1, new TurnCommand(drivebase_, 90, 10));
-  autoBaseCmd_->Initialize();
+  if (autoBaseCmd_) {
+    autoBaseCmd_->Initialize();
+  }
 }
 
 void MainRobot::TeleopInit() {
@@ -250,7 +250,7 @@ void MainRobot::DisabledPeriodic() {
 }
 
 void MainRobot::AutonomousPeriodic() {
-  if (autonTimer_->Get() > autonDelay_) {
+  if (autonTimer_->Get() > autonDelay_ && autoBaseCmd_) {
     autoBaseCmd_->Run();
   }
 }
