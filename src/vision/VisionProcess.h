@@ -50,6 +50,7 @@ class VisionProcess {
  private:
   bool enabled_;
   Task* task_;
+  Timer* timer_;
 };
 
 #endif  // VISION_VISION_PROCESS_H_

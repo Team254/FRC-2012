@@ -8,6 +8,7 @@ BackboardFinder::BackboardFinder() : VisionProcess() {
   printf("Initting camera\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
   hDiff_ = 0;
   vDiff_ = 0;
+  //camera.WriteResolution(AxisCameraParams::kResolution_320x240);
 }
 
 double BackboardFinder::GetX() {
@@ -27,7 +28,7 @@ double BackboardFinder::GetVDiff() {
 }
 
 bool BackboardFinder::SeesTarget() {
-  return seesTarget_;
+  return HasFreshTarget() && seesTarget_;
 }
 
 void BackboardFinder::LogCamera() {
@@ -39,7 +40,8 @@ double BackboardFinder::GetAngle() {
 	//that one side = number of pixels off
 	//47/320 = degree/pixel based on fov/horizontal resolution
 	//pixels * degrees / pixels = degrees
-	return x_ * 160 * 47 / 320;
+	//printf("get: %f\n", (float) GetX());
+	return GetX() * 160.0 * 47.0 / 320.0;
 }
 
 void BackboardFinder::DoVision() {
@@ -48,7 +50,7 @@ void BackboardFinder::DoVision() {
   ColorImage img(IMAQ_IMAGE_RGB);
   if (!camera.GetImage(&img))
     return;
-  camera.WriteResolution(AxisCameraParams::kResolution_320x240);
+  //
 
   // RGB Threshold -> BinaryImage
   BinaryImage* bimg = img.ThresholdRGB(0,50,0,50,80,255);
@@ -81,6 +83,7 @@ void BackboardFinder::DoVision() {
   ParticleFilterOptions pParticleFilterOptions;
   int pNumParticles;
   
+  /*
   pParticleCriteria = (ParticleFilterCriteria2*)malloc(sizeof(ParticleFilterCriteria2));
   pParticleCriteria[0].parameter = (MeasurementType)pParameter[0];
   pParticleCriteria[0].lower = pLower[0];
@@ -116,6 +119,7 @@ void BackboardFinder::DoVision() {
   eParticleFilterOptions.connectivity8 = TRUE;
   imaqParticleFilter3(image, image, eParticleCriteria, 1, &eParticleFilterOptions, NULL, &eNumParticles);
   free(eParticleCriteria);
+  */
   
   // Extract Particles (4?)
   ParticleAnalysisReport left, right, top, bottom;
@@ -188,6 +192,7 @@ void BackboardFinder::DoVision() {
   // Calculate x offset from target center
   seesTarget_ = (particles->size() == 3 || particles->size() == 4);
   x_ = seesTarget_ ? top.center_mass_x_normalized : 0.0;
+  //printf("x_ : %f\n", (float) x_);
 
   //printf("CAMERA FAKFDSAJFADSOJG \n");
   // Calculate angle on fieled based on ?
@@ -200,7 +205,9 @@ void BackboardFinder::DoVision() {
   static double t = 0;
   double diff = Timer::GetFPGATimestamp() - t;
   t = Timer::GetFPGATimestamp();
+  
   lastUpdate_ = t;
+  
   static int counts = 0;
   counts++;
   if (counts % 10 == 0) {
