@@ -126,7 +126,6 @@ class MainRobot : public IterativeRobot {
   DriverStationLCD* lcd_;
   bool oldAutoAlignButton_;
   double shooterTargetVelocity_;
-  double power_;
   bool oldShooterSwitch_;
   bool oldIncreaseButton_;
   bool oldDecreaseButton_;
@@ -136,6 +135,7 @@ class MainRobot : public IterativeRobot {
 
   // Autonomous
   double autonDelay_;
+  Timer* autonTimer_;
   enum AutonMode {
     AUTON_NONE = 0,
     AUTON_FENDER,

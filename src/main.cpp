@@ -124,6 +124,7 @@ MainRobot::MainRobot() {
   oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
 
   autonDelay_ = 0.0;
+  autonTimer_ = new Timer();
   autonMode_ = AUTON_NONE;
 }
 
@@ -137,10 +138,11 @@ void MainRobot::AutonomousInit() {
   constants_->LoadFile();
 //  target_->Start();
   GetWatchdog().SetEnabled(false);
-  power_ = 0;
-  // This no workey :(
+  autonTimer_->Reset();
+  autonTimer_->Start();
+
   if (autoBaseCmd_) {
-      delete autoBaseCmd_;
+    delete autoBaseCmd_;
   }
 
   /*
@@ -248,7 +250,9 @@ void MainRobot::DisabledPeriodic() {
 }
 
 void MainRobot::AutonomousPeriodic() {
-  autoBaseCmd_->Run();
+  if (autonTimer_->Get() > autonDelay_) {
+    autoBaseCmd_->Run();
+  }
 }
 
 void MainRobot::TeleopPeriodic() {
