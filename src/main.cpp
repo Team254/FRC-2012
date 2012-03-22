@@ -116,7 +116,7 @@ MainRobot::MainRobot() {
 
   shooterTargetVelocity_ = 0;
   autoBaseCmd_ = NULL;
-  
+
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
   // Shooter button guards
   oldShooterSwitch = operatorControl_->GetShooterSwitch();
@@ -139,7 +139,7 @@ void MainRobot::AutonomousInit() {
   if (autoBaseCmd_) {
       delete autoBaseCmd_;
   }
-  
+
   /*
   autoBaseCmd_ = new SequentialCommand(5, new ShootCommand(shooter_, intake_, false, 3.75),
                  new DriveCommand(drivebase_, 50,  false),
@@ -148,7 +148,7 @@ void MainRobot::AutonomousInit() {
                  new ShootCommand(shooter_, intake_, true, 10.0)
                  );
                  */
-                 
+
   //coopertition bridge
   /*
   autoBaseCmd_ = new SequentialCommand(5, new ShootCommand(shooter_, intake_, false, 3.75),
@@ -193,7 +193,7 @@ void MainRobot::TeleopInit() {
   GetWatchdog().SetEnabled(true);
 }
 
-void MainRobot::DisabledPeriodic() {  
+void MainRobot::DisabledPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Gyro: %f\n", gyro_->GetAngle());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Sens: %f\n", constants_->gyroSensitivity);
   if (operatorControl_->GetIntakeButton()) {
@@ -236,54 +236,48 @@ void MainRobot::TeleopPeriodic() {
   }
   counter++;
   */
-  
-  
+
   // Update shooter power/manual control
-  if (operatorControl_->GetShooterSwitch()) {
-    //printf("switch on\n");
-    if (operatorControl_->GetFenderButton()) {
-      shooterTargetVelocity_ = 38;
-    } else if (operatorControl_->GetFarFenderButton()) {
-      shooterTargetVelocity_ = 46;
-    } else if (operatorControl_->GetKeyCloseButton()) {
-      shooterTargetVelocity_ = 48;
-    } else if (operatorControl_->GetKeyFarButton()) {
-      shooterTargetVelocity_ = 53;
-    }
-    if (!oldShooterSwitch) {
-      shooterTargetVelocity_ = 38;
-      printf("flipped\n");
-      constants_->LoadFile();
-    } else {
-      if (operatorControl_->GetIncreaseButton() && !increaseButton) {
-          shooterTargetVelocity_ += 1;
-      } else if (operatorControl_->GetDecreaseButton() && !decreaseButton) {
-          shooterTargetVelocity_ -= 1;
-      }
-    }
-  } else {
-    shooterTargetVelocity_ = 0;
+  if (operatorControl_->GetFenderButton()) {
+    shooterTargetVelocity_ = 38;
+  } else if (operatorControl_->GetFarFenderButton()) {
+    shooterTargetVelocity_ = 46;
+  } else if (operatorControl_->GetKeyCloseButton()) {
+    shooterTargetVelocity_ = 48;
+  } else if (operatorControl_->GetKeyFarButton()) {
+    shooterTargetVelocity_ = 53;
+  } else if (operatorControl_->GetIncreaseButton() && !increaseButton) {
+    shooterTargetVelocity_ += 1;
+  } else if (operatorControl_->GetDecreaseButton() && !decreaseButton) {
+    shooterTargetVelocity_ -= 1;
   }
-  // Add rightmost row of default power things here
 
   // LED ring transistor (when we get it)
-  ledRingSwitch_->Set(shooterTargetVelocity_ > 0);
-  
+  ledRingSwitch_->Set(operatorControl_->GetShooterSwitch());
+
+  if (operatorControl_->GetShooterSwitch()) {
+    // Re-load the shooter PID constants whenever the shooter is turned on.
+    if (!oldShooterSwitch) {
+      constants_->LoadFile();
+    }
+    shooter_->SetTargetVelocity(shooterTargetVelocity_);
+  } else {
+    shooter_->SetTargetVelocity(0);
+  }
+  bool shooterDone = shooter_->PIDUpdate();
+
   // Update shooter button guards
   oldShooterSwitch = operatorControl_->GetShooterSwitch();
   increaseButton = operatorControl_->GetIncreaseButton();
   decreaseButton = operatorControl_->GetDecreaseButton();
-  
-  shooter_->SetTargetVelocity(shooterTargetVelocity_);
-  bool shooterDone = shooter_->PIDUpdate();
-  
-  if (operatorControl_->GetShooterSwitch() && shooterDone && 
-    operatorControl_->GetAutoShootButton()) {
-    shooter_->SetLinearConveyorPower(1);
-    intake_->SetIntakePower(1);
-  } else if (operatorControl_->GetAutoShootButton()) {
-    shooter_->QueueBall();
-    intake_->SetIntakePower(1);
+
+  if (operatorControl_->GetAutoShootButton()) {
+    if (operatorControl_->GetShooterSwitch() && shooterDone) {
+      shooter_->SetLinearConveyorPower(1.0);
+    } else {
+      shooter_->SetLinearConveyorPower(0.0);
+    }
+    intake_->SetIntakePower(1.0);
   } else if (operatorControl_->GetShootButton()) {
     shooter_->SetLinearConveyorPower(1.0);
     intake_->SetIntakePower(1.0);
@@ -297,19 +291,6 @@ void MainRobot::TeleopPeriodic() {
     shooter_->SetLinearConveyorPower(0.0);
     intake_->SetIntakePower(0.0);
   }
-  
-  /* queueing
-  // Automatic ball queueing control.
-  if (xbox->GetTwist() < -0.75) {
-    //    if (shooter_->QueueBall() && !oldBallQueueSwitch_) {
-    //      shooter_->ShootBall();
-    //    }
-    intake_->SetIntakePower(1.0);
-  } else {
-    shooter_->SetLinearConveyorPower(0);
-    intake_->SetIntakePower(0);
-  }
-  */
 
   // Only have Teleop and AutoAlign Drivers right now
   if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
