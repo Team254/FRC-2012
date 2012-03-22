@@ -1,6 +1,6 @@
 #include "auto/AutoAlignCommand.h"
 #include "subsystems/Drive.h"
-#include "drivers/AutoTurnDriver.cpp"
+#include "drivers/AutoTurnDriver.h"
 
 AutoAlignCommand::AutoAlignCommand(Drive* drive, AutoTurnDriver* autoTurn, double timeout) {
   SetTimeout(timeout);
