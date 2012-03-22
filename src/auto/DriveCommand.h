@@ -48,10 +48,7 @@ class DriveCommand : public AutoCommand {
   // Should pizza wheels be down?
   bool usePizza_;
   bool resetPizza_;
-  double oldLeftDist_;
-  double oldRightDist_;
-  MovingAverageFilter leftFilter;
-  MovingAverageFilter rightFilter;
+  double startingAngle_;
 };
 
 #endif  // AUTO_DRIVE_COMMAND_H_
