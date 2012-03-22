@@ -43,6 +43,7 @@ class AutoTurnDriver : public Driver {
   bool staticFriction_;
   BackboardFinder* target_;
   double angleGoal_;
+  bool foundTarget_;
 };
 
 #endif

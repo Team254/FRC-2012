@@ -12,7 +12,8 @@ AutoTurnDriver::AutoTurnDriver(Drive* drive, BackboardFinder* target) : Driver(d
   filterL_ = new MovingAverageFilter(5);
   filterR_ = new MovingAverageFilter(5);
   constants_ = Constants::GetInstance();
-  pid_ = new Pid(&constants_->autoAlignKP, &constants_->autoAlignKI, &constants_->autoAlignKD);
+  //pid_ = new Pid(&constants_->autoAlignKP, &constants_->autoAlignKI, &constants_->autoAlignKD);
+  pid_ = new Pid(&constants_->turnKP, &constants_->turnKI, &constants_->turnKD);
   pidL_ = new Pid(&constants_->driveVelKP, &constants_->driveVelKI, &constants_->driveVelKD);
   pidR_ = new Pid(&constants_->driveVelKP, &constants_->driveVelKI, &constants_->driveVelKD);
   target_ = target;
@@ -30,7 +31,10 @@ void AutoTurnDriver::Reset() {
   staticFriction_ = true;
   filterL_->Reset();
   filterR_->Reset();
-  target_->DoVision();
+  //target_->DoVision();
+  foundTarget_ = false;
+  printf("did reset auto turn\n");
+  
 }
 
 
@@ -42,20 +46,27 @@ bool AutoTurnDriver::UpdateDriver() {
     lastTimer_ = -1; // fix this later
     lastPosL_ = drive_->GetLeftEncoderDistance();
     lastPosR_ = drive_->GetRightEncoderDistance();
-    // Grab a camera image angle and reset the gyro
-    angleGoal_ = target_->GetAngle();
-    drive_->ResetGyro();
+
     printf("RESET FARGAGAGJADGAHGDSGDHFGASG\n");
   }
   drive_->SetHighGear(false); 
   drive_->SetBrakeOn(false);
+  
+  if (!foundTarget_ && target_->SeesTarget() && target_->HasFreshTarget()) {
+	  // Grab a camera image angle and reset the gyro
+	  drive_->ResetGyro();
+	  angleGoal_ = -target_->GetAngle();
+	  printf("**********\n**ANGLE: %f %f \n\n", angleGoal_, drive_->GetGyroAngle());
+	  foundTarget_ = true;
+  }
 
-  if(target_->SeesTarget()) {
+  if(foundTarget_) {
     double output = pid_->Update(angleGoal_, drive_->GetGyroAngle());
+    printf("angle goal: %f gyro: %f output: %f\n", angleGoal_, drive_->GetGyroAngle(), output);
     drive_->SetLinearPower(-output, output);
   } else {
     angleGoal_ = 0;
-    drive_->SetLinearPower(-0, 0);
+    drive_->SetLinearPower(0, 0);
   }
 
 

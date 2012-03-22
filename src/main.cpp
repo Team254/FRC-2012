@@ -16,6 +16,7 @@
 #include "util/Functions.h"
 #include "util/Logger.h"
 #include "util/PidTuner.h"
+#include "util/RelativeGyro.h"
 #include "vision/BackboardFinder.h"
 #include "drivers/AutoTurnDriver.h"
 #include "auto/SequentialCommand.h"
@@ -50,7 +51,7 @@ MainRobot::MainRobot() {
   conveyorEncoder_ = new Encoder((int)constants_->conveyorEncoderPortA,
                                  (int)constants_->conveyorEncoderPortB, true);
   conveyorEncoder_->Start();
-  gyro_ = new Gyro((int)constants_->gyroPort);
+  gyro_ = new RelativeGyro((int)constants_->gyroPort);
   gyro_->SetSensitivity(constants_->gyroSensitivity);
   bumpSensor_ = new DigitalInput((int)constants_->bumpSensorPort);
   conveyorBallSensor_ = new AnalogChannel((int)constants_->conveyorBallSensorPort);
@@ -91,14 +92,14 @@ MainRobot::MainRobot() {
   operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
 
   // Vision Tasks
-//  target_ = new BackboardFinder();
-  //target_->Start();
+  target_ = new BackboardFinder();
+  target_->Start();
   ledRingSwitch_ = new DigitalOutput((int)constants_->ledRingSwitchPort);
 
   // Drivers
   teleopDriver_ = new TeleopDriver(drivebase_, leftJoystick_, rightJoystick_, operatorControl_);
   baselockDriver_ = new BaselockDriver(drivebase_, leftJoystick_);
-//  autoAlignDriver_ = new AutoTurnDriver(drivebase_, target_);
+  autoAlignDriver_ = new AutoTurnDriver(drivebase_, target_);
 
   // Set the current Driver to teleop, though this will change later
   currDriver_ = teleopDriver_;
@@ -246,6 +247,9 @@ void MainRobot::DisabledPeriodic() {
     gyro_->SetSensitivity(constants_->gyroSensitivity);
     gyro_->Reset();
   }
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Convey: %d", conveyorEncoder_->Get());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Ball: %d", conveyorBallSensor_->GetValue());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "T: %f %f", (float) target_->GetAngle(), (float) target_->GetX());
   lcd_->UpdateLCD();
 }
 
@@ -258,7 +262,10 @@ void MainRobot::AutonomousPeriodic() {
 void MainRobot::TeleopPeriodic() {
   GetWatchdog().Feed();
   drivebase_->SetBrakeOn(false);
-
+  static Logger* driveLog = new Logger("/turnLog.log");
+  if(rightJoystick_->GetRawButton((int)constants_->quickTurnPort)) {
+	  driveLog->Log("%f,%f\n", target_->GetX(), drivebase_->GetGyroAngle());
+  }
   /*
   static int counter = 0;
   static Logger* driveLog = new Logger("/driveLog.log");
@@ -355,15 +362,18 @@ void MainRobot::TeleopPeriodic() {
   //oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
   // If pizza wheels are up, set intake up
-  if(drivebase_->GetPizzaUp()) {
+  
+  if(!drivebase_->GetPizzaUp()) {
     intake_->SetIntakePosition(Intake::INTAKE_UP);
   } else {
     intake_->SetIntakePosition(operatorControl_->GetIntakePositionSwitch());
   }
+  //intake_->SetIntakePosition(operatorControl_->GetIntakePositionSwitch());
 
   // LCD display
   double velocity = shooter_->GetVelocity();
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Shoot: %.0f rps", shooterTargetVelocity_);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "T: %f %f", (float) target_->GetAngle(), (float) target_->GetX());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f rps", shooterTargetVelocity_);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Ranger: %d", ballRanger_->GetValue());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "Gyro: %f", gyro_->GetAngle());
   lcd_->UpdateLCD();
