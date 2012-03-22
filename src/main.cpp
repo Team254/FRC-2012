@@ -23,6 +23,7 @@
 #include "auto/ShootCommand.h"
 #include "auto/DriveCommand.h"
 #include "auto/BridgeBallsCommand.h"
+#include "auto/AutoAlignCommand.h"
 #include "auto/TurnCommand.h"
 
 MainRobot::MainRobot() {
@@ -139,6 +140,10 @@ void MainRobot::AutonomousInit() {
   constants_->LoadFile();
 //  target_->Start();
   GetWatchdog().SetEnabled(false);
+  
+  intake_->SetIntakePosition(Intake::INTAKE_UP);
+  drivebase_->SetLinearPower(0,0);
+  
   autonTimer_->Reset();
   autonTimer_->Start();
 
@@ -153,14 +158,16 @@ void MainRobot::AutonomousInit() {
     case AUTON_FENDER:
       break;
     case AUTON_BRIDGE_SLOW:
-      break;
-    case AUTON_BRIDGE_FAST:
-      autoBaseCmd_ = new SequentialCommand(5,
-          new ShootCommand(shooter_, intake_, false, 3.75),
+      autoBaseCmd_ = new SequentialCommand(6,
+          new ShootCommand(shooter_, intake_, false, 3),
           new DriveCommand(drivebase_, 50,  false),
           new BridgeBallsCommand(intake_, shooter_, true, 5.0),
           new DriveCommand(drivebase_, -50, false),
+          new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.5),
           new ShootCommand(shooter_, intake_, true, 10.0));
+      break;
+    case AUTON_BRIDGE_FAST:
+
       break;
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = new SequentialCommand(11,
@@ -208,7 +215,7 @@ void MainRobot::DisabledPeriodic() {
   }
 
   // Autonomous mode selection
-  if (operatorControl_->GetIncreaseButton() && !oldAutonSelectButton_) {
+  if (operatorControl_->GetAutonSelectButton() && !oldAutonSelectButton_) {
     autonMode_ = (AutonMode)(autonMode_ + 1);
     if (autonMode_ == NUM_AUTON_MODES) {
       autonMode_ = AUTON_NONE;
@@ -247,9 +254,7 @@ void MainRobot::DisabledPeriodic() {
     gyro_->SetSensitivity(constants_->gyroSensitivity);
     gyro_->Reset();
   }
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Convey: %d", conveyorEncoder_->Get());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Ball: %d", conveyorBallSensor_->GetValue());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "T: %f %f", (float) target_->GetAngle(), (float) target_->GetX());
+
   lcd_->UpdateLCD();
 }
 
@@ -372,6 +377,8 @@ void MainRobot::TeleopPeriodic() {
 
   // LCD display
   double velocity = shooter_->GetVelocity();
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "left:%f", drivebase_->GetLeftEncoderDistance());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "right:%f", drivebase_->GetRightEncoderDistance());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "T: %f %f", (float) target_->GetAngle(), (float) target_->GetX());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f rps", shooterTargetVelocity_);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Ranger: %d", ballRanger_->GetValue());

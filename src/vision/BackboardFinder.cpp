@@ -210,13 +210,13 @@ void BackboardFinder::DoVision() {
   
   static int counts = 0;
   counts++;
-  if (counts % 10 == 0) {
+ /* if (counts % 10 == 0) {
     for (int i = 0; i < particles->size() ; i++) {
       printf("i: %d | x: %f | y: %f\n", i,  (float) particles->at(i).center_mass_x_normalized, (float) particles->at(i).center_mass_y_normalized); 
     }
     printf("\n\n");
   }
-
+*/
   double middleGap = right.boundingRect.left - (left.boundingRect.left + left.boundingRect.width);
 
 }

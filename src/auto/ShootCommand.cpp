@@ -16,8 +16,12 @@ void ShootCommand::Initialize() {
 }
 
 bool ShootCommand::Run() {
-  if (shooter_->PIDUpdate()) {
-      shooter_->SetLinearConveyorPower(1);
+  shooter_->SetTargetVelocity(Constants::GetInstance()->autoShootKeyVel);
+  bool atSpeed = shooter_->PIDUpdate();
+  printf("atspeed: %d\n", atSpeed);
+  if (atSpeed) {
+	  printf("im at speeed bioootccchhhh\n");
+    shooter_->SetLinearConveyorPower(1);
     if (runIntake_) {
       intake_->SetIntakePower(1);
     } else {
@@ -27,6 +31,7 @@ bool ShootCommand::Run() {
     shooter_->SetLinearConveyorPower(0);
     intake_->SetIntakePower(0);
   }
+
   bool done = TimeoutExpired();
   if (done) {
     shooter_->SetTargetVelocity(0);

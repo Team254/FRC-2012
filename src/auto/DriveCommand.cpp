@@ -27,7 +27,7 @@ bool DriveCommand::Run() {
   double currRightDist = drive_->GetRightEncoderDistance();
   
   // If the goal has been reached, this command is done.
-  if (fabs(currLeftDist - distanceGoal_ ) < 3 && fabs(currRightDist- distanceGoal_) < 3) {
+  if (fabs(currLeftDist - distanceGoal_ ) < 3 || fabs(currRightDist- distanceGoal_) < 3) {
     drive_->SetPizzaWheelDown(resetPizza_);
     drive_->SetLinearPower(0, 0);
     return true;
@@ -36,7 +36,7 @@ bool DriveCommand::Run() {
   // Get PID feedback and send back to the motors.
   double leftPIDOutput = PwmLimit(leftPid_->Update(distanceGoal_, currLeftDist));
   double rightPIDOutput = PwmLimit(rightPid_->Update(distanceGoal_, currRightDist));
-  double angleDiff = drive_->GetGyroAngle() - startingAngle_;
+  double angleDiff = startingAngle_ - drive_->GetGyroAngle();
   double straightGain = angleDiff * Constants::GetInstance()->straightDriveGain;
   double leftPwr = leftPIDOutput - straightGain;
   double rightPwr = rightPIDOutput + straightGain;

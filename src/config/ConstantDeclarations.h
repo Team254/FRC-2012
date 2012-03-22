@@ -153,5 +153,5 @@ DECLARE_DOUBLE(poofometerHighCorrection, 1.0)
 DECLARE_DOUBLE(gyroSensitivity, 0.0005)
 
 // Automomous
-DECLARE_DOUBLE(autoShootKeyVel, 52)
-DECLARE_DOUBLE(autoAlignThreshold, 0.1)
+DECLARE_DOUBLE(autoShootKeyVel, 51)
+DECLARE_DOUBLE(autoAlignThreshold, 1)

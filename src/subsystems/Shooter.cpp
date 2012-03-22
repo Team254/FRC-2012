@@ -67,9 +67,11 @@ bool Shooter::PIDUpdate() {
   double filteredOutput = UpdateOutputFilter(outputValue_);
   SetLinearPower(filteredOutput);
   //double t = GetTime();
-  //PidTuner::PushData(targetVelocity_, velocity_, t);
-  //printf("target: %f vel: %f corrected: %f\n",targetVelocity_,velocity_,t);
-  return (fabs(correctedTargetVelocity_ - velocity_) < VELOCITY_THRESHOLD);
+
+  bool ret = fabs(correctedTargetVelocity_ - velocity_) < VELOCITY_THRESHOLD;
+  printf("target: %f vel: %f ret: %d\n",correctedTargetVelocity_,velocity_, ret);
+  PidTuner::PushData(correctedTargetVelocity_, velocity_, (ret) ? 50.0 : 0.0);
+  return ret == true;
 }
 
 void Shooter::SetLinearConveyorPower(double pwm) {
