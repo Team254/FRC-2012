@@ -36,7 +36,7 @@ bool DriveCommand::Run() {
   // Get PID feedback and send back to the motors.
   double leftPIDOutput = PwmLimit(leftPid_->Update(distanceGoal_, currLeftDist));
   double rightPIDOutput = PwmLimit(rightPid_->Update(distanceGoal_, currRightDist));
-  double angleDiff = startingAngle_ - drive_->GetGyroAngle();
+  double angleDiff = drive_->GetGyroAngle() - startingAngle_;
   double straightGain = angleDiff * Constants::GetInstance()->straightDriveGain;
   double leftPwr = leftPIDOutput - straightGain;
   double rightPwr = rightPIDOutput + straightGain;

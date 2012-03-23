@@ -13,7 +13,7 @@ class ShootCommand : public AutoCommand {
   /**
    * Constructor. Takes shooter and intake objects and whether or not to run the intake
    */
-  ShootCommand(Shooter* shooter, Intake* intake, bool runIntake, double timeout);
+  ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,double shootSpeed, double timeout);
 
   /**
    * Initializes 
@@ -34,7 +34,7 @@ class ShootCommand : public AutoCommand {
   Shooter* shooter_;
   Intake* intake_;
   bool runIntake_;
-  
+  double shootSpeed_;
 };
 
 #endif

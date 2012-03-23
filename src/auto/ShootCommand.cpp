@@ -3,11 +3,12 @@
 #include "subsystems/Shooter.h"
 #include "subsystems/Intake.h"
 
-ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake, double timeout) {
+ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,double shootSpeed, double timeout) {
   SetTimeout(timeout);
   shooter_ = shooter;
   intake_ = intake;
   runIntake_ = runIntake;
+  shootSpeed_ = shootSpeed;
 }
 
 void ShootCommand::Initialize() {
@@ -16,7 +17,7 @@ void ShootCommand::Initialize() {
 }
 
 bool ShootCommand::Run() {
-  shooter_->SetTargetVelocity(Constants::GetInstance()->autoShootKeyVel);
+  shooter_->SetTargetVelocity(shootSpeed_);
   bool atSpeed = shooter_->PIDUpdate();
   printf("atspeed: %d\n", atSpeed);
   if (atSpeed) {

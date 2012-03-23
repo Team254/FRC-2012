@@ -53,7 +53,7 @@ MainRobot::MainRobot() {
                                  (int)constants_->conveyorEncoderPortB, true);
   conveyorEncoder_->Start();
   gyro_ = new RelativeGyro((int)constants_->gyroPort);
-  gyro_->SetSensitivity(constants_->gyroSensitivity);
+  //gyro_->SetSensitivity(constants_->gyroSensitivity);
   bumpSensor_ = new DigitalInput((int)constants_->bumpSensorPort);
   conveyorBallSensor_ = new AnalogChannel((int)constants_->conveyorBallSensorPort);
   poofMeter_ = new AnalogChannel((int)constants_->poofMeterPort);
@@ -130,6 +130,13 @@ MainRobot::MainRobot() {
   autonMode_ = AUTON_NONE;
 }
 
+void MainRobot::ResetMotorPower() {
+	drivebase_->SetLinearPower(0, 0);
+	shooter_->SetLinearPower(0);
+	shooter_->SetLinearConveyorPower(0);
+	intake_->SetIntakePower(0);
+}
+
 void MainRobot::DisabledInit() {
   drivebase_->ResetEncoders();
   drivebase_->ResetGyro();
@@ -142,8 +149,8 @@ void MainRobot::AutonomousInit() {
   GetWatchdog().SetEnabled(false);
   
   intake_->SetIntakePosition(Intake::INTAKE_UP);
-  drivebase_->SetLinearPower(0,0);
   
+  ResetMotorPower();
   autonTimer_->Reset();
   autonTimer_->Start();
 
@@ -156,22 +163,25 @@ void MainRobot::AutonomousInit() {
     case AUTON_NONE:
       break;
     case AUTON_FENDER:
+      autoBaseCmd_ = new SequentialCommand(2, 
+   		  new DriveCommand(drivebase_, -40, false),
+   		  new ShootCommand(shooter_, intake_, false, 38, 5));
       break;
     case AUTON_BRIDGE_SLOW:
       autoBaseCmd_ = new SequentialCommand(6,
-          new ShootCommand(shooter_, intake_, false, 3),
+          new ShootCommand(shooter_, intake_, false,Constants::GetInstance()->autoShootKeyVel, 3),
           new DriveCommand(drivebase_, 50,  false),
           new BridgeBallsCommand(intake_, shooter_, true, 5.0),
           new DriveCommand(drivebase_, -50, false),
           new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.5),
-          new ShootCommand(shooter_, intake_, true, 10.0));
+          new ShootCommand(shooter_, intake_, true,Constants::GetInstance()->autoShootKeyVel, 10.0));
       break;
     case AUTON_BRIDGE_FAST:
 
       break;
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = new SequentialCommand(11,
-          new ShootCommand(shooter_, intake_, false, 3.75),
+          new ShootCommand(shooter_, intake_, false, Constants::GetInstance()->autoShootKeyVel, 3.75),
           new TurnCommand(drivebase_, 90, 3),
           new DriveCommand(drivebase_, 132, false),
           new TurnCommand(drivebase_, -90, 3),
@@ -181,7 +191,7 @@ void MainRobot::AutonomousInit() {
           new TurnCommand(drivebase_, 90, 3),
           new DriveCommand(drivebase_, -132, false),
           new TurnCommand(drivebase_, -90, 3),
-          new ShootCommand(shooter_, intake_, true, 10.0));
+          new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->autoShootKeyVel, 10.0));
       break;
     default:
       autoBaseCmd_ = NULL;
@@ -198,7 +208,7 @@ void MainRobot::TeleopInit() {
   drivebase_->ResetEncoders();
   testTimer_->Start();
   shooter_->ResetQueueState();
-
+  ResetMotorPower();
   // Start off with the TeleopDriver
   currDriver_ = teleopDriver_;
   currDriver_->Reset();
@@ -258,7 +268,7 @@ void MainRobot::DisabledPeriodic() {
   lcd_->UpdateLCD();
 }
 
-void MainRobot::AutonomousPeriodic() {
+void MainRobot::AutonomousPeriodic() { 	
   if (autonTimer_->Get() > autonDelay_ && autoBaseCmd_) {
     autoBaseCmd_->Run();
   }

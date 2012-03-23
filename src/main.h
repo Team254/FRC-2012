@@ -61,6 +61,11 @@ class MainRobot : public IterativeRobot {
    * Is called periodically as long as the robot is in Teleop mode
    */
   virtual void TeleopPeriodic();
+  
+  /**
+   * Resets motor powers.
+   */
+  void ResetMotorPower();
 
  private:
 
