@@ -5,7 +5,8 @@
 #include "util/PidTuner.h"
 #include "config/Constants.h"
 
-DriveCommand::DriveCommand(Drive* drive, double distance, bool usePizza) {
+DriveCommand::DriveCommand(Drive* drive, double distance, bool usePizza, double timeout) {
+  SetTimeout(timeout);
   drive_ = drive;
   distanceGoal_ = distance;
   usePizza_ = usePizza;
@@ -14,20 +15,40 @@ DriveCommand::DriveCommand(Drive* drive, double distance, bool usePizza) {
   Constants* constants = Constants::GetInstance();
   leftPid_ = new Pid(&constants->driveKP, &constants->driveKI, &constants->driveKD);
   rightPid_ = new Pid(&constants->driveKP, &constants->driveKI, &constants->driveKD);
+  driveTimer_ = new Timer();
+  prevTime_ = 0;
+  prevLeftDist_ = 0;
+  prevRightDist_ = 0;
 }
 
 void DriveCommand::Initialize() {
+  AutoCommand::Initialize();
   drive_->ResetEncoders();
   drive_->SetPizzaWheelDown(usePizza_);
   startingAngle_ = drive_->GetGyroAngle();
+  driveTimer_->Reset();
+  driveTimer_->Start();
+  prevTime_ = driveTimer_->Get();
+  prevLeftDist_ = drive_->GetLeftEncoderDistance();
+  prevRightDist_ = drive_->GetRightEncoderDistance();
 }
 
 bool DriveCommand::Run() {
+  if (TimeoutExpired()) {
+	drive_->SetLinearPower(0, 0);
+	return true;
+  }
   double currLeftDist = drive_->GetLeftEncoderDistance();
   double currRightDist = drive_->GetRightEncoderDistance();
-  
+  double currTime = driveTimer_->Get();
+  double lVel = (currLeftDist - prevLeftDist_)/(currTime - prevTime_);
+  double rVel = (currRightDist - prevRightDist_)/(currTime - prevTime_);
+  prevTime_ = currTime;
+  prevLeftDist_ = currLeftDist;
+  prevRightDist_ = currRightDist;
   // If the goal has been reached, this command is done.
-  if (fabs(currLeftDist - distanceGoal_ ) < 3 || fabs(currRightDist- distanceGoal_) < 3) {
+  if ((fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2)
+		  && (fabs(lVel) < 1 || fabs(rVel) < 1)) {
     drive_->SetPizzaWheelDown(resetPizza_);
     drive_->SetLinearPower(0, 0);
     return true;
