@@ -154,4 +154,9 @@ DECLARE_DOUBLE(gyroSensitivity, 0.0005)
 
 // Automomous
 DECLARE_DOUBLE(autoShootKeyVel, 51)
+DECLARE_DOUBLE(autoShootFenderVel, 38)
+DECLARE_DOUBLE(autoShootBridgeVel, 60)
 DECLARE_DOUBLE(autoAlignThreshold, 1)
+DECLARE_DOUBLE(autoKeyToBridgeDist, 43)
+DECLARE_DOUBLE(autoKeyToFenderDist, 64)
+DECLARE_DOUBLE(autoCenterToEdgeDist, 60)

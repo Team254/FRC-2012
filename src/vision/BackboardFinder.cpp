@@ -78,11 +78,11 @@ void BackboardFinder::DoVision() {
   double pUpper[1] = {100};
   int pCalibrated[1] = {0};
   int pExclude[1] = {0};
-  
+
   ParticleFilterCriteria2* pParticleCriteria = NULL;
   ParticleFilterOptions pParticleFilterOptions;
   int pNumParticles;
-  
+
   /*
   pParticleCriteria = (ParticleFilterCriteria2*)malloc(sizeof(ParticleFilterCriteria2));
   pParticleCriteria[0].parameter = (MeasurementType)pParameter[0];
@@ -96,7 +96,7 @@ void BackboardFinder::DoVision() {
   pParticleFilterOptions.connectivity8 = TRUE;
   imaqParticleFilter3(image, image, pParticleCriteria, 1, &pParticleFilterOptions, NULL, &pNumParticles);
   free(pParticleCriteria);
-  
+
   // Filter based on squarishness, eParamter = elongationParamter
   int eParameter =  53;
   double eLower = 1.2;
@@ -120,7 +120,7 @@ void BackboardFinder::DoVision() {
   imaqParticleFilter3(image, image, eParticleCriteria, 1, &eParticleFilterOptions, NULL, &eNumParticles);
   free(eParticleCriteria);
   */
-  
+
   // Extract Particles (4?)
   ParticleAnalysisReport left, right, top, bottom;
   vector<ParticleAnalysisReport>* particles = bimg->GetOrderedParticleAnalysisReports();
@@ -155,7 +155,7 @@ void BackboardFinder::DoVision() {
 #define IN_LINE_X(a,b)  (fabs(a.center_mass_x_normalized  - b.center_mass_x_normalized) < X_DELTA)
 #define IN_LINE_Y(a,b)  (fabs(a.center_mass_y_normalized  - b.center_mass_y_normalized) < Y_DELTA)
 #define HIGHEST(a,b)    ((a.center_mass_y_normalized < b.center_mass_y_normalized) ? a : b)
-  case 3: 
+  case 3:
     // Two Horizontal or two vertical targets
     if (IN_LINE_Y(particles->at(0), particles->at(1))){
       //printf("case A\n");
@@ -179,6 +179,59 @@ void BackboardFinder::DoVision() {
       // wtf, mate?
     }
     break;
+  case 2:
+    if (particles->at(0).center_mass_x_normalized > .3 && particles->at(1).center_mass_x_normalized > .3) {
+      //case where they are both on the right side of the screen, center axis is the one more to the right
+      //if it only sees 2, the other is the left
+      if(particles->at(0).center_mass_x_normalized > particles->at(1).center_mass_x_normalized) {
+        top = particles->at(0);
+      } else {
+        top = particles->at(1);
+      }
+    } else if (particles->at(0).center_mass_x_normalized < -.3 && particles->at(1).center_mass_x_normalized < -.3) {
+      //case where both are on the left side of the screen, center axis is the one more to the left
+      //if it only sees 2, because the other is to the right
+      if(particles->at(0).center_mass_x_normalized < particles->at(1).center_mass_x_normalized) {
+        top = particles->at(0);
+      } else {
+        top = particles->at(1);
+      }
+    } else if(fabs(particles->at(0).center_mass_x_normalized) < .3 && fabs(particles->at(1).center_mass_x_normalized) < .3) {
+      //case where we can only see 2 in the center, possibly super zoomed in, both have same axis
+      if(particles->at(0).center_mass_y_normalized > particles->at(1).center_mass_y_normalized) {
+        top = particles->at(0);
+      } else {
+        top = particles->at(1);
+      }
+    } else if (fabs(particles->at(0).center_mass_y_normalized) > .3) {
+      //case where one on the side is blocked and one is in the center
+      //the one off from the center line is the top or bottom, central
+      //axis is the same
+      top = particles->at(0);
+    } else {
+      top = particles->at(1);
+    }
+    break;
+  case 1:
+    if (particles->at(0).center_mass_x_normalized > .5) {
+      left = particles->at(0);
+    } else if (particles->at(0).center_mass_x_normalized < -.5) {
+      right = particles->at(0);
+    } else {
+      //same desired axis
+      bottom = particles->at(0);
+      top = particles->at(0);
+    }
+    //if it is the left target, lead it right
+    if(left != NULL) {
+      top = left.center_mass_x_normalized + .5;
+    }
+    //if it is the right target, lead it left
+    if(right != NULL) {
+      top = right.center_mass_x_normalized - .5;
+    }
+    //if it's not left or right and still see's them then the top is set
+    break;
   default:
     break;
   }
@@ -190,7 +243,7 @@ void BackboardFinder::DoVision() {
   // Calculate distance
 
   // Calculate x offset from target center
-  seesTarget_ = (particles->size() == 3 || particles->size() == 4);
+  seesTarget_ = (particles->size() > 0);
   x_ = seesTarget_ ? top.center_mass_x_normalized : 0.0;
   //printf("x_ : %f\n", (float) x_);
 
@@ -200,19 +253,19 @@ void BackboardFinder::DoVision() {
   hDiff_ = right.center_mass_x_normalized - left.center_mass_x_normalized;
   vDiff_ = fabs(top.center_mass_y_normalized - bottom.center_mass_y_normalized);
   //printf("Offset: %f, Horizontal Diff: %f, Vertical Diff: %f\n", top.center_mass_x_normalized, hDiff, vDiff);
-  
+
   delete bimg;
   static double t = 0;
   double diff = Timer::GetFPGATimestamp() - t;
   t = Timer::GetFPGATimestamp();
-  
+
   lastUpdate_ = t;
-  
+
   static int counts = 0;
   counts++;
  /* if (counts % 10 == 0) {
     for (int i = 0; i < particles->size() ; i++) {
-      printf("i: %d | x: %f | y: %f\n", i,  (float) particles->at(i).center_mass_x_normalized, (float) particles->at(i).center_mass_y_normalized); 
+      printf("i: %d | x: %f | y: %f\n", i,  (float) particles->at(i).center_mass_x_normalized, (float) particles->at(i).center_mass_y_normalized);
     }
     printf("\n\n");
   }
