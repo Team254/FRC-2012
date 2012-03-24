@@ -48,7 +48,7 @@ void Shooter::SetTargetVelocity(double velocity) {
   outputValue_ = 0;
   if (velocity > 44) {
     SetHoodUp(true);
-  } else {
+  } else if (velocity > 0) {
     SetHoodUp(false);
   }
 
@@ -68,14 +68,18 @@ bool Shooter::PIDUpdate() {
   SetLinearPower(filteredOutput);
   //double t = GetTime();
 
-  bool ret = fabs(correctedTargetVelocity_ - velocity_) < VELOCITY_THRESHOLD;
-  printf("target: %f vel: %f ret: %d\n",correctedTargetVelocity_,velocity_, ret);
-  PidTuner::PushData(correctedTargetVelocity_, velocity_, (ret) ? 50.0 : 0.0);
-  return ret == true;
+  atTarget_ = fabs(correctedTargetVelocity_ - velocity_) < VELOCITY_THRESHOLD;
+  //printf("target: %f vel: %f ret: %d\n",correctedTargetVelocity_,velocity_, ret);
+  PidTuner::PushData(correctedTargetVelocity_, velocity_, 0.0);
+  return atTarget_ == true;
 }
 
 void Shooter::SetLinearConveyorPower(double pwm) {
   conveyorMotor_->Set(pwm);
+}
+
+bool Shooter::AtTargetVelocity() {
+	return atTarget_;
 }
 
 void Shooter::SetHoodUp(bool up) {

@@ -44,6 +44,7 @@ class DriveCommand : public AutoCommand {
   
   //Timer for velocity calcs
   Timer* driveTimer_;
+  Timer* brakeTimer_;
 
   // Distance goal, more goals can be added (angle, velocity, etc.)
   double distanceGoal_;
@@ -55,6 +56,7 @@ class DriveCommand : public AutoCommand {
   double prevTime_;
   double prevLeftDist_;
   double prevRightDist_;
+  
 };
 
 #endif  // AUTO_DRIVE_COMMAND_H_

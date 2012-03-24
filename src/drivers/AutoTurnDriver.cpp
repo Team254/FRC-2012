@@ -39,6 +39,7 @@ void AutoTurnDriver::Reset() {
 
 
 bool AutoTurnDriver::UpdateDriver() {
+	double curAngle = -drive_->GetGyroAngle();
   if (justReset_) {
     justReset_ = false;
     timer_->Reset();
@@ -61,8 +62,9 @@ bool AutoTurnDriver::UpdateDriver() {
   }
 
   if(foundTarget_) {
-    double output = pid_->Update(angleGoal_, drive_->GetGyroAngle());
- //   printf("angle goal: %f gyro: %f output: %f\n", angleGoal_, drive_->GetGyroAngle(), output);
+	
+    double output = pid_->Update(angleGoal_, curAngle);
+    printf("angle goal: %f gyro: %f output: %f\n", angleGoal_, curAngle, output);
     drive_->SetLinearPower(-output, output);
   } else {
     angleGoal_ = 0;
@@ -71,7 +73,7 @@ bool AutoTurnDriver::UpdateDriver() {
 
 
   //PidTuner::PushData(target_->GetX(), output, 0);
-  return fabs(angleGoal_ - drive_->GetGyroAngle()) < constants_->autoAlignThreshold;
+  return fabs(angleGoal_ - curAngle) < constants_->autoAlignThreshold;
 #if 0
   double posL = drive_->GetLeftEncoderDistance();
   double velL = (posL - lastPosL_) / (timer_->Get() - lastTimer_);

@@ -144,7 +144,8 @@ class MainRobot : public IterativeRobot {
   enum AutonMode {
     AUTON_NONE = 0,
     AUTON_FENDER,
-    AUTON_BRIDGE_SLOW,
+    AUTON_CLOSE_BRIDGE_SLOW,
+    AUTON_FAR_BRIDGE_SLOW,
     AUTON_BRIDGE_FAST,
     AUTON_ALLIANCE_BRIDGE,
     NUM_AUTON_MODES

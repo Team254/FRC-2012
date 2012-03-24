@@ -103,8 +103,8 @@ DECLARE_DOUBLE(conveyorCoeffC, 0.3228)
 DECLARE_DOUBLE(conveyorCoeffD, 1.1347)
 
 // Camera relations
-DECLARE_DOUBLE(distanceCoeffA, 0.00002)
-DECLARE_DOUBLE(distanceCoeffB, -0.0077)
+DECLARE_DOUBLE(distanceCoeffA, 244.56)
+DECLARE_DOUBLE(distanceCoeffB, 5)
 DECLARE_DOUBLE(distanceCoeffC, 1.4524)
 
 // Drive tuning
@@ -156,7 +156,7 @@ DECLARE_DOUBLE(gyroSensitivity, 0.0005)
 DECLARE_DOUBLE(autoShootKeyVel, 51)
 DECLARE_DOUBLE(autoShootFenderVel, 38)
 DECLARE_DOUBLE(autoShootBridgeVel, 60)
-DECLARE_DOUBLE(autoAlignThreshold, 1)
+DECLARE_DOUBLE(autoAlignThreshold, 1.0)
 DECLARE_DOUBLE(autoKeyToBridgeDist, 43)
 DECLARE_DOUBLE(autoKeyToFenderDist, 64)
 DECLARE_DOUBLE(autoCenterToEdgeDist, 60)

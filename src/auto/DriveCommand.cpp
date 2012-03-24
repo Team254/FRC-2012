@@ -16,6 +16,7 @@ DriveCommand::DriveCommand(Drive* drive, double distance, bool usePizza, double 
   leftPid_ = new Pid(&constants->driveKP, &constants->driveKI, &constants->driveKD);
   rightPid_ = new Pid(&constants->driveKP, &constants->driveKI, &constants->driveKD);
   driveTimer_ = new Timer();
+  brakeTimer_ = new Timer();
   prevTime_ = 0;
   prevLeftDist_ = 0;
   prevRightDist_ = 0;
@@ -28,6 +29,7 @@ void DriveCommand::Initialize() {
   startingAngle_ = drive_->GetGyroAngle();
   driveTimer_->Reset();
   driveTimer_->Start();
+  brakeTimer_->Reset();
   prevTime_ = driveTimer_->Get();
   prevLeftDist_ = drive_->GetLeftEncoderDistance();
   prevRightDist_ = drive_->GetRightEncoderDistance();
@@ -47,12 +49,13 @@ bool DriveCommand::Run() {
   prevLeftDist_ = currLeftDist;
   prevRightDist_ = currRightDist;
   // If the goal has been reached, this command is done.
-  if ((fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2)
-		  && (fabs(lVel) < 1 || fabs(rVel) < 1)) {
-    drive_->SetPizzaWheelDown(resetPizza_);
-    drive_->SetLinearPower(0, 0);
-    return true;
-  }
+  if(brakeTimer_->Get() > .2) {
+  	  drive_->SetLinearPower(0, 0);
+  	  printf("returnd from brake timer\n");
+  	  return true;
+    }
+  
+  
 
   // Get PID feedback and send back to the motors.
   double leftPIDOutput = PwmLimit(leftPid_->Update(distanceGoal_, currLeftDist));
@@ -61,6 +64,19 @@ bool DriveCommand::Run() {
   double straightGain = angleDiff * Constants::GetInstance()->straightDriveGain;
   double leftPwr = leftPIDOutput - straightGain;
   double rightPwr = rightPIDOutput + straightGain;
+  if (fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2) {
+      drive_->SetPizzaWheelDown(resetPizza_);
+      brakeTimer_->Start();
+    
+      //return false;
+  }
+  
+  if (brakeTimer_->Get() != 0.0 ){
+	  int dir = (distanceGoal_ > 0) ? 1 : -1;
+	  drive_->SetLinearPower((-.3 * dir) - straightGain, (-.3 * dir) + straightGain);
+      return false;
+  }
+    
   drive_->SetLinearPower(leftPwr, rightPwr);
   PidTuner::PushData(leftPwr, straightGain, 0);
 

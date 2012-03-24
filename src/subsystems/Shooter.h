@@ -114,6 +114,8 @@ class Shooter {
   void SetBallShooterTarget(ballStats ball);
 
   void DebugBallQueue();
+  
+  bool AtTargetVelocity();
 
  private:
   /**
@@ -129,6 +131,8 @@ class Shooter {
    * @return the linearized output
    */
   double ConveyorLinearize(double x);
+  
+
 
   // Motors
   Victor* conveyorMotor_;
@@ -162,6 +166,8 @@ class Shooter {
   int outputFilterIndex_;
   double poofCorrectionFactor_;
   bool prevBallSensor_;
+  bool atTarget_;
+  
 };
 
 #endif  // SUBSYSTEMS_SHOOTER_H_

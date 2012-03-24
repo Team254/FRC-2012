@@ -9,6 +9,7 @@
  * Task which updates information regarding distance, angle, and other vision-targeting information.
  */
 class Logger;
+class Constants;
 
 class BackboardFinder : public VisionProcess {
  public:
@@ -66,6 +67,7 @@ class BackboardFinder : public VisionProcess {
   double hDiff_;
   double vDiff_;
   Logger* cameraLog_;
+  Constants* constants_;
 };
 
 #endif  // VISION_BACKBOARD_FINDER_H_

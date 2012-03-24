@@ -2,12 +2,14 @@
 #include <math.h>
 #include "WPILib.h"
 #include "util/Logger.h"
+#include "config/Constants.h"
 
 BackboardFinder::BackboardFinder() : VisionProcess() {
   cameraLog_ = new Logger("/cameraLog.log");
   printf("Initting camera\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
   hDiff_ = 0;
   vDiff_ = 0;
+  constants_ = Constants::GetInstance();
   //camera.WriteResolution(AxisCameraParams::kResolution_320x240);
 }
 
@@ -33,6 +35,11 @@ bool BackboardFinder::SeesTarget() {
 
 void BackboardFinder::LogCamera() {
   cameraLog_->Log("%f,%f,%f\n", GetX(), hDiff_, vDiff_);
+}
+
+double BackboardFinder::GetDistance() {
+	return constants_->distanceCoeffA * pow(hDiff_, 2) + 
+		   constants_->distanceCoeffB * hDiff_ + constants_->distanceCoeffC;
 }
 
 double BackboardFinder::GetAngle() {
@@ -83,7 +90,7 @@ void BackboardFinder::DoVision() {
   ParticleFilterOptions pParticleFilterOptions;
   int pNumParticles;
 
-  /*
+  
   pParticleCriteria = (ParticleFilterCriteria2*)malloc(sizeof(ParticleFilterCriteria2));
   pParticleCriteria[0].parameter = (MeasurementType)pParameter[0];
   pParticleCriteria[0].lower = pLower[0];
@@ -119,7 +126,7 @@ void BackboardFinder::DoVision() {
   eParticleFilterOptions.connectivity8 = TRUE;
   imaqParticleFilter3(image, image, eParticleCriteria, 1, &eParticleFilterOptions, NULL, &eNumParticles);
   free(eParticleCriteria);
-  */
+  
 
   // Extract Particles (4?)
   ParticleAnalysisReport left, right, top, bottom;
@@ -215,20 +222,16 @@ void BackboardFinder::DoVision() {
   case 1:
     if (particles->at(0).center_mass_x_normalized > .5) {
       left = particles->at(0);
+      top = particles->at(0);
+      top.center_mass_x_normalized = 1;
     } else if (particles->at(0).center_mass_x_normalized < -.5) {
       right = particles->at(0);
+      top = particles->at(0);
+      top.center_mass_x_normalized = -1;
     } else {
       //same desired axis
       bottom = particles->at(0);
       top = particles->at(0);
-    }
-    //if it is the left target, lead it right
-    if(left != NULL) {
-      top = left.center_mass_x_normalized + .5;
-    }
-    //if it is the right target, lead it left
-    if(right != NULL) {
-      top = right.center_mass_x_normalized - .5;
     }
     //if it's not left or right and still see's them then the top is set
     break;
@@ -243,9 +246,10 @@ void BackboardFinder::DoVision() {
   // Calculate distance
 
   // Calculate x offset from target center
-  seesTarget_ = (particles->size() > 0);
+  seesTarget_ = (particles->size() > 1) && particles->size() < 5;
   x_ = seesTarget_ ? top.center_mass_x_normalized : 0.0;
-  //printf("x_ : %f\n", (float) x_);
+//  printf("Num Targets: %d, x_ : %f\n", particles->size(), (float) x_);
+ // printf("Angle: %f, Distance: %f\n", GetAngle(), GetDistance());
 
   //printf("CAMERA FAKFDSAJFADSOJG \n");
   // Calculate angle on fieled based on ?

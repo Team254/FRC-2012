@@ -168,28 +168,41 @@ void MainRobot::AutonomousInit() {
    		  new DriveCommand(drivebase_, -64, false, 3),
           new ConcurrentCommand(2,
 		        new DriveCommand(drivebase_, -100, false, .5),
-	   	        new ShootCommand(shooter_, intake_, false, 38, 3.0)));
+	   	        new ShootCommand(shooter_, intake_, true, 38, 2, 6.0)));
       break;
-    case AUTON_BRIDGE_SLOW:
-      autoBaseCmd_ = new SequentialCommand(5, 
-                new ShootCommand(shooter_, intake_, false, 52, 3.0),
-    	   	    new DriveCommand(drivebase_, 43, false, 7),
-    	   	    new BridgeBallsCommand(intake_, shooter_, true, 5.0),
-    	   	    new DriveCommand(drivebase_, -43, false, 3),
-    	   	    new ShootCommand(shooter_, intake_, true, 52, 8.0));
+    case AUTON_CLOSE_BRIDGE_SLOW:
+      autoBaseCmd_ = new SequentialCommand(6, 
+                new ShootCommand(shooter_, intake_, true, 48, 2, 7.0),
+    	   	    new DriveCommand(drivebase_, 146, false, 7),
+    	   	    new ConcurrentCommand(2 ,
+    	   	      new BridgeBallsCommand(intake_, shooter_, true, 3.8),
+    	   	      new DriveCommand(drivebase_, -5.5, false, 4)),
+    	   	    new DriveCommand(drivebase_, -76, false, 6.0),
+    	   	    new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
+    	   	    new ShootCommand(shooter_, intake_, true, 50, 2, 8.0));
       break;
+    case AUTON_FAR_BRIDGE_SLOW:
+    	autoBaseCmd_ = new SequentialCommand(5, 
+    	        new ShootCommand(shooter_, intake_, true, 52, 2, 3.0),
+    	    	new DriveCommand(drivebase_, 43, false, 7),
+    	   	    new ConcurrentCommand(2,
+    	   	    		new BridgeBallsCommand(intake_, shooter_, true, 4.2),
+    	   	    		new DriveCommand(drivebase_, -5, false, 4)),
+      	   	    new DriveCommand(drivebase_, -43, false, 3),
+      	   	    new ShootCommand(shooter_, intake_, true, 52, 2, 8.0));
+        break;
     case AUTON_BRIDGE_FAST:
     	autoBaseCmd_ = new SequentialCommand(6,
-    	          new ShootCommand(shooter_, intake_, false,Constants::GetInstance()->autoShootKeyVel, 3),
+    	          new ShootCommand(shooter_, intake_, false,Constants::GetInstance()->autoShootKeyVel, 2, 3),
     	          new DriveCommand(drivebase_, 50,  false, 4),
     	          new BridgeBallsCommand(intake_, shooter_, true, 5.0),
     	          new DriveCommand(drivebase_, -50, false, 4),
     	          new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.5),
-    	          new ShootCommand(shooter_, intake_, true,Constants::GetInstance()->autoShootKeyVel, 10.0));
+    	          new ShootCommand(shooter_, intake_, true,Constants::GetInstance()->autoShootKeyVel, 2, 10.0));
       break;
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = new SequentialCommand(11,
-          new ShootCommand(shooter_, intake_, false, Constants::GetInstance()->autoShootKeyVel, 3.75),
+          new ShootCommand(shooter_, intake_, false, Constants::GetInstance()->autoShootKeyVel, 2, 3.75),
           new TurnCommand(drivebase_, 90, 3),
           new DriveCommand(drivebase_, 132, false, 7),
           new TurnCommand(drivebase_, -90, 3),
@@ -199,7 +212,7 @@ void MainRobot::AutonomousInit() {
           new TurnCommand(drivebase_, 90, 3),
           new DriveCommand(drivebase_, -132, false, 7),
           new TurnCommand(drivebase_, -90, 3),
-          new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->autoShootKeyVel, 10.0));
+          new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->autoShootKeyVel, 2, 10.0));
       break;
     default:
       autoBaseCmd_ = NULL;
@@ -251,8 +264,11 @@ void MainRobot::DisabledPeriodic() {
     case AUTON_FENDER:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Fender", conveyorEncoder_->Get());
       break;
-    case AUTON_BRIDGE_SLOW:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Bridge slow", conveyorEncoder_->Get());
+    case AUTON_CLOSE_BRIDGE_SLOW:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Near Brd slow", conveyorEncoder_->Get());
+      break;
+    case AUTON_FAR_BRIDGE_SLOW:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Far Brd slow", conveyorEncoder_->Get());
       break;
     case AUTON_BRIDGE_FAST:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Bridge fast", conveyorEncoder_->Get());
@@ -272,7 +288,6 @@ void MainRobot::DisabledPeriodic() {
     gyro_->SetSensitivity(constants_->gyroSensitivity);
     gyro_->Reset();
   }
-
   lcd_->UpdateLCD();
 }
 
@@ -280,6 +295,7 @@ void MainRobot::AutonomousPeriodic() {
   if (autonTimer_->Get() > autonDelay_ && autoBaseCmd_) {
     autoBaseCmd_->Run();
   }
+  shooter_->PIDUpdate();
 }
 
 void MainRobot::TeleopPeriodic() {
@@ -348,10 +364,11 @@ void MainRobot::TeleopPeriodic() {
   if (operatorControl_->GetAutoShootButton()) {
     if (operatorControl_->GetShooterSwitch() && shooterDone) {
       shooter_->SetLinearConveyorPower(1.0);
+      intake_->SetIntakePower(1.0);
     } else {
       shooter_->SetLinearConveyorPower(0.0);
+      intake_->SetIntakePower(0.0);
     }
-    intake_->SetIntakePower(1.0);
   } else if (operatorControl_->GetShootButton()) {
     shooter_->SetLinearConveyorPower(1.0);
     intake_->SetIntakePower(1.0);

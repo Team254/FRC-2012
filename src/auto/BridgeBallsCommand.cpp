@@ -16,40 +16,25 @@ void BridgeBallsCommand::Initialize() {
   state_ = 0; 
   initTime_ = timer_->Get();
   AutoCommand::Initialize();
+  intake_->SetIntakePosition(Intake::INTAKE_DOWN);
 }
 
 bool BridgeBallsCommand::Run(){
-  switch(state_)
-  {
-  	case 0:
-  	  intake_->SetIntakePosition(Intake::INTAKE_DOWN);
-  	  state_ = 1;
-  	  break;
-  	case 1:
-  	  if(runIntake_) {
-  	    intake_->SetIntakePower(1);
-  	  }
-  	  if(timer_->Get() - initTime_ > 2.0) {
-  	    intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
-  	    state_ = 2;
-  	  }
-  	  break;
-  	case 2:
-  	  if(runIntake_) {
-  		intake_->SetIntakePower(1);
-  	  }
-  	  intake_->SetIntakePower(1);
-  	  if(timer_->Get() - initTime_ > 4.0) {
-  	    intake_->SetIntakePosition(Intake::INTAKE_UP);
-  	    state_ = 3;
-  	    intake_->SetIntakePower(0);
-  	    return true;
-  	  }
-  	  break;
-  	default:
-  	  break;
+  intake_->SetIntakePower(1);
+  
+  // Float intake eventually
+  if (timer_->Get() > 2.2) {
+	  intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
   }
-  return TimeoutExpired();
+  
+  // Return condition
+  bool ret = TimeoutExpired();
+  if (ret) {
+	  intake_->SetIntakePower(0);
+	  shooter_->SetTargetVelocity(50);
+	  return ret;
+  }
+  return false;
 }
 
 BridgeBallsCommand ::~BridgeBallsCommand() {
