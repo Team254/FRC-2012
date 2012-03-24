@@ -112,10 +112,10 @@ Skyfire::Skyfire() {
 }
 
 void Skyfire::ResetMotors() {
-	drivebase_->SetLinearPower(0, 0);
-	shooter_->SetLinearPower(0);
-	shooter_->SetLinearConveyorPower(0);
-	intake_->SetIntakePower(0);
+  drivebase_->SetLinearPower(0, 0);
+  shooter_->SetLinearPower(0);
+  shooter_->SetLinearConveyorPower(0);
+  intake_->SetIntakePower(0);
 }
 
 void Skyfire::DisabledInit() {
@@ -139,44 +139,44 @@ void Skyfire::AutonomousInit() {
     case AUTON_NONE:
       break;
     case AUTON_FENDER:
-      autoBaseCmd_ = new SequentialCommand(2, 
-   		  new DriveCommand(drivebase_, -64, false, 3),
-          new ConcurrentCommand(2,
-		        new DriveCommand(drivebase_, -100, false, .5),
-	   	        new ShootCommand(shooter_, intake_, true, 38, 2, 6.0)));
+      autoBaseCmd_ = AUTO_SEQUENTIAL(
+           new DriveCommand(drivebase_, -64, false, 3),
+          AUTO_CONCURRENT(
+              new DriveCommand(drivebase_, -100, false, .5),
+               new ShootCommand(shooter_, intake_, true, 38, 2, 6.0)));
       break;
     case AUTON_CLOSE_BRIDGE_SLOW:
-      autoBaseCmd_ = new SequentialCommand(6, 
-                new ShootCommand(shooter_, intake_, true, 48, 2, 7.0),
-    	   	    new DriveCommand(drivebase_, 146, false, 7),
-    	   	    new ConcurrentCommand(2 ,
-    	   	      new BridgeBallsCommand(intake_, shooter_, true, 3.8),
-    	   	      new DriveCommand(drivebase_, -5.5, false, 4)),
-    	   	    new DriveCommand(drivebase_, -76, false, 6.0),
-    	   	    new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
-    	   	    new ShootCommand(shooter_, intake_, true, 50, 2, 8.0));
+      autoBaseCmd_ = AUTO_SEQUENTIAL(
+          new ShootCommand(shooter_, intake_, true, 48, 2, 7.0),
+           new DriveCommand(drivebase_, 146, false, 7),
+           AUTO_CONCURRENT(
+               new BridgeBallsCommand(intake_, shooter_, true, 3.8),
+               new DriveCommand(drivebase_, -5.5, false, 4)),
+           new DriveCommand(drivebase_, -76, false, 6.0),
+           new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
+          new ShootCommand(shooter_, intake_, true, 50, 2, 8.0));
       break;
     case AUTON_FAR_BRIDGE_SLOW:
-    	autoBaseCmd_ = new SequentialCommand(5, 
-    	        new ShootCommand(shooter_, intake_, true, 52, 2, 3.0),
-    	    	new DriveCommand(drivebase_, 43, false, 7),
-    	   	    new ConcurrentCommand(2,
-    	   	    		new BridgeBallsCommand(intake_, shooter_, true, 4.2),
-    	   	    		new DriveCommand(drivebase_, -5, false, 4)),
-      	   	    new DriveCommand(drivebase_, -43, false, 3),
-      	   	    new ShootCommand(shooter_, intake_, true, 52, 2, 8.0));
+      autoBaseCmd_ = AUTO_SEQUENTIAL(
+          new ShootCommand(shooter_, intake_, true, 52, 2, 3.0),
+          new DriveCommand(drivebase_, 43, false, 7),
+           AUTO_CONCURRENT(
+               new BridgeBallsCommand(intake_, shooter_, true, 4.2),
+               new DriveCommand(drivebase_, -5, false, 4)),
+          new DriveCommand(drivebase_, -43, false, 3),
+          new ShootCommand(shooter_, intake_, true, 52, 2, 8.0));
         break;
     case AUTON_BRIDGE_FAST:
-    	autoBaseCmd_ = new SequentialCommand(6,
-    	          new ShootCommand(shooter_, intake_, false,Constants::GetInstance()->autoShootKeyVel, 2, 3),
-    	          new DriveCommand(drivebase_, 50,  false, 4),
-    	          new BridgeBallsCommand(intake_, shooter_, true, 5.0),
-    	          new DriveCommand(drivebase_, -50, false, 4),
-    	          new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.5),
-    	          new ShootCommand(shooter_, intake_, true,Constants::GetInstance()->autoShootKeyVel, 2, 10.0));
+      autoBaseCmd_ = AUTO_SEQUENTIAL(
+          new ShootCommand(shooter_, intake_, false,Constants::GetInstance()->autoShootKeyVel, 2, 3),
+          new DriveCommand(drivebase_, 50,  false, 4),
+          new BridgeBallsCommand(intake_, shooter_, true, 5.0),
+          new DriveCommand(drivebase_, -50, false, 4),
+          new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.5),
+          new ShootCommand(shooter_, intake_, true,Constants::GetInstance()->autoShootKeyVel, 2, 10.0));
       break;
     case AUTON_ALLIANCE_BRIDGE:
-      autoBaseCmd_ = new SequentialCommand(11,
+      autoBaseCmd_ = AUTO_SEQUENTIAL(
           new ShootCommand(shooter_, intake_, false, Constants::GetInstance()->autoShootKeyVel, 2, 3.75),
           new TurnCommand(drivebase_, 90, 3),
           new DriveCommand(drivebase_, 132, false, 7),

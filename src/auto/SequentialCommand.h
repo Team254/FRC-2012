@@ -6,6 +6,9 @@
 
 #include "auto/AutoCommand.h"
 
+// Macro to wrap the SequentialCommand constructor for convenience.
+#define AUTO_SEQUENTIAL(...) new SequentialCommand(0, __VA_ARGS__, NULL)
+
 /**
  * @author Eric Bakan
  *
@@ -16,11 +19,15 @@ class SequentialCommand : public AutoCommand {
   /**
    * Constructor
    * Accepts a variable-length list of AutoCommand pointers to execute sequentially
-   * The commands will be executed in the order they are passed into the constructor
-   * @param numCommands the number of commands to execute
+   * The commands will be executed in the order they are passed into the constructor. The list of commands
+   * MUST be followed by another argument with value NULL, so that the number of commands can be inferred.
+   *
+   * DO NOT CALL THIS CONSTRUCTOR DIRECTLY -- USE THE AUTO_SEQUENTIAL() MACRO.
+   *
+   * @param dummy a dummy argument to satisfy the requirement that there is at least one
    * @param ... the commands to run
    */
-  SequentialCommand(int numCommands, ...);
+  SequentialCommand(int dummy, ...);
 
   /**
    * Destructor

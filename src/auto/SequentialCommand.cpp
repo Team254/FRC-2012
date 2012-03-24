@@ -2,13 +2,13 @@
 
 #include <stdarg.h>
 
-SequentialCommand::SequentialCommand(int numCommands, ...) {
-  printf("%p\n",&commands_);
-  commands_.reserve(numCommands);
+SequentialCommand::SequentialCommand(int dummy, ...) {
   va_list vl;
-  va_start(vl, numCommands);
-  for (int i = 0; i < numCommands; i++) {
-    AutoCommand* command = va_arg(vl, AutoCommand*);
+  va_start(vl, dummy);
+
+  // Stops once it sees the NULL parameter that must follow the desired commands.
+  AutoCommand* command = NULL;
+  while (command = va_arg(vl, AutoCommand*)) {
     commands_.push_back(command);
   }
   va_end(vl);

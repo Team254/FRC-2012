@@ -6,6 +6,9 @@
 
 #include "auto/AutoCommand.h"
 
+// Macro to wrap the ConcurrentCommand constructor for convenience.
+#define AUTO_CONCURRENT(...) new ConcurrentCommand(0, __VA_ARGS__, NULL)
+
 /**
  * @author Eric Bakan
  *
@@ -16,10 +19,15 @@ class ConcurrentCommand : public AutoCommand {
   /**
    * Constructor
    * Accepts a variable-length list of AutoCommand pointers to execute concurrently
-   * @param numCommands the number of commands to execute
+   * The list of commands MUST be followed by another argument with value NULL, so that the number of commands
+   * can be inferred.
+   *
+   * DO NOT CALL THIS CONSTRUCTOR DIRECTLY -- USE THE AUTO_CONCURRENT() MACRO.
+   *
+   * @param dummy a dummy argument to satisfy the requirement that there is at least one
    * @param ... the commands to run
    */
-  ConcurrentCommand(int numCommands, ...);
+  ConcurrentCommand(int dummy, ...);
 
   /**
    * Destructor
