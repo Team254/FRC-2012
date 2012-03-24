@@ -21,8 +21,7 @@ class Drive {
    */
   Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
         Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid, Encoder* leftEncoder,
-        Encoder* rightEncoder, Gyro* gyro, Accelerometer* accelerometerX, Accelerometer* accelerometerY,
-        Accelerometer* accelerometerZ, DigitalInput* bumpSensor);
+        Encoder* rightEncoder, Gyro* gyro, DigitalInput* bumpSensor);
 
   /**
    * Makes drive power linear to input, then sets power to the respective side of the drivetrain
@@ -73,24 +72,6 @@ class Drive {
    * @return the gyro angle in degrees
    */
   double GetGyroAngle();
-
-  /**
-   * Returns current robot acceleration in the X direction
-   * @return the robot X acceleration in G's
-   */
-  double GetXAcceleration();
-
-  /**
-   * Returns current robot acceleration in the Y direction
-   * @return the robot Y acceleration in G's
-   */
-  double GetYAcceleration();
-
-  /**
-   * Returns current robot acceleration in the Z direction
-   * @return the robot Z acceleration in G's
-   */
-  double GetZAcceleration();
 
   /**
    * Returns bump sensor value
@@ -144,9 +125,6 @@ class Drive {
   Encoder* leftDriveEncoder_;
   Encoder* rightDriveEncoder_;
   Gyro* gyro_;
-  Accelerometer* accelerometerX_;
-  Accelerometer* accelerometerY_;
-  Accelerometer* accelerometerZ_;
   DigitalInput* bumpSensor_;
 
   // Pneumatics

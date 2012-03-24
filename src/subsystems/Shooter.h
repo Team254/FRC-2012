@@ -2,7 +2,6 @@
 #define SUBSYSTEMS_SHOOTER_H_
 
 #include "WPILib.h"
-#include <deque>
 
 #include "config/Constants.h"
 #include "subsystems/Pid.h"
@@ -13,17 +12,9 @@
 #define OUTPUT_FILTER_SIZE 3
 
 /**
- * Represents a collection of stats about a given ball in the queue
- */
-struct ballStats {
-  int position; // Position on the conveyor relative to the starting position in ticks
-  int poofiness; // Arbitrary unit of squishiness
-};
-
-/**
  * @author Eric Bakaan
  *
- * Easy-access functions for shooter functions: shooting, intaking, conveying, etc.
+ * Easy-access functions for shooter functions: shooting, conveying, etc.
  */
 class Shooter {
  public:
@@ -32,7 +23,7 @@ class Shooter {
    * Accepts the Victors, Encoders, pneumatics, etc. to be used
    */
   Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightShooterMotor, Encoder* shooterEncoder,
-          Solenoid* hoodSolenoid, Encoder* conveyorEncoder, AnalogChannel* ballSensor, AnalogChannel* poofMeter,
+          Solenoid* hoodSolenoid, AnalogChannel* ballSensor, AnalogChannel* poofMeter,
           AnalogChannel* ballRanger);
 
   /**
@@ -60,16 +51,6 @@ class Shooter {
   void SetLinearConveyorPower(double pwm);
 
   /**
-   * Sets the target conveyor position in ticks
-   */
-  void SetConveyorTarget(int target);
-
-  /**
-   * Updates the conveyor position PID
-   */
-  void ConveyorPIDUpdate();
-
-  /**
    * Sets the solenoid position for the hood
    * @param up true to set up, else false
    */
@@ -91,30 +72,6 @@ class Shooter {
    */
   void SetPower(double power);
 
-  /**
-   * Runs the conveyor belt until a ball has been loaded from the conveyor
-   * @return true if a ball has been queued and is ready to shoot
-   */
-  bool QueueBall();
-
-  /**
-   * Sets the shooter wheel velocity and pops the ball off the queue
-   */
-  void ShootBall();
-
-  /**
-   * Empties the queue
-   */
-  void ResetQueueState();
-
-  /**
-   * Sets the shooter target velocity based on the current ball, distance, etc.
-   * @param ball the stats of the ball we're shooting
-   */
-  void SetBallShooterTarget(ballStats ball);
-
-  void DebugBallQueue();
-  
   bool AtTargetVelocity();
 
  private:
@@ -141,7 +98,6 @@ class Shooter {
 
   // Sensors
   Encoder* shooterEncoder_;
-  Encoder* conveyorEncoder_;
   AnalogChannel* ballSensor_;
   AnalogChannel* poofMeter_;
   AnalogChannel* ballRanger_;
@@ -153,10 +109,7 @@ class Shooter {
   Constants* constants_;
   Timer* timer_;
   Pid* pid_;
-  Pid* conveyorPid_;
-  std::deque<ballStats> ballQ_;
   int prevEncoderPos_;
-  int conveyorTarget_;
   double targetVelocity_;
   double velocity_;
   double velocityFilter_[FILTER_SIZE];
@@ -167,7 +120,6 @@ class Shooter {
   double poofCorrectionFactor_;
   bool prevBallSensor_;
   bool atTarget_;
-  
 };
 
 #endif  // SUBSYSTEMS_SHOOTER_H_

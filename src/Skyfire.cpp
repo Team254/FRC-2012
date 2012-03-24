@@ -1,16 +1,23 @@
-#include "main.h"
+#include "skyfire.h"
 
-#include <math.h>
-#include <stdio.h>
+#include <cmath>
+#include <cstdio>
 
+#include "auto/AutoAlignCommand.h"
+#include "auto/BridgeBallsCommand.h"
+#include "auto/ConcurrentCommand.h"
+#include "auto/DriveCommand.h"
+#include "auto/SequentialCommand.h"
+#include "auto/ShootCommand.h"
+#include "auto/TurnCommand.h"
+#include "drivers/AutoTurnDriver.h"
+#include "drivers/BaselockDriver.h"
 #include "drivers/Driver.h"
 #include "drivers/TeleopDriver.h"
-#include "drivers/BaselockDriver.h"
 #include "subsystems/Drive.h"
 #include "subsystems/Intake.h"
-#include "subsystems/Shooter.h"
-#include "subsystems/ShooterController.h"
 #include "subsystems/OperatorControl.h"
+#include "subsystems/Shooter.h"
 #include "subsystems/Pid.h"
 #include "subsystems/PidCommander.h"
 #include "util/Functions.h"
@@ -18,17 +25,8 @@
 #include "util/PidTuner.h"
 #include "util/RelativeGyro.h"
 #include "vision/BackboardFinder.h"
-#include "drivers/AutoTurnDriver.h"
-#include "auto/SequentialCommand.h"
-#include "auto/ConcurrentCommand.h"
-#include "auto/ShootCommand.h"
-#include "auto/DriveCommand.h"
-#include "auto/BridgeBallsCommand.h"
-#include "auto/AutoAlignCommand.h"
-#include "auto/TurnCommand.h"
 
-MainRobot::MainRobot() {
-  // Constants
+Skyfire::Skyfire() {
   constants_ = Constants::GetInstance();
 
   // Motors
@@ -42,7 +40,6 @@ MainRobot::MainRobot() {
   rightShooterMotor_ = new Victor((int)constants_->rightShooterPwm);
 
   // Sensors
-  // Encoders
   leftEncoder_ = new Encoder((int)constants_->leftEncoderPortA, (int)constants_->leftEncoderPortB);
   leftEncoder_->Start();
   rightEncoder_ = new Encoder((int)constants_->rightEncoderPortA, (int)constants_->rightEncoderPortB);
@@ -50,110 +47,88 @@ MainRobot::MainRobot() {
   shooterEncoder_ = new Encoder((int)constants_->shooterEncoderPortA, (int)constants_->shooterEncoderPortB,
                                 false, CounterBase::k1X);
   shooterEncoder_->Start();
-  conveyorEncoder_ = new Encoder((int)constants_->conveyorEncoderPortA,
-                                 (int)constants_->conveyorEncoderPortB, true);
-  conveyorEncoder_->Start();
   gyro_ = new RelativeGyro((int)constants_->gyroPort);
-  //gyro_->SetSensitivity(constants_->gyroSensitivity);
   bumpSensor_ = new DigitalInput((int)constants_->bumpSensorPort);
   conveyorBallSensor_ = new AnalogChannel((int)constants_->conveyorBallSensorPort);
   poofMeter_ = new AnalogChannel((int)constants_->poofMeterPort);
   ballRanger_ = new AnalogChannel((int)constants_->ballRangerPort);
 
-  // Accelerometer
-  //double accelerometerSensitivity = 1.0;
-  //accelerometerX_ = new Accelerometer((int)constants_->accelerometerXPort);
-  //accelerometerY_ = new Accelerometer((int)constants_->accelerometerYPort);
-  //accelerometerZ_ = new Accelerometer((int)constants_->accelerometerZPort);
-  //accelerometerX_->SetSensitivity(accelerometerSensitivity);
-  //accelerometerY_->SetSensitivity(accelerometerSensitivity);
-  //accelerometerZ_->SetSensitivity(accelerometerSensitivity);
-
   // Pneumatics
-  compressor_ = new Compressor((int)constants_->compressorPressureSwitchPort,(int)constants_->compressorRelayPort);
+  compressor_ = new Compressor((int)constants_->compressorPressureSwitchPort,
+                               (int)constants_->compressorRelayPort);
   compressor_->Start();
   shiftSolenoid_ = new Solenoid((int)constants_->shiftSolenoidPort);
   hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
-  pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidDownPort, (int)constants_->pizzaWheelSolenoidUpPort);
-  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidUpPort, (int)constants_->intakeSolenoidDownPort);
-  brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidOnPort, (int)constants_->brakeSolenoidOffPort);
+  pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidDownPort,
+                                           (int)constants_->pizzaWheelSolenoidUpPort);
+  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidUpPort,
+                                       (int)constants_->intakeSolenoidDownPort);
+  brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidOnPort,
+                                      (int)constants_->brakeSolenoidOffPort);
 
   // Subsystems
   drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_,
-                         shiftSolenoid_, pizzaWheelSolenoid_, brakeSolenoid_,  leftEncoder_,
-                         rightEncoder_, gyro_, accelerometerX_, accelerometerY_,
-                         accelerometerZ_, bumpSensor_);
+                         shiftSolenoid_, pizzaWheelSolenoid_, brakeSolenoid_,  leftEncoder_, rightEncoder_,
+                         gyro_, bumpSensor_);
   intake_ = new Intake(intakeMotor_, intakeSolenoid_);
   shooter_ = new Shooter(conveyorMotor_, leftShooterMotor_, rightShooterMotor_, shooterEncoder_,
-                         hoodSolenoid_, conveyorEncoder_, conveyorBallSensor_, poofMeter_, ballRanger_);
-  sc_ = new ShooterController(shooter_, intake_);
+                         hoodSolenoid_, conveyorBallSensor_, poofMeter_, ballRanger_);
+  shooterTargetVelocity_ = 0;
 
-  // Control Board
+  // Control board
   leftJoystick_ = new Joystick((int)constants_->leftJoystickPort);
   rightJoystick_ = new Joystick((int)constants_->rightJoystickPort);
   operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
 
-  // Vision Tasks
+  // Vision
   target_ = new BackboardFinder();
   target_->Start();
-  ledRingSwitch_ = new DigitalOutput((int)constants_->ledRingSwitchPort);
 
   // Drivers
   teleopDriver_ = new TeleopDriver(drivebase_, leftJoystick_, rightJoystick_, operatorControl_);
   baselockDriver_ = new BaselockDriver(drivebase_, leftJoystick_);
   autoAlignDriver_ = new AutoTurnDriver(drivebase_, target_);
-
-  // Set the current Driver to teleop, though this will change later
   currDriver_ = teleopDriver_;
 
-  testPid_ = new Pid(&constants_->driveKP, &constants_->driveKI, &constants_->driveKD);
-  testTimer_ = new Timer();
-  testLogger_ = new Logger("/test.log", 1);
-
   // Watchdog
-  GetWatchdog().SetExpiration(100);
+  GetWatchdog().SetExpiration(1000);
+  GetWatchdog().SetEnabled(true);
 
   // Get a local instance of the Driver Station LCD
   lcd_ = DriverStationLCD::GetInstance();
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line1,"***Teleop Ready!***");
 
-  shooterTargetVelocity_ = 0;
-  autoBaseCmd_ = NULL;
-
+  // Initialize button edge-detection variables
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
-  // Shooter button guards
   oldShooterSwitch_ = operatorControl_->GetShooterSwitch();
   oldIncreaseButton_ = operatorControl_->GetIncreaseButton();
   oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
+  oldAutonSelectButton_ = operatorControl_->GetAutonSelectButton();
 
+  // Initialize autonomous variables
   autonDelay_ = 0.0;
   autonTimer_ = new Timer();
-  autonMode_ = AUTON_NONE;
+  autonMode_ = AUTON_CLOSE_BRIDGE_SLOW;
+  autoBaseCmd_ = NULL;
 }
 
-void MainRobot::ResetMotorPower() {
+void Skyfire::ResetMotors() {
 	drivebase_->SetLinearPower(0, 0);
 	shooter_->SetLinearPower(0);
 	shooter_->SetLinearConveyorPower(0);
 	intake_->SetIntakePower(0);
 }
 
-void MainRobot::DisabledInit() {
+void Skyfire::DisabledInit() {
   drivebase_->ResetEncoders();
   drivebase_->ResetGyro();
-//  target_->Stop();
 }
 
-void MainRobot::AutonomousInit() {
+void Skyfire::AutonomousInit() {
   constants_->LoadFile();
-//  target_->Start();
-  GetWatchdog().SetEnabled(false);
-  
-  intake_->SetIntakePosition(Intake::INTAKE_UP);
-  
-  ResetMotorPower();
+  ResetMotors();
   autonTimer_->Reset();
   autonTimer_->Start();
+  intake_->SetIntakePosition(Intake::INTAKE_UP);
 
   if (autoBaseCmd_) {
     delete autoBaseCmd_;
@@ -223,21 +198,19 @@ void MainRobot::AutonomousInit() {
   }
 }
 
-void MainRobot::TeleopInit() {
+void Skyfire::TeleopInit() {
   constants_->LoadFile();
+  ResetMotors();
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
-  testTimer_->Start();
-  shooter_->ResetQueueState();
-  ResetMotorPower();
-  // Start off with the TeleopDriver
+
   currDriver_ = teleopDriver_;
   currDriver_->Reset();
-//  target_->Start();
-  GetWatchdog().SetEnabled(true);
 }
 
-void MainRobot::DisabledPeriodic() {
+void Skyfire::DisabledPeriodic() {
+  GetWatchdog().Feed();
+
   // Autonomous delay
   if (operatorControl_->GetIncreaseButton() && !oldIncreaseButton_) {
     autonDelay_ += 0.5;
@@ -259,73 +232,43 @@ void MainRobot::DisabledPeriodic() {
 
   switch (autonMode_) {
     case AUTON_NONE:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "No auton", conveyorEncoder_->Get());
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "No auton");
       break;
     case AUTON_FENDER:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Fender", conveyorEncoder_->Get());
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Fender");
       break;
     case AUTON_CLOSE_BRIDGE_SLOW:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Near Brd slow", conveyorEncoder_->Get());
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Near bridge slow");
       break;
     case AUTON_FAR_BRIDGE_SLOW:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Far Brd slow", conveyorEncoder_->Get());
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Far bridge slow");
       break;
     case AUTON_BRIDGE_FAST:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Bridge fast", conveyorEncoder_->Get());
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Bridge fast");
       break;
     case AUTON_ALLIANCE_BRIDGE:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Alliance bridge", conveyorEncoder_->Get());
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Alliance bridge");
       break;
     default:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Invalid auton", conveyorEncoder_->Get());
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Invalid auton");
   }
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Delay: %.1f", autonDelay_);
 
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Gyro: %f\n", gyro_->GetAngle());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Sens: %f\n", constants_->gyroSensitivity);
-  if (operatorControl_->GetIntakeButton()) {
-    constants_->LoadFile();
-    gyro_->SetSensitivity(constants_->gyroSensitivity);
-    gyro_->Reset();
-  }
   lcd_->UpdateLCD();
 }
 
-void MainRobot::AutonomousPeriodic() { 	
+void Skyfire::AutonomousPeriodic() {
+  GetWatchdog().Feed();
+
   if (autonTimer_->Get() > autonDelay_ && autoBaseCmd_) {
     autoBaseCmd_->Run();
   }
   shooter_->PIDUpdate();
 }
 
-void MainRobot::TeleopPeriodic() {
+void Skyfire::TeleopPeriodic() {
   GetWatchdog().Feed();
-  drivebase_->SetBrakeOn(false);
-  static Logger* driveLog = new Logger("/turnLog.log");
-  if(rightJoystick_->GetRawButton((int)constants_->quickTurnPort)) {
-	  driveLog->Log("%f,%f\n", target_->GetX(), drivebase_->GetGyroAngle());
-  }
-  /*
-  static int counter = 0;
-  static Logger* driveLog = new Logger("/driveLog.log");
-  if (counter % 10 == 0) {
-    double left = drivebase_->GetLeftEncoderDistance();
-    double right = drivebase_->GetRightEncoderDistance();
-    double currX = 0;
-    double currV = 0;
-    double currH = 0;
-    if(target_->SeesTarget()) {
-    	currX = target_->GetX();
-    	currV = target_->GetVDiff();
-    	currH = target_->GetHDiff();
-    }
-    //angle, distance
-    driveLog->Log("%f,%f,%f,%f\n", left, currX, currV, currH);
-    //PidTuner::PushData(drivebase_->GetGyroAngle(), currX, 0);
-    //target_->LogCamera();
-  }
-  counter++;
-  */
 
   // Update shooter power/manual control
   if (operatorControl_->GetFenderButton()) {
@@ -341,9 +284,6 @@ void MainRobot::TeleopPeriodic() {
   } else if (operatorControl_->GetDecreaseButton() && !oldDecreaseButton_) {
     shooterTargetVelocity_ -= 1;
   }
-
-  // LED ring transistor (when we get it)
-  ledRingSwitch_->Set(operatorControl_->GetShooterSwitch());
 
   if (operatorControl_->GetShooterSwitch()) {
     // Re-load the shooter PID constants whenever the shooter is turned on.
@@ -401,22 +341,18 @@ void MainRobot::TeleopPeriodic() {
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
   //oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
 
-  // If pizza wheels are up, set intake up
-  
-  if(!drivebase_->GetPizzaUp()) {
+  if (!drivebase_->GetPizzaUp()) {
+    // If pizza wheels are down, set the intake up to prevent damage.
     intake_->SetIntakePosition(Intake::INTAKE_UP);
   } else {
     intake_->SetIntakePosition(operatorControl_->GetIntakePositionSwitch());
   }
-  //intake_->SetIntakePosition(operatorControl_->GetIntakePositionSwitch());
 
   // LCD display
-  double velocity = shooter_->GetVelocity();
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "left:%f", drivebase_->GetLeftEncoderDistance());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "right:%f", drivebase_->GetRightEncoderDistance());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "T: %f %f", (float) target_->GetAngle(), (float) target_->GetX());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line4,"Shoot: %.0f rps", shooterTargetVelocity_);
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Ranger: %d", ballRanger_->GetValue());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "Gyro: %f", gyro_->GetAngle());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line1,"Shoot: %.1f rps", shooterTargetVelocity_);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Target: %.1f %.1f", (float) target_->GetAngle(),
+                   (float) target_->GetX());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Ranger: %d", ballRanger_->GetValue());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Gyro: %f", gyro_->GetAngle());
   lcd_->UpdateLCD();
 }

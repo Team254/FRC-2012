@@ -1,36 +1,34 @@
-#ifndef MAIN_H_
-#define MAIN_H_
+#ifndef SKYFIRE_H_
+#define SKYFIRE_H_
 
 #include "WPILib.h"
 
+class AutoTurnDriver;
 class BackboardFinder;
+class BaselockDriver;
 class Constants;
 class Drive;
+class Driver;
+class Intake;
 class Logger;
 class OperatorControl;
-class Pid;
-class Intake;
-class Shooter;
-class Driver;
-class TeleopDriver;
-class BaselockDriver;
-class ShooterController;
-class AutoTurnDriver;
 class SequentialCommand;
+class Shooter;
+class TeleopDriver;
 
 /**
  * @author Eric Caldwell
  *
  * The main robot class. Almost all of our logic outside of individual subsystems will be placed in here.
  */
-class MainRobot : public IterativeRobot {
+class Skyfire : public IterativeRobot {
  public:
   /**
    * Constructor
    * Initializes all motors, sensors, and control board inputs the program will use
    * Also constructs support subsystem classes
    */
-  MainRobot();
+  Skyfire();
 
   /**
    * Runs once when the robot enters Disabled mode
@@ -63,9 +61,9 @@ class MainRobot : public IterativeRobot {
   virtual void TeleopPeriodic();
   
   /**
-   * Resets motor powers.
+   * Resets motor powers to zero.
    */
-  void ResetMotorPower();
+  void ResetMotors();
 
  private:
 
@@ -74,13 +72,11 @@ class MainRobot : public IterativeRobot {
 
   // Vision
   BackboardFinder* target_;
-  DigitalOutput* ledRingSwitch_;
 
   // Subsystems
   Drive* drivebase_;
   Intake* intake_;
   Shooter* shooter_;
-  ShooterController* sc_;
 
   // Drivers
   Driver* currDriver_;
@@ -107,11 +103,7 @@ class MainRobot : public IterativeRobot {
   Encoder* leftEncoder_;
   Encoder* rightEncoder_;
   Encoder* shooterEncoder_;
-  Encoder* conveyorEncoder_;
   Gyro* gyro_;
-  Accelerometer* accelerometerX_;
-  Accelerometer* accelerometerY_;
-  Accelerometer* accelerometerZ_;
   AnalogChannel* poofMeter_;
   DigitalInput* bumpSensor_;
   AnalogChannel* conveyorBallSensor_;
@@ -125,18 +117,13 @@ class MainRobot : public IterativeRobot {
   DoubleSolenoid* intakeSolenoid_;
   DoubleSolenoid* brakeSolenoid_;
 
-  Pid* testPid_;
-  Timer* testTimer_;
-  Logger* testLogger_;
   DriverStationLCD* lcd_;
   bool oldAutoAlignButton_;
-  double shooterTargetVelocity_;
   bool oldShooterSwitch_;
   bool oldIncreaseButton_;
   bool oldDecreaseButton_;
   bool oldAutonSelectButton_;
-
-  bool oldBallQueueSwitch_;
+  double shooterTargetVelocity_;
 
   // Autonomous
   double autonDelay_;
@@ -155,6 +142,6 @@ class MainRobot : public IterativeRobot {
 };
 
 // Start the actual program
-START_ROBOT_CLASS(MainRobot);
+START_ROBOT_CLASS(Skyfire);
 
-#endif  // MAIN_H_
+#endif  // SKYFIRE_H_
