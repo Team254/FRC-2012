@@ -2,14 +2,18 @@
 
 #include <cmath>
 
-Intake::Intake(Victor* intakeMotor, DoubleSolenoid* intakeSolenoid) {
+Intake::Intake(Victor* intakeMotor1, Victor* intakeMotor2, Victor* intakeMotor3, DoubleSolenoid* intakeSolenoid) {
   constants_ = Constants::GetInstance();
-  intakeMotor_ =  intakeMotor;
+  intakeMotor1_ =  intakeMotor1;
+  intakeMotor2_ =  intakeMotor2;
+  intakeMotor3_ =  intakeMotor3;
   intakeSolenoid_ =  intakeSolenoid;
 }
 
 void Intake::SetIntakePower(double pwm) {
-  intakeMotor_->Set(PwmLimit(pwm));
+  intakeMotor1_->Set(PwmLimit(pwm));
+  intakeMotor2_->Set(PwmLimit(pwm));
+  intakeMotor3_->Set(PwmLimit(pwm));
 }
 
 void Intake::SetIntakePosition(IntakePositions pos) {

@@ -94,7 +94,9 @@ class Skyfire : public IterativeRobot {
   Victor* leftDriveMotorB_;
   Victor* rightDriveMotorA_;
   Victor* rightDriveMotorB_;
-  Victor* intakeMotor_;
+  Victor* intakeMotor1_;
+  Victor* intakeMotor2_;
+  Victor* intakeMotor3_;
   Victor* conveyorMotor_;
   Victor* leftShooterMotor_;
   Victor* rightShooterMotor_;

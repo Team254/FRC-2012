@@ -6,12 +6,14 @@
  */
 
 // Motors
-// NOTE(patrick): PWMs 1 and 10 currently unused.
+
 DECLARE_DOUBLE(leftDrivePwmA, 5)
 DECLARE_DOUBLE(leftDrivePwmB, 4)
 DECLARE_DOUBLE(rightDrivePwmA, 6)
 DECLARE_DOUBLE(rightDrivePwmB, 7)
-DECLARE_DOUBLE(intakePwm, 2)
+DECLARE_DOUBLE(intakePwm1, 2)
+DECLARE_DOUBLE(intakePwm2, 1)
+DECLARE_DOUBLE(intakePwm3, 10)
 DECLARE_DOUBLE(conveyorPwm, 9)
 DECLARE_DOUBLE(leftShooterPwm, 3)
 DECLARE_DOUBLE(rightShooterPwm, 8)

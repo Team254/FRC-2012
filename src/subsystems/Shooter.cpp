@@ -34,6 +34,7 @@ Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightS
   poofCorrectionFactor_ = 1.0;
   prevBallSensor_ = false;
   ballRanger_ = ballRanger;
+  filter_ = DaisyFilter::SinglePoleIIRFilter(0.5f);
 }
 
 void Shooter::SetLinearPower(double pwm) {
@@ -60,14 +61,18 @@ bool Shooter::PIDUpdate() {
 
   double correctedTargetVelocity_ = targetVelocity_ * poofCorrectionFactor_;
   outputValue_ += pid_->Update(correctedTargetVelocity_, velocity_);
-  timer_->Reset();
 
-  double filteredOutput = UpdateOutputFilter(outputValue_);
+  timer_->Reset();
+  double correctedOutputValue = targetVelocity_ * (1.0/72.0);
+  correctedOutputValue += outputValue_;
+  double filteredOutput = UpdateOutputFilter(correctedOutputValue);
   SetLinearPower(filteredOutput);
   //double t = GetTime();
 
   atTarget_ = fabs(correctedTargetVelocity_ - velocity_) < VELOCITY_THRESHOLD;
-  //printf("target: %f vel: %f ret: %d\n",correctedTargetVelocity_,velocity_, ret);
+  static int op = 0;
+  if (++op % 10 == 0)
+    printf("target: %f vel: %f \n",correctedTargetVelocity_,velocity_);
   //PidTuner::PushData(correctedTargetVelocity_, velocity_, 0.0);
   return atTarget_ == true;
 }
@@ -85,16 +90,7 @@ void Shooter::SetHoodUp(bool up) {
 }
 
 double Shooter::UpdateFilter(double value) {
-  velocityFilter_[filterIndex_] = value;
-  filterIndex_++;
-  if (filterIndex_ == FILTER_SIZE) {
-    filterIndex_ = 0;
-  }
-  double sum = 0;
-  for (int i = 0; i < FILTER_SIZE; i++) {
-    sum += velocityFilter_[i];
-  }
-  return sum / (double)FILTER_SIZE;
+  return filter_->Calculate(value); 
 }
 
 double Shooter::UpdateOutputFilter(double value) {

@@ -5,6 +5,7 @@
 
 #include "config/Constants.h"
 #include "subsystems/Pid.h"
+#include "util/DaisyFilter.h"
 
 #define TICKS_PER_REV 32
 #define VELOCITY_THRESHOLD 3.0
@@ -120,6 +121,7 @@ class Shooter {
   double poofCorrectionFactor_;
   bool prevBallSensor_;
   bool atTarget_;
+  DaisyFilter *filter_;
 };
 
 #endif  // SUBSYSTEMS_SHOOTER_H_
