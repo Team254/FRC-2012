@@ -12,8 +12,8 @@ AutoTurnDriver::AutoTurnDriver(Drive* drive, BackboardFinder* target) : Driver(d
   filterL_ = new MovingAverageFilter(5);
   filterR_ = new MovingAverageFilter(5);
   constants_ = Constants::GetInstance();
-  //pid_ = new Pid(&constants_->autoAlignKP, &constants_->autoAlignKI, &constants_->autoAlignKD);
-  pid_ = new Pid(&constants_->turnKP, &constants_->turnKI, &constants_->turnKD);
+  pid_ = new Pid(&constants_->autoCameraAlignKP, &constants_->autoCameraAlignKI, &constants_->autoCameraAlignKD);
+  //pid_ = new Pid(&constants_->turnKP, &constants_->turnKI, &constants_->turnKD);
   pidL_ = new Pid(&constants_->driveVelKP, &constants_->driveVelKI, &constants_->driveVelKD);
   pidR_ = new Pid(&constants_->driveVelKP, &constants_->driveVelKI, &constants_->driveVelKD);
   target_ = target;
@@ -62,49 +62,27 @@ bool AutoTurnDriver::UpdateDriver() {
   }
 
   if(foundTarget_) {
-	
-    double output = pid_->Update(angleGoal_, curAngle);
-    printf("angle goal: %f gyro: %f output: %f\n", angleGoal_, curAngle, output);
+	int dir = (curAngle < angleGoal_) ? 1 : -1;
+	double output = 0; 
+	double diff = fabs(angleGoal_ - curAngle);
+	if (diff < 4) {
+      output = pid_->Update(angleGoal_, curAngle);
+	} else {
+      double fastGain = (diff < 10) ? 0.0 : (diff > 25) ? .7 : ((diff - 10) * (0.2/15.0)); 
+	  output = (.45  + fastGain) * dir;
+	}
+    printf("goal: %f gyro: %f diff: %f out: %f\n", angleGoal_, curAngle, (curAngle - angleGoal_), output);
     drive_->SetLinearPower(-output, output);
   } else {
     angleGoal_ = 0;
     drive_->SetLinearPower(0, 0);
   }
+  
+  double turnRate = curAngle - oldAngle_;
+  oldAngle_ = curAngle;
 
 
-  //PidTuner::PushData(target_->GetX(), output, 0);
-  return fabs(angleGoal_ - curAngle) < constants_->autoAlignThreshold;
-#if 0
-  double posL = drive_->GetLeftEncoderDistance();
-  double velL = (posL - lastPosL_) / (timer_->Get() - lastTimer_);
-  velL = filterL_->Update(velL);
-  outputValueL_ += pidL_->Update(setpoint, velL);
-  double fixL = 0;
-
-
-  double posR = drive_->GetRightEncoderDistance();
-  double velR = (posR - lastPosR_) / (timer_->Get() - lastTimer_);
-  velR = filterR_->Update(velR);
-  outputValueR_ += pidR_->Update(setpointR, velR);
-  double fixR = 0;
-
-  if ((fabs(velR) + fabs(velL) / 2) > 3  && staticFriction_) {
-    staticFriction_ = false;
-    outputValueL_ = outputValueL_ + ((setpointL < 0) ? -constants_->breakStaticOffset : constants_->breakStaticOffset);
-    outputValueR_ = outputValueR_ + ((setpointR < 0) ? -constants_->breakStaticOffset : constants_->breakStaticOffset);
-  }
-
-  if (staticFriction_) {
-    fixR = (setpointR < 0) ? -constants_->breakStaticOffset : constants_->breakStaticOffset;
-    fixL = (setpointL < 0) ? -constants_->breakStaticOffset : constants_->breakStaticOffset;
-    printf("FIXXXXXXXXXXXXXXXXXXX!!!!!");
-  }
-
-  printf("%f | %f | %f | %f\n\n", (float) outputValueL_ + fixL, (float)outputValueR_ + fixR, (float)fixL, (float) fixR);
-  drive_->SetLinearPower(outputValueL_ + fixL, outputValueR_ + fixR);
-
-  lastTimer_ = timer_->Get();
-  lastPosL_ = posL; 
-  lastPosR_ = posR;
-#endif
+  PidTuner::PushData(angleGoal_, curAngle, 0);
+  return (fabs(angleGoal_ - curAngle) < constants_->autoAlignThreshold) &&
+		  (fabs(turnRate) < .06);
 }

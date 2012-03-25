@@ -18,7 +18,7 @@ class DriveCommand : public AutoCommand {
   /**
    * Constructor. Accepts drivetrain pointer and goal in terms of distance in inches
    */
-  DriveCommand(Drive* drive, double distance, bool usePizza, double timeout);
+  DriveCommand(Drive* drive, double distance, bool coast, bool usePizza, double timeout, double maxSpeed=1.0);
 
   /**
    * Clears encoders and gyro
@@ -56,7 +56,8 @@ class DriveCommand : public AutoCommand {
   double prevTime_;
   double prevLeftDist_;
   double prevRightDist_;
-  
+  double coast_;
+  double maxSpeed_;
 };
 
 #endif  // AUTO_DRIVE_COMMAND_H_

@@ -44,6 +44,7 @@ class AutoTurnDriver : public Driver {
   BackboardFinder* target_;
   double angleGoal_;
   bool foundTarget_;
+  double oldAngle_;
 };
 
 #endif

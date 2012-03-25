@@ -5,12 +5,14 @@
 #include "util/PidTuner.h"
 #include "config/Constants.h"
 
-DriveCommand::DriveCommand(Drive* drive, double distance, bool usePizza, double timeout) {
+DriveCommand::DriveCommand(Drive* drive, double distance, bool coast, bool usePizza, double timeout, double maxSpeed) {
   SetTimeout(timeout);
   drive_ = drive;
   distanceGoal_ = distance;
   usePizza_ = usePizza;
   resetPizza_ =  usePizza; //(usePizza && drive->GetPizzaUp());
+  coast_ = coast;
+  maxSpeed_ = maxSpeed;
 
   Constants* constants = Constants::GetInstance();
   leftPid_ = new Pid(&constants->driveKP, &constants->driveKI, &constants->driveKD);
@@ -40,6 +42,7 @@ bool DriveCommand::Run() {
 	drive_->SetLinearPower(0, 0);
 	return true;
   }
+  drive_->SetHighGear(true);
   double currLeftDist = drive_->GetLeftEncoderDistance();
   double currRightDist = drive_->GetRightEncoderDistance();
   double currTime = driveTimer_->Get();
@@ -48,13 +51,6 @@ bool DriveCommand::Run() {
   prevTime_ = currTime;
   prevLeftDist_ = currLeftDist;
   prevRightDist_ = currRightDist;
-  // If the goal has been reached, this command is done.
-  if(brakeTimer_->Get() > .2) {
-  	  drive_->SetLinearPower(0, 0);
-  	  printf("returnd from brake timer\n");
-  	  return true;
-    }
-  
   
 
   // Get PID feedback and send back to the motors.
@@ -62,24 +58,33 @@ bool DriveCommand::Run() {
   double rightPIDOutput = PwmLimit(rightPid_->Update(distanceGoal_, currRightDist));
   double angleDiff = drive_->GetGyroAngle() - startingAngle_;
   double straightGain = angleDiff * Constants::GetInstance()->straightDriveGain;
-  double leftPwr = leftPIDOutput - straightGain;
-  double rightPwr = rightPIDOutput + straightGain;
-  if (fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2) {
-      drive_->SetPizzaWheelDown(resetPizza_);
-      brakeTimer_->Start();
-    
-      //return false;
-  }
+  double leftPwr = leftPIDOutput; - straightGain;
+  double rightPwr = rightPIDOutput; + straightGain;
   
-  if (brakeTimer_->Get() != 0.0 ){
-	  int dir = (distanceGoal_ > 0) ? 1 : -1;
-	  drive_->SetLinearPower((-.3 * dir) - straightGain, (-.3 * dir) + straightGain);
-      return false;
-  }
-    
+  leftPwr = (leftPwr < -maxSpeed_) ?  -maxSpeed_: (leftPwr > maxSpeed_) ? maxSpeed_ : leftPwr;
+  rightPwr = (rightPwr < -maxSpeed_) ?  -maxSpeed_ : (rightPwr > maxSpeed_) ? maxSpeed_ : rightPwr;
+  
+  leftPwr -= straightGain;
+  rightPwr += straightGain;
+  PidTuner::PushData(currLeftDist, distanceGoal_, 0.0);    
   drive_->SetLinearPower(leftPwr, rightPwr);
-  PidTuner::PushData(leftPwr, straightGain, 0);
+  
+  if (fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2) {
+	  if (coast_) {
+	    drive_->SetLinearPower(0,0);
+	    return true;
+	   }
+	  if (fabs(lVel) < 6 && fabs(rVel) < 6) {
+	    brakeTimer_->Start();
+	  }
 
+    }
+  
+  if (brakeTimer_->Get() > .2) {
+	  drive_->SetPizzaWheelDown(resetPizza_);
+	  drive_->SetLinearPower(0,0);
+	  return true;
+  }
   // Indicate that the goal has not yet been reached.
   return false;
 }

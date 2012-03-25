@@ -68,7 +68,7 @@ bool Shooter::PIDUpdate() {
 
   atTarget_ = fabs(correctedTargetVelocity_ - velocity_) < VELOCITY_THRESHOLD;
   //printf("target: %f vel: %f ret: %d\n",correctedTargetVelocity_,velocity_, ret);
-  PidTuner::PushData(correctedTargetVelocity_, velocity_, 0.0);
+  //PidTuner::PushData(correctedTargetVelocity_, velocity_, 0.0);
   return atTarget_ == true;
 }
 

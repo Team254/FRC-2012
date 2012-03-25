@@ -128,9 +128,9 @@ DECLARE_DOUBLE(turnKP, 0.074)
 DECLARE_DOUBLE(turnKI, 0.000)
 DECLARE_DOUBLE(turnKD, 0.550)
 DECLARE_DOUBLE(breakStaticOffset, 0.4)
-DECLARE_DOUBLE(autoAlignKP, 0.8)
-DECLARE_DOUBLE(autoAlignKI, -0.001)
-DECLARE_DOUBLE(autoAlignKD, -0.35)
+DECLARE_DOUBLE(autoCameraAlignKP, 0.074)
+DECLARE_DOUBLE(autoCameraAlignKI, 0.0)
+DECLARE_DOUBLE(autoCameraAlignKD, .55)
 DECLARE_DOUBLE(straightDriveGain, 0.1)
 
 // Automomous

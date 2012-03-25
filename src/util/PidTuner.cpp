@@ -30,7 +30,7 @@ PidTuner::PidTuner() {
 /* create client's socket */
 
  if ((sFd_ = socket (AF_INET, SOCK_DGRAM, 0)) == ERROR) {
-   perror ("socket");
+   //perror ("socket");
    // return (ERROR);
    }
 
@@ -45,7 +45,7 @@ PidTuner::PidTuner() {
  serverAddr_.sin_port = htons (SERVER_PORT_NUM);
 
  if (((serverAddr_.sin_addr.s_addr = inet_addr ("10.2.54.125")) == ERROR)) {
-   perror ("unknown server name");
+   //perror ("unknown server name");
    close (sFd_);
    //    return (ERROR);
    }
@@ -57,7 +57,7 @@ void PidTuner::Push(double setpoint, double value, double control) {
   sprintf(myRequest, "{\"S\":%f, \"V\":%f, \"C\":%f}\0", (float) setpoint, (float) value, (float) control);
   if (sendto(sFd_, (caddr_t) myRequest, strlen(myRequest), 0,
      (struct sockaddr *) &serverAddr_, sockAddrSize_) == ERROR) {
-    perror ("sendto");
+    //perror ("sendto");
     close (sFd_);
    }
 }

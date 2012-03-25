@@ -31,7 +31,7 @@ bool BridgeBallsCommand::Run(){
   bool ret = TimeoutExpired();
   if (ret) {
 	  intake_->SetIntakePower(0);
-	  shooter_->SetTargetVelocity(50);
+	  shooter_->SetTargetVelocity(48);
 	  return ret;
   }
   return false;

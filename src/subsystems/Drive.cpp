@@ -66,9 +66,9 @@ void Drive::SetPizzaWheelDown(bool down) {
 }
 
 void Drive::SetBrakeOn(bool on) {
-  if (on) {
+  if (on) {  
     brakeSolenoid_->Set(DoubleSolenoid::kForward);
-  } else {
+  } else { 
     brakeSolenoid_->Set(DoubleSolenoid::kReverse);
   }
 }
