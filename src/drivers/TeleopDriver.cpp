@@ -14,9 +14,6 @@ TeleopDriver::TeleopDriver(Drive* drive, Joystick* leftJoystick, Joystick* right
 }
 
 bool TeleopDriver::UpdateDriver() {
-  // printf wasn't working, switched to DriverStationLCD temporarily
-  DriverStationLCD* lcd = DriverStationLCD::GetInstance();
-
   // Operator drive control
   bool wantHighGear = !leftJoystick_->GetRawButton((int)constants_->highGearPort);
   bool quickTurning = rightJoystick_->GetRawButton((int)constants_->quickTurnPort);
@@ -24,21 +21,14 @@ bool TeleopDriver::UpdateDriver() {
   double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
   double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
 
-  // Debugging
-  //lcd->PrintfLine(DriverStationLCD::kUser_Line1, "lj:%.4f rj:%.4f", HandleDeadband(-leftJoystick_->GetY(), 0.1), HandleDeadband(rightJoystick_->GetX(), 0.1));
-  //lcd->PrintfLine(DriverStationLCD::kUser_Line2, "sp:%.4f tp:%.4f", straightPower, turnPower);
-
-  // Pizza wheel control
+  // If the switch has toggled, flip the pizza wheels.
   bool currPizzaWheelsButton = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
-
-  // If the switch has toggled, flip the pizza wheels
   if (currPizzaWheelsButton != oldPizzaWheelsButton_) {
     pizzaWheelsDown_ = !pizzaWheelsDown_;
   }
-  // Update the button
   oldPizzaWheelsButton_ = currPizzaWheelsButton;
 
-  // If we've run over the bump
+  // Retract the pizza wheels if the sensor has detected the bump.
   if (pizzaWheelsDown_ && drive_->GetBumpSensorValue()) {
     pizzaWheelsDown_ = false;
   }
@@ -48,19 +38,13 @@ bool TeleopDriver::UpdateDriver() {
   drive_->SetBrakeOn(operatorControl_->GetBrakeSwitch());
 
   // Drive
-  if (pizzaWheelsDown_) {
-    turnPower = 0;
-  }
   drive_->CheesyDrive(straightPower, turnPower, quickTurning);
   
-  //printf("Left Joystick %f, Right Joystick %f\n", leftJoystick_->GetY(), rightJoystick_->GetX());
-
-  // Teleop is always ready to be broken out of
   return true;
 }
 
 void TeleopDriver::Reset() {
-  // Reset Pizza Wheels
+  // Reset pizza wheels.
   oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
   pizzaWheelsDown_= false;
   drive_->SetPizzaWheelDown(pizzaWheelsDown_);

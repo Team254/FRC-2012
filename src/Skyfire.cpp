@@ -230,6 +230,7 @@ void Skyfire::DisabledPeriodic() {
   oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
   oldAutonSelectButton_ = operatorControl_->GetAutonSelectButton();
 
+  // Show selected mode and delay on the Driver Station LCD.
   switch (autonMode_) {
     case AUTON_NONE:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "No auton");
@@ -254,6 +255,7 @@ void Skyfire::DisabledPeriodic() {
   }
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Delay: %.1f", autonDelay_);
 
+  // Show any other pre-match stuff we're interested in on the Driver Station LCD.
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Gyro: %f\n", gyro_->GetAngle());
   lcd_->UpdateLCD();
 }
@@ -302,6 +304,7 @@ void Skyfire::TeleopPeriodic() {
   oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
 
   if (operatorControl_->GetAutoShootButton()) {
+    // In auto-shoot mode, only feed the balls if the shooter is up to speed.
     if (operatorControl_->GetShooterSwitch() && shooterDone) {
       shooter_->SetLinearConveyorPower(1.0);
       intake_->SetIntakePower(1.0);
@@ -310,12 +313,15 @@ void Skyfire::TeleopPeriodic() {
       intake_->SetIntakePower(0.0);
     }
   } else if (operatorControl_->GetShootButton()) {
+    // In manual shoot mode, run the conveyor and intake to feed the shooter.
     shooter_->SetLinearConveyorPower(1.0);
     intake_->SetIntakePower(1.0);
   } else if (operatorControl_->GetUnjamButton()) {
+    // In exhaust mode, run the conveyor and intake backwards.
     intake_->SetIntakePower(-1.0);
     shooter_->SetLinearConveyorPower(-1.0);
   } else if (operatorControl_->GetIntakeButton()) {
+    // In intake mode, run the intake forwards and the conveyor backwards to jumble balls in the hopper.
     intake_->SetIntakePower(1.0);
     shooter_->SetLinearConveyorPower(-1.0);
   } else {
@@ -325,21 +331,18 @@ void Skyfire::TeleopPeriodic() {
 
   // Only have Teleop and AutoAlign Drivers right now
   if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
-    printf("Going to AutoAlign\n");
+    // If the auto-align button is pressed, switch to the auto-align driver.
     currDriver_ = autoAlignDriver_;
     currDriver_->Reset();
   } else if (!leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && oldAutoAlignButton_) {
-    // If the baselock switch has been flipped off, switch back to teleop
-    printf("Teleopping\n");
+    // If the auto-align button is released, switch back to the teleop driver.
     currDriver_ = teleopDriver_;
     currDriver_->Reset();
   }
-
-  // Update the driver and the baselock switch status
-  currDriver_->UpdateDriver();
-  // Temp auto align control
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
-  //oldBaseLockSwitch_ = operatorControl_->GetBaseLockSwitch();
+
+  // Calculate the outputs for the drivetrain given the inputs.
+  currDriver_->UpdateDriver();
 
   if (!drivebase_->GetPizzaUp()) {
     // If pizza wheels are down, set the intake up to prevent damage.
@@ -348,11 +351,11 @@ void Skyfire::TeleopPeriodic() {
     intake_->SetIntakePosition(operatorControl_->GetIntakePositionSwitch());
   }
 
-  // LCD display
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line1,"Shoot: %.1f rps", shooterTargetVelocity_);
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Target: %.1f %.1f", (float) target_->GetAngle(),
-                   (float) target_->GetX());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Ranger: %d", ballRanger_->GetValue());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Gyro: %f", gyro_->GetAngle());
+  // Print useful information to the LCD display.
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Shooter set|mea:");
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "%.1f | %.1f rps", shooterTargetVelocity_,
+                   shooter_->GetVelocity());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Ranger: %d", ballRanger_->GetValue());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Gyro: %f", gyro_->GetAngle());
   lcd_->UpdateLCD();
 }

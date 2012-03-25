@@ -36,7 +36,7 @@ class Driver {
    * All logic goes in here - setting motor values, reading joysticks, etc.
    * @return true if the driver is done/at its goal, else false
    */
-  virtual bool UpdateDriver() { return true; }
+  virtual bool UpdateDriver() = 0;
 
   /**
    * Resets the Driver.
@@ -52,7 +52,6 @@ class Driver {
 
  protected:
   Drive* drive_;
-
 };
 
-#endif // DRIVERS_DRIVER_H
+#endif  // DRIVERS_DRIVER_H
