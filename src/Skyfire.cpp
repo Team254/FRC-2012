@@ -48,7 +48,7 @@ Skyfire::Skyfire() {
   rightEncoder_ = new Encoder((int)constants_->rightEncoderPortA, (int)constants_->rightEncoderPortB);
   rightEncoder_->Start();
   shooterEncoder_ = new Encoder((int)constants_->shooterEncoderPortA, (int)constants_->shooterEncoderPortB,
-                                false, CounterBase::k1X);
+                                false, CounterBase::k4X);
   shooterEncoder_->Start();
   gyro_ = new RelativeGyro((int)constants_->gyroPort);
   bumpSensor_ = new DigitalInput((int)constants_->bumpSensorPort);
@@ -271,6 +271,9 @@ void Skyfire::AutonomousPeriodic() {
 
 void Skyfire::TeleopPeriodic() {
   GetWatchdog().Feed();
+  static Timer* a = new Timer();
+  a->Start();
+  //Logger::GetSysLog()->Log("%f, %d, %d\n", a->Get(), shooterEncoder_->GetRaw(), 12.0);
 
   // Update shooter power/manual control
   if (operatorControl_->GetFenderButton()) {
@@ -356,7 +359,9 @@ void Skyfire::TeleopPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "%.1f | %.1f rps", shooterTargetVelocity_,
                    shooter_->GetVelocity());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Angle: %f, x:%f", target_->GetAngle(), target_->GetX());
+  /*
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Ranger: %d", ballRanger_->GetValue());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Gyro: %f", gyro_->GetAngle());
+  */
   lcd_->UpdateLCD();
 }

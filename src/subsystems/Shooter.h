@@ -6,6 +6,8 @@
 #include "config/Constants.h"
 #include "subsystems/Pid.h"
 #include "util/DaisyFilter.h"
+#include "matlab/mat.cpp"
+
 
 #define TICKS_PER_REV 32
 #define VELOCITY_THRESHOLD 3.0
@@ -110,6 +112,7 @@ class Shooter {
   Constants* constants_;
   Timer* timer_;
   Pid* pid_;
+  double pidGoal_;
   int prevEncoderPos_;
   double targetVelocity_;
   double velocity_;
@@ -122,6 +125,13 @@ class Shooter {
   bool prevBallSensor_;
   bool atTarget_;
   DaisyFilter *filter_;
+  
+  // Matrix Stuff
+  
+    struct matrix *m_y;
+    struct matrix *m_r;
+    ss_controller ssc_;
+    
 };
 
 #endif  // SUBSYSTEMS_SHOOTER_H_
