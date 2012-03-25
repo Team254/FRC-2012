@@ -16,16 +16,13 @@ DECLARE_DOUBLE(conveyorPwm, 9)
 DECLARE_DOUBLE(leftShooterPwm, 3)
 DECLARE_DOUBLE(rightShooterPwm, 8)
 
-// Analog Sensors
+// Analog sensors
 DECLARE_DOUBLE(gyroPort, 1)
-DECLARE_DOUBLE(accelerometerXPort, 5)
-DECLARE_DOUBLE(accelerometerYPort, 6)
-DECLARE_DOUBLE(accelerometerZPort, 7)
 DECLARE_DOUBLE(poofMeterPort, 4)
 DECLARE_DOUBLE(ballRangerPort, 2)
 DECLARE_DOUBLE(conveyorBallSensorPort, 3)
 
-// Digital Sensors
+// Digital sensors
 DECLARE_DOUBLE(bumpSensorPort, 1)
 DECLARE_DOUBLE(leftEncoderPortA, 2)
 DECLARE_DOUBLE(leftEncoderPortB, 3)
@@ -33,9 +30,6 @@ DECLARE_DOUBLE(rightEncoderPortA, 4)
 DECLARE_DOUBLE(rightEncoderPortB, 5)
 DECLARE_DOUBLE(shooterEncoderPortA, 6)
 DECLARE_DOUBLE(shooterEncoderPortB, 7)
-DECLARE_DOUBLE(conveyorEncoderPortA, 8)
-DECLARE_DOUBLE(conveyorEncoderPortB, 9)
-DECLARE_DOUBLE(ledRingSwitchPort, 13)
 
 // Pneumatics
 DECLARE_DOUBLE(compressorPressureSwitchPort, 14)
@@ -60,24 +54,23 @@ DECLARE_DOUBLE(thresholdBMax, 255)
 // Driver controls
 DECLARE_DOUBLE(leftJoystickPort, 1)
 DECLARE_DOUBLE(rightJoystickPort, 2)
-DECLARE_DOUBLE(baseLockPort, 1)
-DECLARE_DOUBLE(fineControlLeftPort, 6)
-DECLARE_DOUBLE(fineControlRightPort, 7)
-DECLARE_DOUBLE(intakeDeployPort, 8)
 
 // Operator controls
 DECLARE_DOUBLE(operatorControlPort, 3)
-DECLARE_DOUBLE(autonSelectPort,11)
-DECLARE_DOUBLE(unjamPort,10)
-DECLARE_DOUBLE(shootPort,9)
-DECLARE_DOUBLE(autoShootPort,8)
-DECLARE_DOUBLE(intakePort,7)
-DECLARE_DOUBLE(increasePort,6)
-DECLARE_DOUBLE(decreasePort,5)
-DECLARE_DOUBLE(keyFarPort,4)
-DECLARE_DOUBLE(keyClosePort,3)
-DECLARE_DOUBLE(farFenderPort,2)
-DECLARE_DOUBLE(fenderPort,1)
+DECLARE_DOUBLE(intakeUpPort, 4)
+DECLARE_DOUBLE(intakeDownPort, 12)
+DECLARE_DOUBLE(autonSelectPort, 11)
+DECLARE_DOUBLE(unjamPort, 10)
+DECLARE_DOUBLE(shootPort, 9)
+DECLARE_DOUBLE(autoShootPort, 8)
+DECLARE_DOUBLE(intakePort, 7)
+DECLARE_DOUBLE(increasePort, 6)
+DECLARE_DOUBLE(decreasePort, 5)
+DECLARE_DOUBLE(keyFarPort, 4)
+DECLARE_DOUBLE(keyClosePort, 3)
+DECLARE_DOUBLE(farFenderPort, 2)
+DECLARE_DOUBLE(fenderPort, 1)
+DECLARE_DOUBLE(shooterOnPort, 3)
 
 // Left joystick
 DECLARE_DOUBLE(autoAlignPort, 2);
@@ -111,6 +104,13 @@ DECLARE_DOUBLE(distanceCoeffC, 1.4524)
 DECLARE_DOUBLE(turnSensLow, 1.1)
 DECLARE_DOUBLE(turnSensHigh, 1.4)
 
+// Shooter
+DECLARE_DOUBLE(shooterFenderSpeed, 38)
+DECLARE_DOUBLE(shooterFarFenderSpeed, 46)
+DECLARE_DOUBLE(shooterKeyCloseSpeed, 48)
+DECLARE_DOUBLE(shooterKeyFarSpeed, 53)
+DECLARE_DOUBLE(shooterSpeedIncrement, 0.5)
+
 // PID constants
 DECLARE_DOUBLE(driveKP, 0.12)
 DECLARE_DOUBLE(driveKI, 0.0)
@@ -124,9 +124,6 @@ DECLARE_DOUBLE(baseLockKD, 0)
 DECLARE_DOUBLE(shooterKP, 0.600)
 DECLARE_DOUBLE(shooterKI, 0.700)
 DECLARE_DOUBLE(shooterKD, -0.950)
-DECLARE_DOUBLE(conveyorKP, 0.003)
-DECLARE_DOUBLE(conveyorKI, 0.000)
-DECLARE_DOUBLE(conveyorKD, 0.005)
 DECLARE_DOUBLE(turnKP, 0.074)
 DECLARE_DOUBLE(turnKI, 0.000)
 DECLARE_DOUBLE(turnKD, 0.550)
@@ -136,27 +133,6 @@ DECLARE_DOUBLE(autoAlignKI, -0.001)
 DECLARE_DOUBLE(autoAlignKD, -0.35)
 DECLARE_DOUBLE(straightDriveGain, 0.1)
 
-// Shooter constants
-DECLARE_DOUBLE(minConveyorBallDist, 700)
-DECLARE_DOUBLE(conveyorPIDThreshold, 50)
-DECLARE_DOUBLE(conveyorHeight, 1440)
-DECLARE_DOUBLE(conveyorPIDIncrement, 10)
-DECLARE_DOUBLE(conveyorPoofWindowLow, 0)
-DECLARE_DOUBLE(conveyorPoofWindowHigh, 600)
-
-// Poofometer calibration
-DECLARE_DOUBLE(poofometerLowPoofiness, 400)
-DECLARE_DOUBLE(poofometerLowCorrection, 1.1)
-DECLARE_DOUBLE(poofometerHighPoofiness, 500)
-DECLARE_DOUBLE(poofometerHighCorrection, 1.0)
-
-DECLARE_DOUBLE(gyroSensitivity, 0.0005)
-
 // Automomous
 DECLARE_DOUBLE(autoShootKeyVel, 51)
-DECLARE_DOUBLE(autoShootFenderVel, 38)
-DECLARE_DOUBLE(autoShootBridgeVel, 60)
 DECLARE_DOUBLE(autoAlignThreshold, 1.0)
-DECLARE_DOUBLE(autoKeyToBridgeDist, 43)
-DECLARE_DOUBLE(autoKeyToFenderDist, 64)
-DECLARE_DOUBLE(autoCenterToEdgeDist, 60)

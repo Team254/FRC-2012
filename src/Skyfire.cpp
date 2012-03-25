@@ -274,17 +274,17 @@ void Skyfire::TeleopPeriodic() {
 
   // Update shooter power/manual control
   if (operatorControl_->GetFenderButton()) {
-    shooterTargetVelocity_ = 38;
+    shooterTargetVelocity_ = constants_->shooterFenderSpeed;
   } else if (operatorControl_->GetFarFenderButton()) {
-    shooterTargetVelocity_ = 46;
+    shooterTargetVelocity_ = constants_->shooterFarFenderSpeed;
   } else if (operatorControl_->GetKeyCloseButton()) {
-    shooterTargetVelocity_ = 48;
+    shooterTargetVelocity_ = constants_->shooterKeyCloseSpeed;
   } else if (operatorControl_->GetKeyFarButton()) {
-    shooterTargetVelocity_ = 53;
+    shooterTargetVelocity_ = constants_->shooterKeyFarSpeed;
   } else if (operatorControl_->GetIncreaseButton() && !oldIncreaseButton_) {
-    shooterTargetVelocity_ += 1;
+    shooterTargetVelocity_ += constants_->shooterSpeedIncrement;
   } else if (operatorControl_->GetDecreaseButton() && !oldDecreaseButton_) {
-    shooterTargetVelocity_ -= 1;
+    shooterTargetVelocity_ -= constants_->shooterSpeedIncrement;
   }
 
   if (operatorControl_->GetShooterSwitch()) {

@@ -60,7 +60,9 @@ void BackboardFinder::DoVision() {
   //
 
   // RGB Threshold -> BinaryImage
-  BinaryImage* bimg = img.ThresholdRGB(0,50,0,50,80,255);
+  BinaryImage* bimg = img.ThresholdRGB((int)constants_->thresholdRMin, (int)constants_->thresholdRMax,
+                                       (int)constants_->thresholdGMin, (int)constants_->thresholdGMax,
+                                       (int)constants_->thresholdBMin, (int)constants_->thresholdBMax);
 
   // take out small things
   Image* image = bimg->GetImaqImage();

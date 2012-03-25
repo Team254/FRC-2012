@@ -10,16 +10,16 @@ OperatorControl::~OperatorControl() {
 }
 
 bool OperatorControl::GetControlLoopsSwitch() {
-  return operatorJoystick_->GetX() > 0.0;
+  return (operatorJoystick_->GetX() > 0.0);
 }
 
 bool OperatorControl::GetBrakeSwitch() {
-  return operatorJoystick_->GetY() < 0.0;
+  return (operatorJoystick_->GetY() < 0.0);
 }
 
 Intake::IntakePositions OperatorControl::GetIntakePositionSwitch() {
-  bool axis = operatorJoystick_->GetRawAxis(4)<0.0;
-  bool button = operatorJoystick_->GetRawButton(12);
+  bool axis = (operatorJoystick_->GetRawAxis((int)constants_->intakeUpPort) < 0.0);
+  bool button = operatorJoystick_->GetRawButton((int)constants_->intakeDownPort);
   if (axis) {
     return Intake::INTAKE_UP;
   }
@@ -74,6 +74,5 @@ bool OperatorControl::GetFenderButton() {
 }
 
 bool OperatorControl::GetShooterSwitch() {
-  return (bool)(operatorJoystick_->GetRawAxis(3)<0.0);
+  return (operatorJoystick_->GetRawAxis((int)constants_->shooterOnPort) < 0.0);
 }
-
