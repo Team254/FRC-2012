@@ -2,6 +2,7 @@
 #define SKYFIRE_H_
 
 #include "WPILib.h"
+#include "CheesyRobot.h"
 
 class AutoTurnDriver;
 class BackboardFinder;
@@ -21,7 +22,7 @@ class TeleopDriver;
  *
  * The main robot class. Almost all of our logic outside of individual subsystems will be placed in here.
  */
-class Skyfire : public IterativeRobot {
+class Skyfire : public CheesyRobot {
  public:
   /**
    * Constructor
@@ -141,6 +142,7 @@ class Skyfire : public IterativeRobot {
   };
   AutonMode autonMode_;
   SequentialCommand* autoBaseCmd_;
+  Timer* timer_;
 };
 
 // Start the actual program

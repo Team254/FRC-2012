@@ -28,6 +28,7 @@
 #include "vision/BackboardFinder.h"
 
 Skyfire::Skyfire() {
+  SetPeriod(0.02);
   constants_ = Constants::GetInstance();
 
   // Motors
@@ -112,6 +113,8 @@ Skyfire::Skyfire() {
   autonTimer_ = new Timer();
   autonMode_ = AUTON_CLOSE_BRIDGE_SLOW;
   autoBaseCmd_ = NULL;
+  timer_ = new Timer();
+  timer_->Start();
 }
 
 void Skyfire::ResetMotors() {
@@ -206,6 +209,7 @@ void Skyfire::TeleopInit() {
 
   currDriver_ = teleopDriver_;
   currDriver_->Reset();
+  timer_->Reset();
 }
 
 void Skyfire::DisabledPeriodic() {
@@ -273,6 +277,15 @@ void Skyfire::TeleopPeriodic() {
   GetWatchdog().Feed();
   static Timer* a = new Timer();
   a->Start();
+  double dt = timer_->Get();
+  timer_->Reset();
+  static double fpga = Timer::GetFPGATimestamp();
+  double curfpga = Timer::GetFPGATimestamp();
+  double dtfpga = curfpga - fpga;
+  fpga = curfpga;
+  PidTuner::PushData(.02, .02, dtfpga);
+  //printf("dt: %f fpga: %f diff: %f\n", dt, dtfpga, dt-dtfpga);
+  return;
   //Logger::GetSysLog()->Log("%f, %d, %d\n", a->Get(), shooterEncoder_->GetRaw(), 12.0);
 
   // Update shooter power/manual control
