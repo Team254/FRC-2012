@@ -84,7 +84,7 @@ bool AutoTurnDriver::UpdateDriver() {
   oldAngle_ = curAngle;
 
 
-  PidTuner::PushData(angleGoal_, curAngle, 0);
+  //PidTuner::PushData(angleGoal_, curAngle, 0);
   return (fabs(angleGoal_ - curAngle) < constants_->autoAlignThreshold) &&
 		  (fabs(turnRate) < .1);
 }

@@ -21,6 +21,7 @@ void BridgeBallsCommand::Initialize() {
 
 bool BridgeBallsCommand::Run(){
   intake_->SetIntakePower(1);
+  shooter_->SetLinearConveyorPower(-1);
   
   // Float intake eventually
   if (timer_->Get() > 2.2) {
@@ -31,6 +32,7 @@ bool BridgeBallsCommand::Run(){
   bool ret = TimeoutExpired();
   if (ret) {
 	  intake_->SetIntakePower(0);
+	  shooter_->SetLinearConveyorPower(0);
 	  shooter_->SetTargetVelocity(48);
 	  return ret;
   }

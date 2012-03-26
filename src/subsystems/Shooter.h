@@ -10,8 +10,8 @@
 
 
 #define TICKS_PER_REV 32
-#define VELOCITY_THRESHOLD 1.2 
-#define FILTER_SIZE 5
+#define VELOCITY_THRESHOLD 0.7 
+#define FILTER_SIZE 6
 #define OUTPUT_FILTER_SIZE 3
 
 /**
@@ -76,6 +76,8 @@ class Shooter {
   void SetPower(double power);
 
   bool AtTargetVelocity();
+  
+  void Reset();
 
  private:
   /**
@@ -125,6 +127,7 @@ class Shooter {
   bool prevBallSensor_;
   bool atTarget_;
   DaisyFilter *filter_;
+  
   
   // Matrix Stuff
   

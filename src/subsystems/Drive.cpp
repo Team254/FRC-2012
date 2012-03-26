@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "util/PidTuner.h"
+
 Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
        Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid,  Encoder* leftEncoder,
        Encoder* rightEncoder, Gyro* gyro, DigitalInput* bumpSensor) {
@@ -22,6 +24,7 @@ Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Vic
   gyro_->Reset();
   bumpSensor_ = bumpSensor;
   lcd_ = DriverStationLCD::GetInstance();
+  prevAngularPower_ = 0.0;
 }
 
 void Drive::SetLinearPower(double left, double right) {
@@ -126,11 +129,24 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
   double sensitivity = 1.0;
   double rPower = 0.0;
   double lPower = 0.0;
+  
+  static double fpga = Timer::GetFPGATimestamp();
+    static double prevGyro = gyro_->GetAngle();
+    double curfpga = Timer::GetFPGATimestamp();
+    double curGyro = gyro_->GetAngle();
+    double dt = curfpga - fpga;
+    double dtheta = curGyro - prevGyro;
+    double wubbleu = dtheta / dt;
+    fpga = curfpga;
+    prevGyro = curGyro;
+    //PidTuner::PushData(wubbleu, 0, 0);
 
   if (!shiftSolenoid_->Get()) //high gear
     sensitivity = constants_->turnSensHigh;
-  else
+  else {
     sensitivity = constants_->turnSensLow;
+    printf("low gear....\n");
+  }
 
   if (quickTurn) {
     overPower = 1.0;
@@ -140,6 +156,10 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
   else {
     overPower = 0.0;
     angularPower = fabs(throttle) * wheel * sensitivity;
+  }
+  
+  if (!quickTurn) {
+    angularPower -= wubbleu * constants_->inertiaGain;
   }
 
   rPower = lPower = throttle;

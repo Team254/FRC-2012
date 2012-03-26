@@ -137,6 +137,8 @@ class Drive {
   DriverStationLCD* lcd_;
   Constants* constants_;
   
+  double prevAngularPower_;
+  
 };
 
 #endif  // SUBSYSTEMS_DRIVE_H_

@@ -37,6 +37,7 @@ Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightS
   ballRanger_ = ballRanger;
   filter_ = DaisyFilter::SinglePoleIIRFilter(0.5f);
   pidGoal_ = 0.0;
+  atTarget_ = false;
   
   m_y = init_matrix(1,1);
     m_r = init_matrix(2,1);
@@ -102,7 +103,8 @@ bool Shooter::PIDUpdate() {
 	  //printf("Power: %f\n", ssc_.U->data[0] / 12.0);
 	  SetLinearPower(ssc_.U->data[0] / 12.0);
   }
-  
+
+  PidTuner::PushData(x_hat1, instantVelocity, dt*50*100);
   //PidTuner::PushData(x_hat0, x_hat1, x_hat1);
   
 
@@ -112,6 +114,7 @@ bool Shooter::PIDUpdate() {
 
   instantVelocity =  instantVelocity / (2 * 3.1415926);
   velocity_ = UpdateFilter(instantVelocity);
+ // printf("t: %f , v: %f\n", targetVelocity_, velocity_);
 
   prevPos_ = currEncoderPos;
   DriverStationLCD* lcd_ = DriverStationLCD::GetInstance();
@@ -122,7 +125,7 @@ bool Shooter::PIDUpdate() {
 
   
   atTarget_ = fabs(velocity_ - targetVelocity_) < VELOCITY_THRESHOLD;
-  PidTuner::GetInstance()->PushData(targetVelocity_,velocity_, 0);
+  //PidTuner::GetInstance()->PushData(targetVelocity_,velocity_, 0);
   //SetLinearPower(.8);
   //return false;
   return atTarget_;
@@ -141,7 +144,16 @@ void Shooter::SetHoodUp(bool up) {
 }
 
 double Shooter::UpdateFilter(double value) {
-  return filter_->Calculate(value); 
+  velocityFilter_[filterIndex_] = value;
+  filterIndex_++;
+  if (filterIndex_ == FILTER_SIZE) {
+    filterIndex_ = 0;
+  }
+  double sum = 0;
+  for (int i = 0; i < FILTER_SIZE; i++) {
+    sum += velocityFilter_[i];
+  }
+  return sum / (double)FILTER_SIZE;
 }
 
 double Shooter::UpdateOutputFilter(double value) {
@@ -178,6 +190,12 @@ double Shooter::Linearize(double x) {
     // Rotate the linearization function by 180.0 degrees to handle negative input.
     return -Linearize(-x);
   }
+}
+
+void Shooter::Reset() {
+  atTarget_ = false;
+  for (int i = 0; i < FILTER_SIZE; i++)
+	velocityFilter_[i] = 0;
 }
 
 double Shooter::ConveyorLinearize(double x) {

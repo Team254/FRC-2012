@@ -29,13 +29,17 @@ void ShootCommand::Initialize() {
 }
 
 bool ShootCommand::Run() {
-
+  intake_->SetIntakePosition(Intake::INTAKE_DOWN);
   shooter_->SetTargetVelocity(shootSpeed_);
+  static int counter= 0;
+  static int dropCounts = 0;
+  // printf("count: %d\n", counter++);
   bool atSpeed = shooter_->AtTargetVelocity();
+  counter++;
   if (!atSpeed) {
 	shooterWaitTimer_->Reset();
   }
-  if (atSpeed && shooterWaitTimer_->Get() > .25) {
+  if (atSpeed ) {
 	countLatch_ = false;
     shooter_->SetLinearConveyorPower(1);
     if (runIntake_) {
@@ -44,15 +48,20 @@ bool ShootCommand::Run() {
        intake_->SetIntakePower(0);
     }
     reachedSpeed_ = true;
+    dropCounts = 0;
   } else {
     shooter_->SetLinearConveyorPower(0);
     intake_->SetIntakePower(0);
-    if(shooter_->GetVelocity() < shootSpeed_ - 7 && !countLatch_ && reachedSpeed_) {
-      shotsFired_++;
-      countLatch_ = true;
-      //countLatch_ = true;
-      if(shotsFired_ >= shotsToFire_) {
-    	  shotSpotterTimer_->Start();
+    if(shooter_->GetVelocity() < shootSpeed_ - 8 && !countLatch_ && reachedSpeed_) {
+      if (dropCounts++ > 10) {
+    	dropCounts = 0;
+        shotsFired_++;
+        countLatch_ = true;
+        printf("I shot a ball %d %d %f\n", shotsFired_, counter, shooter_->GetVelocity());
+        //countLatch_ = true;
+        if(shotsFired_ >= shotsToFire_) {
+    	    shotSpotterTimer_->Start();
+        }
       }
     } 
   }
@@ -60,7 +69,7 @@ bool ShootCommand::Run() {
 		  shotSpotterTimer_->Get() > .25);
   if (done) {
     shooter_->SetTargetVelocity(0);
-    shooter_->PIDUpdate();
+    //shooter_->PIDUpdate();
     shooter_->SetLinearConveyorPower(0.0);
     intake_->SetIntakePower(0);
   }

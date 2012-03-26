@@ -66,7 +66,7 @@ bool DriveCommand::Run() {
   
   leftPwr -= straightGain;
   rightPwr += straightGain;
-  PidTuner::PushData(currLeftDist, distanceGoal_, 0.0);    
+  //PidTuner::PushData(currLeftDist, distanceGoal_, 0.0);    
   drive_->SetLinearPower(leftPwr, rightPwr);
   
   if (fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2) {

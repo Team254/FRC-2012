@@ -133,6 +133,8 @@ void Skyfire::DisabledInit() {
 void Skyfire::AutonomousInit() {
   constants_->LoadFile();
   ResetMotors();
+  shooter_->Reset();
+  
   autonTimer_->Reset();
   autonTimer_->Start();
   intake_->SetIntakePosition(Intake::INTAKE_UP);
@@ -175,19 +177,22 @@ void Skyfire::AutonomousInit() {
      	      new BridgeBallsCommand(intake_, shooter_, true, 3.5),
      	      new DriveCommand(drivebase_, -5, false, false, 1.0)),
        	  AUTO_CONCURRENT(
-       	    new DriveCommand(drivebase_, -76, false, false, 1.5),
-       	    new JumbleCommand(shooter_, intake_, .5)),
-       	  new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
-       	  new ShootCommand(shooter_, intake_, true, 51.5, 2, 16.0));
+       	    new DriveCommand(drivebase_, -76, false, false, 1.5)),
+       	  new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5),
+       	  new ShootCommand(shooter_, intake_, true, 51.5, 99, 16.0));
         break;
     case AUTON_BRIDGE_FAST:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
-          new ShootCommand(shooter_, intake_, false,Constants::GetInstance()->autoShootKeyVel, 2, 3),
-          new DriveCommand(drivebase_, 50,  false, false, 4),
-          new BridgeBallsCommand(intake_, shooter_, true, 5.0),
-          new DriveCommand(drivebase_, -50, false, false, 4),
-          new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.5),
-          new ShootCommand(shooter_, intake_, true,Constants::GetInstance()->autoShootKeyVel, 2, 10.0));
+          new DriveCommand(drivebase_, 56,  false, false, 5.0, .4),
+          AUTO_SEQUENTIAL(
+        		  new ShootCommand(shooter_, intake_, true, 69, 10, 100),
+        		  //new BridgeBallsCommand(intake_, shooter_, true, 2.3),
+        		  new AutoAlignCommand(drivebase_, autoAlignDriver_, 4.0))
+         // new BridgeBallsCommand(intake_, shooter_, true, 5.0),
+          //new DriveCommand(drivebase_, -50, false, false, 4),
+          //new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.5),
+          //new ShootCommand(shooter_, intake_, true,Constants::GetInstance()->autoShootKeyVel, 2, 10.0)
+          );
       break;
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
@@ -278,13 +283,8 @@ void Skyfire::TeleopPeriodic() {
   GetWatchdog().Feed();
   static Timer* a = new Timer();
   a->Start();
-  double dt = timer_->Get();
-  timer_->Reset();
-  static double fpga = Timer::GetFPGATimestamp();
-  double curfpga = Timer::GetFPGATimestamp();
-  double dtfpga = curfpga - fpga;
-  fpga = curfpga;
-  //PidTuner::PushData(.02, .02, dtfpga);
+  
+  
   //printf("dt: %f fpga: %f diff: %f\n", dt, dtfpga, dt-dtfpga);
   //Logger::GetSysLog()->Log("%f, %d, %d\n", a->Get(), shooterEncoder_->GetRaw(), 12.0);
 
