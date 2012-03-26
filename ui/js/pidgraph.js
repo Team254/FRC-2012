@@ -96,7 +96,8 @@ $(function () {
             dataControl = dataControl.slice(1);
 
         while (dataControl.length < maxPoints) {
-            var y = (newC * ((max_graph-5 - (min_graph+5))/2)) + ((max_graph-5 - (min_graph+5))/2) ;
+            //var y = (newC * ((max_graph-5 - (min_graph+5))/2)) + ((max_graph-5 - (min_graph+5))/2) ;
+            var y = newC;
             dataControl.push(y);
         }
    
