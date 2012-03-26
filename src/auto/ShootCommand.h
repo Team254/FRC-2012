@@ -41,6 +41,7 @@ class ShootCommand : public AutoCommand {
   bool countLatch_;
   bool reachedSpeed_;
   int shotsFired_;
+  int downCycles_;
 };
 
 #endif

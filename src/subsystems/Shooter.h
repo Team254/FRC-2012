@@ -10,7 +10,7 @@
 
 
 #define TICKS_PER_REV 32
-#define VELOCITY_THRESHOLD 3.0
+#define VELOCITY_THRESHOLD 1.2 
 #define FILTER_SIZE 5
 #define OUTPUT_FILTER_SIZE 3
 
@@ -113,7 +113,7 @@ class Shooter {
   Timer* timer_;
   Pid* pid_;
   double pidGoal_;
-  int prevEncoderPos_;
+  double prevPos_;
   double targetVelocity_;
   double velocity_;
   double velocityFilter_[FILTER_SIZE];

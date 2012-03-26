@@ -39,7 +39,7 @@ void AutoTurnDriver::Reset() {
 
 
 bool AutoTurnDriver::UpdateDriver() {
-	double curAngle = -drive_->GetGyroAngle();
+  double curAngle = -drive_->GetGyroAngle();
   if (justReset_) {
     justReset_ = false;
     timer_->Reset();
@@ -47,19 +47,21 @@ bool AutoTurnDriver::UpdateDriver() {
     lastTimer_ = -1; // fix this later
     lastPosL_ = drive_->GetLeftEncoderDistance();
     lastPosR_ = drive_->GetRightEncoderDistance();
-
-   // printf("RESET FARGAGAGJADGAHGDSGDHFGASG\n");
+    foundTarget_ = false;
   }
   drive_->SetHighGear(false); 
   drive_->SetBrakeOn(false);
-  
-  if (!foundTarget_ && target_->SeesTarget() && target_->HasFreshTarget()) {
+  if (!foundTarget_ && !target_->SeesTarget()){
+      target_->DoVision();
+      
+    }else if (!foundTarget_ && target_->SeesTarget()) {
 	  // Grab a camera image angle and reset the gyro
 	  drive_->ResetGyro();
 	  angleGoal_ = -target_->GetAngle();
 	  printf("**********\n**ANGLE: %f %f \n\n", angleGoal_, drive_->GetGyroAngle());
 	  foundTarget_ = true;
   }
+  
 
   if(foundTarget_) {
 	int dir = (curAngle < angleGoal_) ? 1 : -1;
@@ -84,5 +86,5 @@ bool AutoTurnDriver::UpdateDriver() {
 
   PidTuner::PushData(angleGoal_, curAngle, 0);
   return (fabs(angleGoal_ - curAngle) < constants_->autoAlignThreshold) &&
-		  (fabs(turnRate) < .06);
+		  (fabs(turnRate) < .1);
 }

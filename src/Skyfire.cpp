@@ -30,7 +30,8 @@
 Skyfire::Skyfire() {
   SetPeriod(0.02);
   constants_ = Constants::GetInstance();
-
+  SetPeriod(.02);
+  
   // Motors
   leftDriveMotorA_ = new Victor((int)constants_->leftDrivePwmA);
   leftDriveMotorB_ = new Victor((int)constants_->leftDrivePwmB);
@@ -157,7 +158,7 @@ void Skyfire::AutonomousInit() {
      	  new DriveCommand(drivebase_, 130, false, false, 3.3),
           new DriveCommand(drivebase_, 100, true, false, 1.5, .4), // square up
      	  AUTO_CONCURRENT(
-              new BridgeBallsCommand(intake_, shooter_, true, 3.8),
+              new BridgeBallsCommand(intake_, shooter_, true, 4.5),
      	      new DriveCommand(drivebase_, -5.0, false, false, 4)),
           AUTO_CONCURRENT(
      	      new JumbleCommand(shooter_,  intake_, 1.0),
@@ -167,17 +168,17 @@ void Skyfire::AutonomousInit() {
       break;
     case AUTON_FAR_BRIDGE_SLOW:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
-          new ShootCommand(shooter_, intake_, true, 53, 2, 3.0),
+          new ShootCommand(shooter_, intake_, true, 53.5, 2, 8.0),
   	      new DriveCommand(drivebase_, 30, true, false, 3),
   	      new DriveCommand(drivebase_, 100, true, false, 1.0, .4),
      	  AUTO_CONCURRENT(
      	      new BridgeBallsCommand(intake_, shooter_, true, 3.5),
      	      new DriveCommand(drivebase_, -5, false, false, 1.0)),
        	  AUTO_CONCURRENT(
-       	    new DriveCommand(drivebase_, -76, false, false, 3),
+       	    new DriveCommand(drivebase_, -76, false, false, 1.5),
        	    new JumbleCommand(shooter_, intake_, .5)),
        	  new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
-       	  new ShootCommand(shooter_, intake_, true, 50, 2, 8.0));
+       	  new ShootCommand(shooter_, intake_, true, 51.5, 2, 16.0));
         break;
     case AUTON_BRIDGE_FAST:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
@@ -214,7 +215,7 @@ void Skyfire::TeleopInit() {
 
 void Skyfire::DisabledPeriodic() {
   GetWatchdog().Feed();
-
+  target_->DoVision();
   // Autonomous delay
   if (operatorControl_->GetIncreaseButton() && !oldIncreaseButton_) {
     autonDelay_ += 0.5;
@@ -283,9 +284,8 @@ void Skyfire::TeleopPeriodic() {
   double curfpga = Timer::GetFPGATimestamp();
   double dtfpga = curfpga - fpga;
   fpga = curfpga;
-  PidTuner::PushData(.02, .02, dtfpga);
+  //PidTuner::PushData(.02, .02, dtfpga);
   //printf("dt: %f fpga: %f diff: %f\n", dt, dtfpga, dt-dtfpga);
-  return;
   //Logger::GetSysLog()->Log("%f, %d, %d\n", a->Get(), shooterEncoder_->GetRaw(), 12.0);
 
   // Update shooter power/manual control

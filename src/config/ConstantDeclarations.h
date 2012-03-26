@@ -110,7 +110,7 @@ DECLARE_DOUBLE(turnSensHigh, 1.4)
 DECLARE_DOUBLE(shooterFenderSpeed, 38)
 DECLARE_DOUBLE(shooterFarFenderSpeed, 46)
 DECLARE_DOUBLE(shooterKeyCloseSpeed, 48)
-DECLARE_DOUBLE(shooterKeyFarSpeed, 53)
+DECLARE_DOUBLE(shooterKeyFarSpeed, 53.5)
 DECLARE_DOUBLE(shooterSpeedIncrement, 0.5)
 
 // PID constants
@@ -136,5 +136,5 @@ DECLARE_DOUBLE(autoCameraAlignKD, 0.05)
 DECLARE_DOUBLE(straightDriveGain, 0.1)
 
 // Automomous
-DECLARE_DOUBLE(autoShootKeyVel, 51)
-DECLARE_DOUBLE(autoAlignThreshold, 1.0)
+DECLARE_DOUBLE(autoShootKeyVel, 53.5)
+DECLARE_DOUBLE(autoAlignThreshold, .5)

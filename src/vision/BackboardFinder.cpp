@@ -17,7 +17,7 @@ double BackboardFinder::GetX() {
   if (-1.0 <= x_ && x_ <= 1.0) {
     return x_;
   } else {
-    printf("Bad x val :( %f\n", x_);
+  //  printf("Bad x val :( %f\n", x_);
     return 0;
   }
 }
@@ -250,15 +250,13 @@ void BackboardFinder::DoVision() {
   // Calculate x offset from target center
   seesTarget_ = (particles->size() > 1) && particles->size() < 5;
   x_ = seesTarget_ ? top.center_mass_x_normalized : 0.0;
-//  printf("Num Targets: %d, x_ : %f\n", particles->size(), (float) x_);
- // printf("Angle: %f, Distance: %f\n", GetAngle(), GetDistance());
 
-  //printf("CAMERA FAKFDSAJFADSOJG \n");
+
   // Calculate angle on fieled based on ?
   //printf("left %f, center %f, right %f\n", left.center_mass_x_normalized, top.center_mass_x_normalized, right.center_mass_x_normalized);
   hDiff_ = right.center_mass_x_normalized - left.center_mass_x_normalized;
   vDiff_ = fabs(top.center_mass_y_normalized - bottom.center_mass_y_normalized);
-  //printf("Offset: %f, Horizontal Diff: %f, Vertical Diff: %f\n", top.center_mass_x_normalized, hDiff, vDiff);
+
 
   delete bimg;
   static double t = 0;
@@ -267,15 +265,6 @@ void BackboardFinder::DoVision() {
 
   lastUpdate_ = t;
 
-  static int counts = 0;
-  counts++;
- /* if (counts % 10 == 0) {
-    for (int i = 0; i < particles->size() ; i++) {
-      printf("i: %d | x: %f | y: %f\n", i,  (float) particles->at(i).center_mass_x_normalized, (float) particles->at(i).center_mass_y_normalized);
-    }
-    printf("\n\n");
-  }
-*/
   double middleGap = right.boundingRect.left - (left.boundingRect.left + left.boundingRect.width);
 
 }

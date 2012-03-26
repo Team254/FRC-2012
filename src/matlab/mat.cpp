@@ -163,10 +163,10 @@ class ss_controller
 		  * and right positions and velocities
 		  * @param y the current left and right distances
 		  */
-		void update(struct matrix *outmat, struct matrix *R, struct matrix *Y)
+		void update( matrix *R, struct matrix *Y)
 		{
 			//printf("r: %f %f\n", R->data[0], R->data[1]);
-			printf("xhat: %f %f\n", X_hat->data[0], X_hat->data[1]);
+			//printf("xhat: %f %f", X_hat->data[0], X_hat->data[1]);
 			//U = K * (R - X_hat);
                         matrix_minus(U_tmp, R, X_hat);
                         matrix_mult(U, K, U_tmp);

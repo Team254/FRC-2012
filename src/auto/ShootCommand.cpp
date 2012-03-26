@@ -2,6 +2,7 @@
 
 #include "subsystems/Shooter.h"
 #include "subsystems/Intake.h"
+#include "util/PidTuner.h"
 
 ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
 		                   double shootSpeed, int shotsToFire, double timeout) {
@@ -16,6 +17,7 @@ ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
   countLatch_ = false;
   reachedSpeed_ = false;
   shotsFired_ = 0;
+  downCycles_ = 0;
 }
 
 void ShootCommand::Initialize() {
@@ -27,6 +29,7 @@ void ShootCommand::Initialize() {
 }
 
 bool ShootCommand::Run() {
+
   shooter_->SetTargetVelocity(shootSpeed_);
   bool atSpeed = shooter_->AtTargetVelocity();
   if (!atSpeed) {
@@ -47,13 +50,14 @@ bool ShootCommand::Run() {
     if(shooter_->GetVelocity() < shootSpeed_ - 7 && !countLatch_ && reachedSpeed_) {
       shotsFired_++;
       countLatch_ = true;
+      //countLatch_ = true;
       if(shotsFired_ >= shotsToFire_) {
     	  shotSpotterTimer_->Start();
       }
     } 
   }
   bool done = TimeoutExpired() || (shotsFired_ >= shotsToFire_ && 
-		  shotSpotterTimer_->Get() > .01);
+		  shotSpotterTimer_->Get() > .25);
   if (done) {
     shooter_->SetTargetVelocity(0);
     shooter_->PIDUpdate();

@@ -14,7 +14,7 @@ Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightS
   rightShooterMotor_ = rightShooterMotor;
   shooterEncoder_ = shooterEncoder;
   hoodSolenoid_ = hoodSolenoid;
-  prevEncoderPos_ = shooterEncoder->Get();
+  prevPos_ = 0;
   ballSensor_ = ballSensor;
   targetVelocity_ = 0.0;
   velocity_ = 0.0;
@@ -63,11 +63,15 @@ void Shooter::SetTargetVelocity(double velocity) {
 }
 
 bool Shooter::PIDUpdate() {
+  double dt = timer_->Get();
+  timer_->Reset();
+  
+  
 	  //int currEncoderPos = shooterEncoder_->Get();
   double currEncoderPos = shooterEncoder_->GetRaw() / 128.0 * 2 * 3.1415926;
   double velocity_goal = 2 * 3.1415926 * targetVelocity_;
-  struct matrix* outputs;
-  outputs = init_matrix(num_outputs, 1);
+  double instantVelocity = ((currEncoderPos - prevPos_) /  (1.0/50.0)); // (2 * 3.1415926);
+  //printf(" v: %f pow: %f dt: %f\n\n", instantVelocity, ssc_.U->data[0], dt);
   flash_matrix(m_y, (double)currEncoderPos);
   const double velocity_weight_scalar = 0.35;
   //const double max_reference = (U_max[0] - velocity_weight_scalar * (velocity_goal - X_hat[1]) * K[1]) / K[0] + X_hat[0];
@@ -81,10 +85,12 @@ bool Shooter::PIDUpdate() {
   const double max_reference = (u_max - velocity_weight_scalar * (velocity_goal - x_hat1) * k1) / k0 + x_hat0;
   const double min_reference = (u_min - velocity_weight_scalar * (velocity_goal - x_hat1) * k1) / k0 + x_hat0;
   //pidGoal_ = max(min(pidGoal_, max_reference), min_reference);
-  double minimum = pidGoal_ < max_reference ? pidGoal_ : max_reference;
-  pidGoal_ = minimum > min_reference ? minimum : min_reference;
+  double minimum = (pidGoal_ < max_reference) ? pidGoal_ : max_reference;
+  pidGoal_ = (minimum > min_reference) ? minimum : min_reference;
+  //printf("min %f max %f r %f\n", min_reference, max_reference, pidGoal_);
   flash_matrix(m_r, pidGoal_, velocity_goal);
-  ssc_.update(outputs, m_r, m_y);
+  pidGoal_ += ((1.0/50.0) * velocity_goal);
+  ssc_.update(m_r, m_y);
   //printf("r: %f %f\n", m_r->data[0], m_r->data[1]);
   //printf("y: %f\n", m_y->data[0]);
   //printf("u: %f\n", ssc_.U->data[0]);
@@ -93,64 +99,33 @@ bool Shooter::PIDUpdate() {
 	  SetLinearPower(0.0);
 	  pidGoal_ = currEncoderPos;
   } else {
-	  printf("Power: %f\n", ssc_.U->data[0] / 12.0);
+	  //printf("Power: %f\n", ssc_.U->data[0] / 12.0);
 	  SetLinearPower(ssc_.U->data[0] / 12.0);
   }
-  PidTuner::PushData(x_hat0, x_hat1, x_hat1);
-  double dt = timer_->Get();
-    double instantVelocity = (float)(shooterEncoder_->GetRaw() - prevEncoderPos_) / TICKS_PER_REV / 4 / dt * 2 * 3.1415926;
-    //velocity_ = UpdateFilter(instantVelocity);
-    prevEncoderPos_ = shooterEncoder_->GetRaw();
+  
+  //PidTuner::PushData(x_hat0, x_hat1, x_hat1);
+  
+
+  //double instantVelocity = ((currEncoderPos - prevPos_) /  (1.0/50.0)); // (2 * 3.1415926);
+ // printf(" v: %f pow: %f dt: %f\n\n", instantVelocity, ssc_.U->data[0], dt);
+  
+
+  instantVelocity =  instantVelocity / (2 * 3.1415926);
+  velocity_ = UpdateFilter(instantVelocity);
+
+  prevPos_ = currEncoderPos;
   DriverStationLCD* lcd_ = DriverStationLCD::GetInstance();
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "x0: %f", x_hat0);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "x1: %f", x_hat1);
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "v: %f", instantVelocity);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "v: %f g: %f ", velocity_, velocity_goal);
   lcd_->UpdateLCD();
+
   
-  return false;
-  /*
-  double increment = targetVelocity_ * dt * TICKS_PER_REV;
-  timer_->Reset();
-   pidGoal_ += increment;
-   double error = pidGoal_ - currEncoderPos;
-   double gain = constants_->shooterKP;
-   if (error*gain > 1.0) {
-	   pidGoal_ = currEncoderPos + 1.0/gain;
-   } else if(error*gain < -1.0) {
-	   pidGoal_ = currEncoderPos - 1.0/gain;
-   }
-   error = pidGoal_ - currEncoderPos;
-   SetLinearPower(1.0);
-   //PidTuner::PushData(targetVelocity_, velocity_, error * gain);
-   PidTuner::PushData(pidGoal_, (double)currEncoderPos, (double)currEncoderPos);
-   static int i = 0;
-   if(i++ % 100) {
-	   printf("pidGoal_: %f currEncoderPos: %d\n", pidGoal_, currEncoderPos);
-   }*/
-   return false;
-  
-  /*
-  double instantVelocity = (float)(currEncoderPos - prevEncoderPos_) / TICKS_PER_REV / timer_->Get();
-  velocity_ = UpdateFilter(instantVelocity);
-  prevEncoderPos_ = currEncoderPos;
-
-  double correctedTargetVelocity_ = targetVelocity_ * poofCorrectionFactor_;
-  outputValue_ += pid_->Update(correctedTargetVelocity_, velocity_);
-
-  timer_->Reset();
-  double correctedOutputValue = targetVelocity_ * (1.0/72.0);
-  correctedOutputValue += outputValue_;
-  double filteredOutput = UpdateOutputFilter(correctedOutputValue);
-  SetLinearPower(filteredOutput);
-  //double t = GetTime();
-
-  atTarget_ = fabs(correctedTargetVelocity_ - velocity_) < VELOCITY_THRESHOLD;
-  static int op = 0;
-  if (++op % 10 == 0)
-    printf("target: %f vel: %f \n",correctedTargetVelocity_,velocity_);
-  //PidTuner::PushData(correctedTargetVelocity_, velocity_, 0.0);
-  return atTarget_ == true;
-  */
+  atTarget_ = fabs(velocity_ - targetVelocity_) < VELOCITY_THRESHOLD;
+  PidTuner::GetInstance()->PushData(targetVelocity_,velocity_, 0);
+  //SetLinearPower(.8);
+  //return false;
+  return atTarget_;
 }
 
 void Shooter::SetLinearConveyorPower(double pwm) {
