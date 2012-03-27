@@ -39,11 +39,12 @@ Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightS
   pidGoal_ = 0.0;
   atTarget_ = false;
   
-  m_y = init_matrix(1,1);
-    m_r = init_matrix(2,1);
-    flash_matrix(m_y, 0.0);
-    flash_matrix(m_r, 0.0, 0.0);
-    ssc_.reset();
+  y_ = init_matrix(1,1);
+    r_ = init_matrix(2,1);
+    flash_matrix(y_, 0.0);
+    flash_matrix(r_, 0.0, 0.0);
+    ssc_ = new ss_controller(1, 1, 2, ss_controller::SHOOTER);
+    ssc_->reset();
     
 }
 
@@ -73,27 +74,27 @@ bool Shooter::PIDUpdate() {
   double velocity_goal = 2 * 3.1415926 * targetVelocity_;
   double instantVelocity = ((currEncoderPos - prevPos_) /  (1.0/50.0)); // (2 * 3.1415926);
   //printf(" v: %f pow: %f dt: %f\n\n", instantVelocity, ssc_.U->data[0], dt);
-  flash_matrix(m_y, (double)currEncoderPos);
+  flash_matrix(y_, (double)currEncoderPos);
   const double velocity_weight_scalar = 0.35;
   //const double max_reference = (U_max[0] - velocity_weight_scalar * (velocity_goal - X_hat[1]) * K[1]) / K[0] + X_hat[0];
   //const double min_reference = (U_min[0] - velocity_weight_scalar * (velocity_goal - X_hat[1]) * K[1]) / K[0] + X_hat[0];
-  double u_min = ssc_.U_min->data[0];
-  double u_max = ssc_.U_max->data[0];
-  double x_hat1 = ssc_.X_hat->data[1];
-  double k1 = ssc_.K->data[1];
-  double k0 = ssc_.K->data[0];
-  double x_hat0 = ssc_.X_hat->data[0];
+  double u_min = ssc_->U_min->data[0];
+  double u_max = ssc_->U_max->data[0];
+  double x_hat1 = ssc_->X_hat->data[1];
+  double k1 = ssc_->K->data[1];
+  double k0 = ssc_->K->data[0];
+  double x_hat0 = ssc_->X_hat->data[0];
   const double max_reference = (u_max - velocity_weight_scalar * (velocity_goal - x_hat1) * k1) / k0 + x_hat0;
   const double min_reference = (u_min - velocity_weight_scalar * (velocity_goal - x_hat1) * k1) / k0 + x_hat0;
   //pidGoal_ = max(min(pidGoal_, max_reference), min_reference);
   double minimum = (pidGoal_ < max_reference) ? pidGoal_ : max_reference;
   pidGoal_ = (minimum > min_reference) ? minimum : min_reference;
   //printf("min %f max %f r %f\n", min_reference, max_reference, pidGoal_);
-  flash_matrix(m_r, pidGoal_, velocity_goal);
+  flash_matrix(r_, pidGoal_, velocity_goal);
   pidGoal_ += ((1.0/50.0) * velocity_goal);
-  ssc_.update(m_r, m_y);
-  //printf("r: %f %f\n", m_r->data[0], m_r->data[1]);
-  //printf("y: %f\n", m_y->data[0]);
+  ssc_->update(r_, y_);
+  //printf("r: %f %f\n", r_->data[0], r_->data[1]);
+  //printf("y: %f\n", y_->data[0]);
   //printf("u: %f\n", ssc_.U->data[0]);
   if (velocity_goal < 1.0) {
 	  //printf("minning out\n");
@@ -101,7 +102,7 @@ bool Shooter::PIDUpdate() {
 	  pidGoal_ = currEncoderPos;
   } else {
 	  //printf("Power: %f\n", ssc_.U->data[0] / 12.0);
-	  SetLinearPower(ssc_.U->data[0] / 12.0);
+	  SetLinearPower(ssc_->U->data[0] / 12.0);
   }
 
   PidTuner::PushData(x_hat1, instantVelocity, dt*50*100);
@@ -194,8 +195,12 @@ double Shooter::Linearize(double x) {
 
 void Shooter::Reset() {
   atTarget_ = false;
-  for (int i = 0; i < FILTER_SIZE; i++)
+  for (int i = 0; i < FILTER_SIZE; i++) {
 	velocityFilter_[i] = 0;
+  }
+  flash_matrix(y_, 0.0);
+  flash_matrix(r_, 0.0, 0.0);
+  ssc_->reset();
 }
 
 double Shooter::ConveyorLinearize(double x) {

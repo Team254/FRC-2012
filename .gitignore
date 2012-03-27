@@ -48,4 +48,6 @@ Thumbs.db
 .ucpp
 Makefile
 PPC603gnu
-
+.cproject
+.project
+.wrproject

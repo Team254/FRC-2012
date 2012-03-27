@@ -6,7 +6,7 @@
 #include "config/Constants.h"
 #include "subsystems/Pid.h"
 #include "util/DaisyFilter.h"
-#include "matlab/mat.cpp"
+#include "matlab/mat.h"
 
 
 #define TICKS_PER_REV 32
@@ -131,9 +131,9 @@ class Shooter {
   
   // Matrix Stuff
   
-    struct matrix *m_y;
-    struct matrix *m_r;
-    ss_controller ssc_;
+    struct matrix *y_;
+    struct matrix *r_;
+    ss_controller *ssc_;
     
 };
 

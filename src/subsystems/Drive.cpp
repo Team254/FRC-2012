@@ -182,6 +182,12 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
     lPower += overPower * (-1.0 - rPower);
     rPower = -1.0;
   }
+  
+  if(throttle == 0 && !quickTurn) {
+	  SetLinearPower(0.0, 0.0);
+  }
+  
+  printf("t: %f l: %f r: %f\n", throttle, lPower, rPower);
 
   //  printf("ts: %f | lp: %f\nrp: %f\n\n", sensitivity, lPower, rPower);
   SetLinearPower(lPower, rPower);

@@ -21,6 +21,7 @@ ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
 }
 
 void ShootCommand::Initialize() {
+   shooter_->Reset();	
    shooter_->SetTargetVelocity(Constants::GetInstance()->autoShootKeyVel);
    AutoCommand::Initialize();
    shooterWaitTimer_->Reset();
