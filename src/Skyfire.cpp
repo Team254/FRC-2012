@@ -116,6 +116,11 @@ Skyfire::Skyfire() {
   autoBaseCmd_ = NULL;
   timer_ = new Timer();
   timer_->Start();
+  
+  prevLeftDist_ = 0.0;
+  prevRightDist_ = 0.0;
+  prevTime = 0.0;
+
 }
 
 void Skyfire::ResetMotors() {
@@ -212,7 +217,9 @@ void Skyfire::TeleopInit() {
   ResetMotors();
   drivebase_->ResetGyro();
   drivebase_->ResetEncoders();
-
+  prevLeftDist_ = 0.0;
+  prevRightDist_ = 0.0;
+  prevTime = 0.0;
   currDriver_ = teleopDriver_;
   currDriver_->Reset();
   timer_->Reset();
@@ -281,8 +288,6 @@ void Skyfire::AutonomousPeriodic() {
 
 void Skyfire::TeleopPeriodic() {
   GetWatchdog().Feed();
-  static Timer* a = new Timer();
-  a->Start();
   
   
   //printf("dt: %f fpga: %f diff: %f\n", dt, dtfpga, dt-dtfpga);
@@ -377,4 +382,17 @@ void Skyfire::TeleopPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Gyro: %f", gyro_->GetAngle());
   */
   lcd_->UpdateLCD();
+  
+  double curLeft = drivebase_->GetLeftEncoderDistance();
+  double curRight = drivebase_->GetRightEncoderDistance();
+  double curTime = timer_->Get();
+  double dt = curTime-prevTime;
+  prevTime = curTime;
+  static const double maxSpeed = 10.0;
+  // Set the brake in the last 0.25 seconds of the match
+  if(timer_->Get()>=119.75 && fabs(curLeft - prevLeftDist_)/dt < maxSpeed && fabs(curRight - prevRightDist_)/dt < maxSpeed) {
+	  drivebase_->SetBrakeOn(true);
+  }
+  prevLeftDist_ = curLeft;
+  prevRightDist_ = curRight;
 }

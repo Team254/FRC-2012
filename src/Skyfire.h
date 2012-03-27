@@ -142,6 +142,9 @@ class Skyfire : public CheesyRobot {
   };
   AutonMode autonMode_;
   SequentialCommand* autoBaseCmd_;
+  double prevLeftDist_;
+  double prevRightDist_;
+  double prevTime;
   Timer* timer_;
 };
 
