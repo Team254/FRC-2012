@@ -33,15 +33,14 @@ class ShootCommand : public AutoCommand {
  private:
   Shooter* shooter_;
   Intake* intake_;
-  Timer* shooterWaitTimer_;
   Timer* shotSpotterTimer_;
   bool runIntake_;
   double shootSpeed_;
   int shotsToFire_;
-  bool countLatch_;
   bool reachedSpeed_;
   int shotsFired_;
   int downCycles_;
+  int atSpeedCycles_;
 };
 
 #endif
