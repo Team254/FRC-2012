@@ -117,7 +117,8 @@ class Skyfire : public CheesyRobot {
   Solenoid* shiftSolenoid_;
   Solenoid* hoodSolenoid_;
   DoubleSolenoid* pizzaWheelSolenoid_;
-  DoubleSolenoid* intakeSolenoid_;
+  Solenoid* intakeUpSolenoid_;
+  Solenoid* intakeDownSolenoid_;
   DoubleSolenoid* brakeSolenoid_;
 
   DriverStationLCD* lcd_;

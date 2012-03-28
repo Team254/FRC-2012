@@ -23,7 +23,8 @@ class Intake {
    * Constructor
    * Accepts the Victors and pneumatics, etc. to be used
    */
-  Intake(Victor* intakeMotor1, Victor* intakeMotor2, Victor* intakeMotor3, DoubleSolenoid* intakeSolenoid);
+  Intake(Victor* intakeMotor1, Victor* intakeMotor2, Victor* intakeMotor3, Solenoid* intakeUpSolenoid,
+         Solenoid* intakeDownSolenoid);
 
   /**
    * Sets the power of the intake motor
@@ -46,7 +47,8 @@ class Intake {
   Victor* intakeMotor3_;
 
   // Solenoids
-  DoubleSolenoid* intakeSolenoid_;
+  Solenoid* intakeUpSolenoid_;
+  Solenoid* intakeDownSolenoid_;
 
   // Other
   Constants* constants_;

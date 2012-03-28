@@ -69,8 +69,8 @@ Skyfire::Skyfire() {
   hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
   pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidDownPort,
                                            (int)constants_->pizzaWheelSolenoidUpPort);
-  intakeSolenoid_ = new DoubleSolenoid((int)constants_->intakeSolenoidUpPort,
-                                       (int)constants_->intakeSolenoidDownPort);
+  intakeUpSolenoid_ = new Solenoid((int)constants_->intakeSolenoidUpPort);
+  intakeDownSolenoid_ = new Solenoid((int)constants_->intakeSolenoidDownPort);
   brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidOnPort,
                                       (int)constants_->brakeSolenoidOffPort);
 
@@ -78,7 +78,7 @@ Skyfire::Skyfire() {
   drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_,
                          shiftSolenoid_, pizzaWheelSolenoid_, brakeSolenoid_,  leftEncoder_, rightEncoder_,
                          gyro_, bumpSensor_);
-  intake_ = new Intake(intakeMotor1_, intakeMotor2_, intakeMotor3_, intakeSolenoid_);
+  intake_ = new Intake(intakeMotor1_, intakeMotor2_, intakeMotor3_, intakeUpSolenoid_, intakeDownSolenoid_);
   shooter_ = new Shooter(conveyorMotor_, leftShooterMotor_, rightShooterMotor_, shooterEncoder_,
                          hoodSolenoid_, conveyorBallSensor_, poofMeter_, ballRanger_);
   shooterTargetVelocity_ = 0;
