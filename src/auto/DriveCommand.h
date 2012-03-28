@@ -20,7 +20,7 @@ class DriveCommand : public AutoCommand {
    * Constructor. Accepts drivetrain pointer and goal in terms of distance in inches
    */
 	// coast is defunct - take it out when we refactor
-  DriveCommand(Drive* drive, double distance, double angle, bool usePizza, double timeout, double maxSpeed=1.0, double maxAcceleration=10.0, double maxAlpha=10.0, double maxOmega=10.0);
+  DriveCommand(Drive* drive, double distance, double angle, bool usePizza, double timeout, double maxSpeed=240.0, double maxAcceleration=120.0, double maxAlpha=10.0, double maxOmega=10.0);
 
   /**
    * Clears encoders and gyro
@@ -54,6 +54,8 @@ class DriveCommand : public AutoCommand {
   double maxAcceleration_;
   double maxAlpha_;
   double maxOmega_;
+  double turnOffset_;
+  double sumStoppedError_;
   
   // State space stuff
   double curA_;
@@ -67,6 +69,15 @@ class DriveCommand : public AutoCommand {
   ss_controller *ssc_;
   AccelFilterBase* straightFilter_;
   AccelFilterBase* turnFilter_;
+  
+  // Old
+  Pid* leftPid_;
+  Pid* rightPid_;
+  Timer* driveTimer_;
+  double prevTime_;
+  double prevLeftDist_;
+  double prevRightDist_;
+  double startingAngle_;
 };
 
 #endif  // AUTO_DRIVE_COMMAND_H_

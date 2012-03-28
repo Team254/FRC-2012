@@ -110,10 +110,12 @@ DECLARE_DOUBLE(inertiaGain, .0035
 
 // Shooter
 DECLARE_DOUBLE(shooterFenderSpeed, 38)
-DECLARE_DOUBLE(shooterFarFenderSpeed, 46)
-DECLARE_DOUBLE(shooterKeyCloseSpeed, 48)
+DECLARE_DOUBLE(shooterFarFenderSpeed, 44)
+DECLARE_DOUBLE(shooterKeyCloseSpeed, 46)
 DECLARE_DOUBLE(shooterKeyFarSpeed, 53.5)
 DECLARE_DOUBLE(shooterSpeedIncrement, 0.5)
+DECLARE_DOUBLE(shooterBridgeSpeed, 60)
+
 
 // PID constants
 DECLARE_DOUBLE(driveKP, 0.12)

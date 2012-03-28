@@ -138,6 +138,7 @@ class Skyfire : public CheesyRobot {
     AUTON_FAR_BRIDGE_SLOW,
     AUTON_BRIDGE_FAST,
     AUTON_ALLIANCE_BRIDGE,
+    AUTON_TEST,
     NUM_AUTON_MODES
   };
   AutonMode autonMode_;

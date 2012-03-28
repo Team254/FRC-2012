@@ -78,6 +78,8 @@ class Shooter {
   bool AtTargetVelocity();
   
   void Reset();
+  
+  double GetBallRange();
 
  private:
   /**

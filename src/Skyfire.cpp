@@ -11,6 +11,7 @@
 #include "auto/SequentialCommand.h"
 #include "auto/ShootCommand.h"
 #include "auto/TurnCommand.h"
+#include "auto/QueueBallCommand.h"
 #include "drivers/AutoTurnDriver.h"
 #include "drivers/BaselockDriver.h"
 #include "drivers/Driver.h"
@@ -26,6 +27,8 @@
 #include "util/PidTuner.h"
 #include "util/RelativeGyro.h"
 #include "vision/BackboardFinder.h"
+
+Logger* autoLogger = new Logger("/sscLog.log");
 
 Skyfire::Skyfire() {
   SetPeriod(0.02);
@@ -187,7 +190,7 @@ void Skyfire::AutonomousInit() {
        	  new ShootCommand(shooter_, intake_, true, 51.5, 99, 16.0));
         break;
     case AUTON_BRIDGE_FAST:
-      autoBaseCmd_ = AUTO_SEQUENTIAL(
+      /*autoBaseCmd_ = AUTO_SEQUENTIAL(
           new DriveCommand(drivebase_, 56, 0.0, false, 5.0, .4),
           AUTO_SEQUENTIAL(
         		  new ShootCommand(shooter_, intake_, true, 69, 10, 100),
@@ -197,12 +200,27 @@ void Skyfire::AutonomousInit() {
           //new DriveCommand(drivebase_, -50, false, false, 4),
           //new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.5),
           //new ShootCommand(shooter_, intake_, true,Constants::GetInstance()->autoShootKeyVel, 2, 10.0)
-          );
+          );*/
+    	autoBaseCmd_ = AUTO_SEQUENTIAL(
+    	          new ShootCommand(shooter_, intake_, true, 52.5, 2, 4.0),
+    	  	      new DriveCommand(drivebase_, 44, 0.0, false, 3),
+    	  	      new DriveCommand(drivebase_, 100, 0.0, false, 0.7, 0.4),
+    	     	  AUTO_CONCURRENT(
+    	     	      new BridgeBallsCommand(intake_, shooter_, true, 3.5),
+    	     	      AUTO_SEQUENTIAL(
+    	     	        new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5),
+    	     	        new QueueBallCommand(shooter_, intake_, 2))),
+    	     	  new ShootCommand(shooter_, intake_, true, 60, 99, 3.8)      
+    	       	  );
       break;
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new ShootCommand(shooter_, intake_, false, Constants::GetInstance()->autoShootKeyVel, 2, 3.75));
       break;
+    case AUTON_TEST:
+    	printf("auton testing\n");
+    	autoBaseCmd_ = AUTO_SEQUENTIAL(new DriveCommand(drivebase_, 96, 0.0, false, 20.0));
+    	break;
     default:
       autoBaseCmd_ = NULL;
   }
@@ -267,6 +285,9 @@ void Skyfire::DisabledPeriodic() {
     case AUTON_ALLIANCE_BRIDGE:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Alliance bridge");
       break;
+    case AUTON_TEST:
+        lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Testing Auton");
+        break;
     default:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Invalid auton");
   }
@@ -284,6 +305,16 @@ void Skyfire::AutonomousPeriodic() {
     autoBaseCmd_->Run();
   }
   shooter_->PIDUpdate();
+  
+  /*
+  drivebase_->SetHighGear(false);
+  if(autonTimer_->Get() < 4.0) {
+	  drivebase_->SetLinearPower(1.0, 1.0);
+	  autoLogger->Log("%f,%f,%f\n",autonTimer_->Get(), drivebase_->GetLeftEncoderDistance(), drivebase_->GetRightEncoderDistance());
+  } else {
+	  drivebase_->SetLinearPower(0.0,0.0);
+  }
+  */
 }
 
 void Skyfire::TeleopPeriodic() {
@@ -311,6 +342,7 @@ void Skyfire::TeleopPeriodic() {
   if (operatorControl_->GetShooterSwitch()) {
     // Re-load the shooter PID constants whenever the shooter is turned on.
     if (!oldShooterSwitch_) {
+    	shooterTargetVelocity_ = 38;
       constants_->LoadFile();
     }
     shooter_->SetTargetVelocity(shooterTargetVelocity_);

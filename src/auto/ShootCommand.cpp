@@ -26,6 +26,7 @@ void ShootCommand::Initialize() {
 }
 
 bool ShootCommand::Run() {
+  //intake_->SetIntakePosition(Intake::INTAKE_DOWN);
   shooter_->SetTargetVelocity(shootSpeed_);
   bool atSpeed = shooter_->AtTargetVelocity();
 

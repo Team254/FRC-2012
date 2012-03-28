@@ -56,7 +56,7 @@ void Shooter::SetTargetVelocity(double velocity) {
   targetVelocity_ = velocity;
   pid_->ResetError();
   outputValue_ = 0;
-  if (velocity > 44) {
+  if (velocity > 40) {
     SetHoodUp(true);
   } else if (velocity > 0) {
     SetHoodUp(false);
@@ -105,7 +105,7 @@ bool Shooter::PIDUpdate() {
 	  SetLinearPower(ssc_->U->data[0] / 12.0);
   }
 
-  PidTuner::PushData(x_hat1, instantVelocity, dt*50*100);
+  //PidTuner::PushData(x_hat1, instantVelocity, dt*50*100);
   //PidTuner::PushData(x_hat0, x_hat1, x_hat1);
   
 
@@ -126,7 +126,7 @@ bool Shooter::PIDUpdate() {
 
   
   atTarget_ = fabs(velocity_ - targetVelocity_) < VELOCITY_THRESHOLD;
-  //PidTuner::GetInstance()->PushData(targetVelocity_,velocity_, 0);
+  PidTuner::GetInstance()->PushData(targetVelocity_,velocity_, 0);
   //SetLinearPower(.8);
   //return false;
   return atTarget_;
@@ -213,4 +213,8 @@ double Shooter::ConveyorLinearize(double x) {
     // Rotate the linearization function by 180.0 degrees to handle negative input.
     return -Linearize(-x);
   }
+}
+
+double Shooter::GetBallRange() {
+	return ballRanger_->GetValue();
 }

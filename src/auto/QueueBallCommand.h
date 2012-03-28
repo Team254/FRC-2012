@@ -14,6 +14,9 @@ class QueueBallCommand : public AutoCommand {
   
   ~QueueBallCommand();
   
-   
+private:
+  
+  Shooter* shooter_;
+  Intake* intake_;
 	
 };
