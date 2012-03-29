@@ -68,11 +68,12 @@ bool Shooter::PIDUpdate() {
   double dt = timer_->Get();
   timer_->Reset();
   
-  
 	  //int currEncoderPos = shooterEncoder_->Get();
   double currEncoderPos = shooterEncoder_->GetRaw() / 128.0 * 2 * 3.1415926;
+ // printf("encoder: %f | dt %f\n", shooterEncoder_->GetRaw() / 128.0, dt);
   double velocity_goal = 2 * 3.1415926 * targetVelocity_;
   double instantVelocity = ((currEncoderPos - prevPos_) /  (1.0/50.0)); // (2 * 3.1415926);
+  
   //printf(" v: %f pow: %f dt: %f\n\n", instantVelocity, ssc_.U->data[0], dt);
   flash_matrix(y_, (double)currEncoderPos);
   const double velocity_weight_scalar = 0.35;
@@ -126,7 +127,7 @@ bool Shooter::PIDUpdate() {
 
   
   atTarget_ = fabs(velocity_ - targetVelocity_) < VELOCITY_THRESHOLD;
-  PidTuner::GetInstance()->PushData(targetVelocity_,velocity_, 0);
+  PidTuner::GetInstance()->PushData(targetVelocity_,velocity_, dt * 1000);
   //SetLinearPower(.8);
   //return false;
   return atTarget_;
@@ -145,6 +146,7 @@ void Shooter::SetHoodUp(bool up) {
 }
 
 double Shooter::UpdateFilter(double value) {
+  //return value;
   velocityFilter_[filterIndex_] = value;
   filterIndex_++;
   if (filterIndex_ == FILTER_SIZE) {
@@ -201,6 +203,9 @@ void Shooter::Reset() {
   flash_matrix(y_, 0.0);
   flash_matrix(r_, 0.0, 0.0);
   ssc_->reset();
+  timer_->Reset();
+  shooterEncoder_->Reset();
+  prevPos_ = shooterEncoder_->Get();
 }
 
 double Shooter::ConveyorLinearize(double x) {

@@ -145,7 +145,7 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
     sensitivity = constants_->turnSensHigh;
   else {
     sensitivity = constants_->turnSensLow;
-    printf("low gear....\n");
+    //printf("low gear....\n");
   }
 
   if (quickTurn) {
@@ -187,7 +187,7 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 	  SetLinearPower(0.0, 0.0);
   }
   
-  printf("t: %f l: %f r: %f\n", throttle, lPower, rPower);
+  //printf("t: %f l: %f r: %f\n", throttle, lPower, rPower);
 
   //  printf("ts: %f | lp: %f\nrp: %f\n\n", sensitivity, lPower, rPower);
   SetLinearPower(lPower, rPower);

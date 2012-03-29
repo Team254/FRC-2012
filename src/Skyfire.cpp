@@ -33,7 +33,6 @@ Logger* autoLogger = new Logger("/sscLog.log");
 Skyfire::Skyfire() {
   SetPeriod(0.02);
   constants_ = Constants::GetInstance();
-  SetPeriod(.02);
   
   // Motors
   leftDriveMotorA_ = new Victor((int)constants_->leftDrivePwmA);
@@ -90,7 +89,7 @@ Skyfire::Skyfire() {
 
   // Vision
   target_ = new BackboardFinder();
-  target_->Start();
+  //target_->Start();
 
   // Drivers
   teleopDriver_ = new TeleopDriver(drivebase_, leftJoystick_, rightJoystick_, operatorControl_);
@@ -228,6 +227,9 @@ void Skyfire::AutonomousInit() {
   if (autoBaseCmd_) {
     autoBaseCmd_->Initialize();
   }
+  
+  // Reset the shooter
+  shooter_->Reset();
 }
 
 void Skyfire::TeleopInit() {
@@ -245,7 +247,8 @@ void Skyfire::TeleopInit() {
 
 void Skyfire::DisabledPeriodic() {
   GetWatchdog().Feed();
-  target_->DoVision();
+  shooter_->Reset();
+  //target_->DoVision();
   // Autonomous delay
   if (operatorControl_->GetIncreaseButton() && !oldIncreaseButton_) {
     autonDelay_ += 0.5;
@@ -300,12 +303,11 @@ void Skyfire::DisabledPeriodic() {
 
 void Skyfire::AutonomousPeriodic() {
   GetWatchdog().Feed();
-
-  if (autonTimer_->Get() > autonDelay_ && autoBaseCmd_) {
-    autoBaseCmd_->Run();
-  }
   shooter_->PIDUpdate();
-  
+ // if ((autonTimer_->Get() > autonDelay_)&& autoBaseCmd_) {
+   // autoBaseCmd_->Run();
+  //}
+  shooter_->SetTargetVelocity(55);
   /*
   drivebase_->SetHighGear(false);
   if(autonTimer_->Get() < 4.0) {
@@ -342,7 +344,9 @@ void Skyfire::TeleopPeriodic() {
   if (operatorControl_->GetShooterSwitch()) {
     // Re-load the shooter PID constants whenever the shooter is turned on.
     if (!oldShooterSwitch_) {
-    	shooterTargetVelocity_ = 38;
+    	if(shooterTargetVelocity_ == 0) {
+    	  shooterTargetVelocity_ = 38;
+    	}
       constants_->LoadFile();
     }
     shooter_->SetTargetVelocity(shooterTargetVelocity_);

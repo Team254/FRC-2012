@@ -6,7 +6,7 @@
 
 #include "DriverStation.h"
 #include "CheesyRobot.h"
-#include "Utility.h"
+#include <taskLib.h>
 
 const double CheesyRobot::kDefaultPeriod;
 
@@ -39,17 +39,11 @@ CheesyRobot::~CheesyRobot()
  */
 void CheesyRobot::SetPeriod(double period)
 {
-	if (period != 0.0)
-	{
-		// Not syncing with the DS, so start the timer for the main loop
-		m_mainLoopTimer.Reset();
-		m_mainLoopTimer.Start();
-	}
-	else
-	{
-		// Syncing with the DS, don't need the timer
-		m_mainLoopTimer.Stop();
-	}
+
+    // Not syncing with the DS, so start the timer for the main loop
+	m_mainLoopTimer.Reset();
+    m_mainLoopTimer.Start();
+	
 	m_period = period;
 }
 
@@ -84,7 +78,7 @@ void CheesyRobot::StartCompetition()
 {
 	// first and one-time initialization
 	RobotInit();
-	
+	static double t = 0;
 	// loop forever, calling the appropriate mode-dependent function
 	while (TRUE)
 	{
@@ -103,6 +97,7 @@ void CheesyRobot::StartCompetition()
 			}
 			if (NextPeriodReady())
 			{
+				FRC_NetworkCommunication_observeUserProgramDisabled();
 				DisabledPeriodic();
 			}
 			DisabledContinuous();
@@ -121,6 +116,7 @@ void CheesyRobot::StartCompetition()
 			}
 			if (NextPeriodReady())
 			{
+				FRC_NetworkCommunication_observeUserProgramDisabled();
 				AutonomousPeriodic();
 			}
 			AutonomousContinuous();
@@ -139,6 +135,7 @@ void CheesyRobot::StartCompetition()
 			}
 			if (NextPeriodReady())
 			{
+				FRC_NetworkCommunication_observeUserProgramDisabled();
 				TeleopPeriodic();
 			}
 			TeleopContinuous();
@@ -270,7 +267,7 @@ void CheesyRobot::DisabledContinuous()
 		printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
-	taskDelay(1);
+	m_ds->WaitForData();
 }
 
 /**
@@ -287,7 +284,7 @@ void CheesyRobot::AutonomousContinuous()
 		printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
-	taskDelay(1);
+	m_ds->WaitForData();
 }
 
 /**
@@ -304,5 +301,5 @@ void CheesyRobot::TeleopContinuous()
 		printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
-	taskDelay(1);
+	m_ds->WaitForData();
 }
