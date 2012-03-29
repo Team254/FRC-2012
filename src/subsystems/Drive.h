@@ -99,6 +99,8 @@ class Drive {
    * Is brake on?
    */
   bool GetBrakeOn();
+  
+  void SetControlLoopsOn(bool on);
 
  private:
   /**
@@ -138,6 +140,7 @@ class Drive {
   Constants* constants_;
   
   double prevAngularPower_;
+  bool controlLoops_;
   
 };
 

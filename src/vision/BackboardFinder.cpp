@@ -52,7 +52,6 @@ double BackboardFinder::GetAngle() {
 }
 
 void BackboardFinder::DoVision() {
-	return;
   // Get image from camera
   AxisCamera &camera = AxisCamera::GetInstance("10.2.54.11");
   ColorImage img(IMAQ_IMAGE_RGB);

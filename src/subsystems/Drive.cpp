@@ -25,6 +25,7 @@ Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Vic
   bumpSensor_ = bumpSensor;
   lcd_ = DriverStationLCD::GetInstance();
   prevAngularPower_ = 0.0;
+  controlLoops_ = false;
 }
 
 void Drive::SetLinearPower(double left, double right) {
@@ -158,7 +159,7 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
     angularPower = fabs(throttle) * wheel * sensitivity;
   }
   
-  if (!quickTurn) {
+  if (!quickTurn && controlLoops_) {
     angularPower -= wubbleu * constants_->inertiaGain;
   }
 
@@ -193,3 +194,6 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
   SetLinearPower(lPower, rPower);
 }
 
+void Drive::SetControlLoopsOn(bool on){
+	controlLoops_ = on;
+}

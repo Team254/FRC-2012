@@ -10,8 +10,8 @@
 
 
 #define TICKS_PER_REV 32
-#define VELOCITY_THRESHOLD 1 
-#define FILTER_SIZE 6
+#define VELOCITY_THRESHOLD .8
+#define FILTER_SIZE 5
 #define OUTPUT_FILTER_SIZE 3
 
 /**

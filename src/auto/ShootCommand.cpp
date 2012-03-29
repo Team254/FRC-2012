@@ -5,7 +5,7 @@
 #include "util/PidTuner.h"
 
 ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
-		                   double shootSpeed, int shotsToFire, double timeout) {
+		                   double shootSpeed, int shotsToFire, double timeout, bool intakeDown) {
   SetTimeout(timeout);
   shooter_ = shooter;
   intake_ = intake;
@@ -17,18 +17,30 @@ ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
   shotsFired_ = 0;
   downCycles_ = 0;
   atSpeedCycles_ = 0;
+  intakeDown_ = intakeDown;
 }
 
 void ShootCommand::Initialize() {
    shooter_->Reset();	
-   shooter_->SetTargetVelocity(Constants::GetInstance()->autoShootKeyVel);
+   shooter_->SetTargetVelocity(shootSpeed_);
    AutoCommand::Initialize();
+   if (intakeDown_) {
+   	  intake_->SetIntakePosition(Intake::INTAKE_DOWN);
+   	  ///reachedSpeed_ = true;
+   }
 }
 
 bool ShootCommand::Run() {
   //intake_->SetIntakePosition(Intake::INTAKE_DOWN);
   shooter_->SetTargetVelocity(shootSpeed_);
+  
+  if (timer_->Get() > 2.2 && intakeDown_) {
+	  intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
+	  intakeDown_ = false;
+  }
+  
   bool atSpeed = shooter_->AtTargetVelocity();
+  bool goBack = false;
 
   if (atSpeed) {
     if (atSpeedCycles_++ > 5)
@@ -36,11 +48,13 @@ bool ShootCommand::Run() {
     downCycles_ = 0;
   } else {
     atSpeedCycles_ = 0;
-    if(shooter_->GetVelocity() < shootSpeed_ - 7  && reachedSpeed_) {
-      if (downCycles_++ > 10) {
+    if(shooter_->GetVelocity() < shootSpeed_ - 4  && reachedSpeed_) {
+      if (downCycles_++ > 5) {
         downCycles_ = 0;
         shotsFired_++;
+        goBack = true;
         reachedSpeed_ = false; // Stop running the conveyor
+        intakeDown_ = false;
         if(shotsFired_ >= shotsToFire_) {
           shotSpotterTimer_->Start();
         }
@@ -55,6 +69,13 @@ bool ShootCommand::Run() {
     } else {
        intake_->SetIntakePower(0);
     }
+  } 
+  else if (goBack) {
+	  shooter_->SetLinearConveyorPower(-1);
+	  intake_->SetIntakePower(0);
+  } else if (intakeDown_) {
+	  shooter_->SetLinearConveyorPower(1);
+	  intake_->SetIntakePower(1);
   } else {
     shooter_->SetLinearConveyorPower(0);
     intake_->SetIntakePower(0);
@@ -63,7 +84,7 @@ bool ShootCommand::Run() {
   bool done = TimeoutExpired() || (shotsFired_ >= shotsToFire_ && 
 		  shotSpotterTimer_->Get() > .25);
   if (done) {
-    shooter_->SetTargetVelocity(0);
+    //shooter_->SetTargetVelocity(0);
     shooter_->SetLinearConveyorPower(0.0);
     intake_->SetIntakePower(0);
   }
