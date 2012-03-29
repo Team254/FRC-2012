@@ -140,11 +140,11 @@ void Skyfire::DisabledInit() {
 void Skyfire::AutonomousInit() {
   constants_->LoadFile();
   ResetMotors();
-  shooter_->Reset();
   
   autonTimer_->Reset();
   autonTimer_->Start();
   intake_->SetIntakePosition(Intake::INTAKE_UP);
+  shooter_->SetTargetVelocity(0);
 
   if (autoBaseCmd_) {
     delete autoBaseCmd_;
@@ -228,8 +228,6 @@ void Skyfire::AutonomousInit() {
     autoBaseCmd_->Initialize();
   }
   
-  // Reset the shooter
-  shooter_->Reset();
 }
 
 void Skyfire::TeleopInit() {
@@ -247,9 +245,11 @@ void Skyfire::TeleopInit() {
 
 void Skyfire::DisabledPeriodic() {
   GetWatchdog().Feed();
-  shooter_->Reset();
   //target_->DoVision();
   // Autonomous delay
+  shooter_->Reset();
+  shooter_->SetTargetVelocity(0);
+  shooter_->PIDUpdate();
   if (operatorControl_->GetIncreaseButton() && !oldIncreaseButton_) {
     autonDelay_ += 0.5;
   } else if (operatorControl_->GetDecreaseButton() && !oldDecreaseButton_) {
@@ -307,7 +307,7 @@ void Skyfire::AutonomousPeriodic() {
  // if ((autonTimer_->Get() > autonDelay_)&& autoBaseCmd_) {
    // autoBaseCmd_->Run();
   //}
-  shooter_->SetTargetVelocity(55);
+  shooter_->SetTargetVelocity(53.5);
   /*
   drivebase_->SetHighGear(false);
   if(autonTimer_->Get() < 4.0) {
