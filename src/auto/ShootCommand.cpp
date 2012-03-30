@@ -28,11 +28,13 @@ void ShootCommand::Initialize() {
    	  intake_->SetIntakePosition(Intake::INTAKE_DOWN);
    	  ///reachedSpeed_ = true;
    }
+   lastShotTimer_->Reset();
 }
 
 bool ShootCommand::Run() {
   //intake_->SetIntakePosition(Intake::INTAKE_DOWN);
   shooter_->SetTargetVelocity(shootSpeed_);
+  lastShotTimer_->Start();
   
   if (timer_->Get() > 2.2 && intakeDown_) {
 	  intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
@@ -40,7 +42,7 @@ bool ShootCommand::Run() {
   if (timer_->Get() > 3.5 && intakeDown_)
 	  intakeDown_ = false;
   
-  bool atSpeed = shooter_->AtTargetVelocity();
+  bool atSpeed = shooter_->AtTargetVelocity() || lastShotTimer_->Get() > 2.5;
   bool goBack = false;
 
   if (atSpeed) {
@@ -56,6 +58,7 @@ bool ShootCommand::Run() {
         goBack = true;
         reachedSpeed_ = false; // Stop running the conveyor
         intakeDown_ = false;
+        lastShotTimer_->Reset();
         if(shotsFired_ >= shotsToFire_) {
           shotSpotterTimer_->Start();
         }

@@ -167,7 +167,7 @@ void Skyfire::AutonomousInit() {
               new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
       	      new DriveCommand(drivebase_, 56, 0.0, false, 3),
       	      new DriveCommand(drivebase_, 30, 0.0, false, .5, .65),
-      	    new ShootCommand(shooter_, intake_, true, 60, 99, 16.0, true)
+      	    new ShootCommand(shooter_, intake_, true, 58, 99, 16.0, true)
       	      //AUTO_CONCURRENT(
          	    //new BridgeBallsCommand(intake_, shooter_, true, 67.5, 3.0)),
          	  
