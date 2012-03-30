@@ -114,7 +114,7 @@ Skyfire::Skyfire() {
   // Initialize autonomous variables
   autonDelay_ = 0.0;
   autonTimer_ = new Timer();
-  autonMode_ = AUTON_CLOSE_BRIDGE_SLOW;
+  autonMode_ = AUTON_FENDER;
   autoBaseCmd_ = NULL;
   timer_ = new Timer();
   timer_->Start();
@@ -162,6 +162,32 @@ void Skyfire::AutonomousInit() {
               new DriveCommand(drivebase_, -25, 0.0, false, .5, .7),
    	          new ShootCommand(shooter_, intake_, true, 37.5, 2, 6.0)));
       break;
+    case AUTON_FAR_BRIDGE_SLOW:
+          autoBaseCmd_ = AUTO_SEQUENTIAL(
+              new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
+      	      new DriveCommand(drivebase_, 56, 0.0, false, 3),
+      	      new DriveCommand(drivebase_, 30, 0.0, false, .5, .65),
+      	    new ShootCommand(shooter_, intake_, true, 60, 99, 16.0, true)
+      	      //AUTO_CONCURRENT(
+         	    //new BridgeBallsCommand(intake_, shooter_, true, 67.5, 3.0)),
+         	  
+         	    //new DriveCommand(drivebase_, 15, 0.0, false, 2.0, .5)),
+           	  //AUTO_CONCURRENT(
+           	    //new DriveCommand(drivebase_, -54, 0.0, false, 1.7)),
+           	  //AUTO_CONCURRENT(
+           	    //new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5)),
+           	  );
+            break;  
+    case AUTON_SHORT_SIMPLE:
+        	autoBaseCmd_ = AUTO_SEQUENTIAL (
+        		new ShootCommand(shooter_, intake_, true, 46, 2, 6.0)
+        		);
+        	break;
+    case AUTON_FAR_SIMPLE:
+        	autoBaseCmd_ = AUTO_SEQUENTIAL (
+                new ShootCommand(shooter_, intake_, true, 53.5, 2, 6.0)	
+        		);
+        	break;        
     case AUTON_CLOSE_BRIDGE_SLOW:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new ShootCommand(shooter_, intake_, true, 48, 2, 7.0),
@@ -176,22 +202,7 @@ void Skyfire::AutonomousInit() {
      	  new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
           new ShootCommand(shooter_, intake_, true, 49, 2, 8.0));
       break;
-    case AUTON_FAR_BRIDGE_SLOW:
-      autoBaseCmd_ = AUTO_SEQUENTIAL(
-          new ShootCommand(shooter_, intake_, true, 54.5, 2, 6.0),
-  	      new DriveCommand(drivebase_, 56, 0.0, false, 3),
-  	      new DriveCommand(drivebase_, 30, 0.0, false, .5, .65),
-  	    new ShootCommand(shooter_, intake_, true, 63 , 99, 16.0, true)
-  	      //AUTO_CONCURRENT(
-     	    //new BridgeBallsCommand(intake_, shooter_, true, 67.5, 3.0)),
-     	  
-     	    //new DriveCommand(drivebase_, 15, 0.0, false, 2.0, .5)),
-       	  //AUTO_CONCURRENT(
-       	    //new DriveCommand(drivebase_, -54, 0.0, false, 1.7)),
-       	  //AUTO_CONCURRENT(
-       	    //new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5)),
-       	  );
-        break;
+    
     case AUTON_BRIDGE_FAST:
       /*autoBaseCmd_ = AUTO_SEQUENTIAL(
           new DriveCommand(drivebase_, 56, 0.0, false, 5.0, .4),
@@ -268,7 +279,9 @@ void Skyfire::DisabledPeriodic() {
       autonMode_ = AUTON_NONE;
     }
   }
-
+  double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
+  double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
+  DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line5, "l:%0.3f r:%0.3f", straightPower, turnPower);
   oldIncreaseButton_ = operatorControl_->GetIncreaseButton();
   oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
   oldAutonSelectButton_ = operatorControl_->GetAutonSelectButton();
@@ -281,11 +294,17 @@ void Skyfire::DisabledPeriodic() {
     case AUTON_FENDER:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Fender");
       break;
+    case AUTON_FAR_BRIDGE_SLOW:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Far + bridge");
+      break;  
+    case AUTON_SHORT_SIMPLE:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Short Simple");
+      break;
+    case AUTON_FAR_SIMPLE:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Far Simple");
+      break;      
     case AUTON_CLOSE_BRIDGE_SLOW:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Near bridge slow");
-      break;
-    case AUTON_FAR_BRIDGE_SLOW:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Far bridge slow");
       break;
     case AUTON_BRIDGE_FAST:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Bridge fast");

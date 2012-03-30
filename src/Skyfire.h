@@ -135,12 +135,14 @@ class Skyfire : public CheesyRobot {
   enum AutonMode {
     AUTON_NONE = 0,
     AUTON_FENDER,
-    AUTON_CLOSE_BRIDGE_SLOW,
     AUTON_FAR_BRIDGE_SLOW,
+    AUTON_SHORT_SIMPLE,
+    AUTON_FAR_SIMPLE,
+    NUM_AUTON_MODES,
+    AUTON_CLOSE_BRIDGE_SLOW,
     AUTON_BRIDGE_FAST,
     AUTON_ALLIANCE_BRIDGE,
-    AUTON_TEST,
-    NUM_AUTON_MODES
+    AUTON_TEST
   };
   AutonMode autonMode_;
   SequentialCommand* autoBaseCmd_;
