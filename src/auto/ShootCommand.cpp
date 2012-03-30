@@ -42,8 +42,8 @@ bool ShootCommand::Run() {
   }
   if (timer_->Get() > 3.5 && intakeDown_)
 	  intakeDown_ = false;
-  
-  bool atSpeed = shooter_->AtTargetVelocity() || lastShotTimer_->Get() > 2.5;
+  // Hacked this at SVR to get the seconds balls to stop before shooting
+  bool atSpeed = shooter_->AtTargetVelocity() || (lastShotTimer_->Get() > 2.4 && lastShotTimer_->Get() < 2.5);
   bool goBack = false;
 
   if (atSpeed) {
