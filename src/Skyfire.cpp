@@ -28,7 +28,7 @@
 #include "util/RelativeGyro.h"
 #include "vision/BackboardFinder.h"
 
-Logger* autoLogger = new Logger("/sscLog.log");
+Logger* autoLogger = new Logger("/timeLog.log");
 
 Skyfire::Skyfire() {
   SetPeriod(0.02);
@@ -135,6 +135,7 @@ void Skyfire::ResetMotors() {
 void Skyfire::DisabledInit() {
   drivebase_->ResetEncoders();
   drivebase_->ResetGyro();
+  Logger::GetSysLog()->Log("Disabled: %f\n", timer_->Get());
 }
 
 void Skyfire::AutonomousInit() {
@@ -159,7 +160,7 @@ void Skyfire::AutonomousInit() {
           new DriveCommand(drivebase_, -68, 0.0, false, 3, .7),
           AUTO_CONCURRENT(
               new DriveCommand(drivebase_, -25, 0.0, false, .5, .7),
-   	          new ShootCommand(shooter_, intake_, true, 39.2, 2, 6.0)));
+   	          new ShootCommand(shooter_, intake_, true, 37.5, 2, 6.0)));
       break;
     case AUTON_CLOSE_BRIDGE_SLOW:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
@@ -180,7 +181,7 @@ void Skyfire::AutonomousInit() {
           new ShootCommand(shooter_, intake_, true, 54.5, 2, 6.0),
   	      new DriveCommand(drivebase_, 56, 0.0, false, 3),
   	      new DriveCommand(drivebase_, 30, 0.0, false, .5, .65),
-  	    new ShootCommand(shooter_, intake_, true, 62 , 99, 16.0, true)
+  	    new ShootCommand(shooter_, intake_, true, 63 , 99, 16.0, true)
   	      //AUTO_CONCURRENT(
      	    //new BridgeBallsCommand(intake_, shooter_, true, 67.5, 3.0)),
      	  
@@ -318,7 +319,7 @@ void Skyfire::TeleopPeriodic() {
   
   
   //printf("dt: %f fpga: %f diff: %f\n", dt, dtfpga, dt-dtfpga);
-  //Logger::GetSysLog()->Log("%f, %d, %d\n", a->Get(), shooterEncoder_->GetRaw(), 12.0);
+  
 
   // Update shooter power/manual control
   if (operatorControl_->GetFenderButton()) {
@@ -405,7 +406,7 @@ void Skyfire::TeleopPeriodic() {
   drivebase_->SetControlLoopsOn(operatorControl_->GetControlLoopsSwitch());
 
   // Print useful information to the LCD display.
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Shooter set|mea:");
+  //lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Shooter set|mea:");
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "%.1f | %.1f rps", shooterTargetVelocity_,
                    shooter_->GetVelocity());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Angle: %f, x:%f", target_->GetAngle(), target_->GetX());
@@ -424,6 +425,7 @@ void Skyfire::TeleopPeriodic() {
   // Set the brake in the last 0.25 seconds of the match
   if(timer_->Get()>=119.75 && fabs(curLeft - prevLeftDist_)/dt < maxSpeed && fabs(curRight - prevRightDist_)/dt < maxSpeed) {
 	  drivebase_->SetBrakeOn(true);
+	  Logger::GetSysLog()->Log("Auto deploying brake: %f\n", timer_->Get());
   }
   prevLeftDist_ = curLeft;
   prevRightDist_ = curRight;

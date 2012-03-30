@@ -38,6 +38,7 @@ bool TeleopDriver::UpdateDriver() {
   drive_->SetBrakeOn(operatorControl_->GetBrakeSwitch());
 
   // Drive
+  DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "l:%0.3f r:%0.3f", straightPower, turnPower);
   drive_->CheesyDrive(straightPower, turnPower, quickTurning);
   
   return true;

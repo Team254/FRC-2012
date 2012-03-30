@@ -105,11 +105,10 @@ DECLARE_DOUBLE(distanceCoeffC, 1.4524)
 // Drive tuning
 DECLARE_DOUBLE(turnSensLow, 1.1)
 DECLARE_DOUBLE(turnSensHigh, 1.4)
-DECLARE_DOUBLE(inertiaGain, .0035
-		)
+DECLARE_DOUBLE(inertiaGain, .0035)
 
 // Shooter
-DECLARE_DOUBLE(shooterFenderSpeed, 38)
+DECLARE_DOUBLE(shooterFenderSpeed, 37.5)
 DECLARE_DOUBLE(shooterFarFenderSpeed, 44)
 DECLARE_DOUBLE(shooterKeyCloseSpeed, 46)
 DECLARE_DOUBLE(shooterKeyFarSpeed, 53.5)
