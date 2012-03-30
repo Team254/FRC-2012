@@ -12,6 +12,7 @@ ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
   runIntake_ = runIntake;
   shootSpeed_ = shootSpeed;
   shotSpotterTimer_ = new Timer();
+  lastShotTimer_ = new Timer();
   shotsToFire_ = shotsToFire;
   reachedSpeed_ = false;
   shotsFired_ = 0;
