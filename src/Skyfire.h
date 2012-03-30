@@ -5,7 +5,7 @@
 #include "CheesyRobot.h"
 
 class AutoTurnDriver;
-class BackboardFinder;
+//class BackboardFinder;
 class BaselockDriver;
 class Constants;
 class Drive;
@@ -72,7 +72,7 @@ class Skyfire : public CheesyRobot {
   Constants* constants_;
 
   // Vision
-  BackboardFinder* target_;
+  //BackboardFinder* target_;
 
   // Subsystems
   Drive* drivebase_;

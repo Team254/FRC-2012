@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstdio>
 
-#include "auto/AutoAlignCommand.h"
+//#include "auto/AutoAlignCommand.h"
 #include "auto/BridgeBallsCommand.h"
 #include "auto/ConcurrentCommand.h"
 #include "auto/DriveCommand.h"
@@ -12,7 +12,7 @@
 #include "auto/ShootCommand.h"
 #include "auto/TurnCommand.h"
 #include "auto/QueueBallCommand.h"
-#include "drivers/AutoTurnDriver.h"
+//#include "drivers/AutoTurnDriver.h"
 #include "drivers/BaselockDriver.h"
 #include "drivers/Driver.h"
 #include "drivers/TeleopDriver.h"
@@ -26,9 +26,9 @@
 #include "util/Logger.h"
 #include "util/PidTuner.h"
 #include "util/RelativeGyro.h"
-#include "vision/BackboardFinder.h"
+//#include "vision/BackboardFinder.h"
 
-Logger* autoLogger = new Logger("/timeLog.log");
+//Logger* autoLogger = new Logger("/timeLog.log");
 
 Skyfire::Skyfire() {
   SetPeriod(0.02);
@@ -88,13 +88,13 @@ Skyfire::Skyfire() {
   operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
 
   // Vision
-  target_ = new BackboardFinder();
+  //target_ = new BackboardFinder();
   //target_->Start();
 
   // Drivers
   teleopDriver_ = new TeleopDriver(drivebase_, leftJoystick_, rightJoystick_, operatorControl_);
   baselockDriver_ = new BaselockDriver(drivebase_, leftJoystick_);
-  autoAlignDriver_ = new AutoTurnDriver(drivebase_, target_);
+  //autoAlignDriver_ = new AutoTurnDriver(drivebase_, target_);
   currDriver_ = teleopDriver_;
 
   // Watchdog
@@ -135,7 +135,7 @@ void Skyfire::ResetMotors() {
 void Skyfire::DisabledInit() {
   drivebase_->ResetEncoders();
   drivebase_->ResetGyro();
-  Logger::GetSysLog()->Log("Disabled: %f\n", timer_->Get());
+  //Logger::GetSysLog()->Log("Disabled: %f\n", timer_->Get());
 }
 
 void Skyfire::AutonomousInit() {
@@ -199,7 +199,7 @@ void Skyfire::AutonomousInit() {
           AUTO_CONCURRENT(
      	      new JumbleCommand(shooter_,  intake_, 1.0),
               new DriveCommand(drivebase_, -76, 0.0, false, 6.0)),
-     	  new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
+     	  //new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
           new ShootCommand(shooter_, intake_, true, 49, 2, 8.0));
       break;
     
@@ -222,7 +222,7 @@ void Skyfire::AutonomousInit() {
     	     	  AUTO_CONCURRENT(
     	     	      new BridgeBallsCommand(intake_, shooter_, true, 60, 3.5),
     	     	      AUTO_SEQUENTIAL(
-    	     	        new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5),
+    	     	        //new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5),
     	     	        new QueueBallCommand(shooter_, intake_, 2))),
     	     	  new ShootCommand(shooter_, intake_, true, 60, 99, 3.8)      
     	       	  );
@@ -232,7 +232,7 @@ void Skyfire::AutonomousInit() {
           new ShootCommand(shooter_, intake_, false, Constants::GetInstance()->autoShootKeyVel, 2, 3.75));
       break;
     case AUTON_TEST:
-    	printf("auton testing\n");
+    	//printf("auton testing\n");
     	autoBaseCmd_ = AUTO_SEQUENTIAL(new DriveCommand(drivebase_, 96, 0.0, false, 20.0));
     	break;
     default:
@@ -260,7 +260,7 @@ void Skyfire::TeleopInit() {
 
 void Skyfire::DisabledPeriodic() {
   GetWatchdog().Feed();
-  target_->DoVision();
+  //target_->DoVision();
   // Autonomous delay
   timer_->Reset();
   shooter_->Reset();
@@ -359,7 +359,7 @@ void Skyfire::TeleopPeriodic() {
     // Re-load the shooter PID constants whenever the shooter is turned on.
     if (!oldShooterSwitch_) {
     	if(shooterTargetVelocity_ == 0) {
-    	  shooterTargetVelocity_ = 38;
+    	  shooterTargetVelocity_ = constants_->shooterFenderSpeed;
     	}
       constants_->LoadFile();
     }
@@ -401,6 +401,7 @@ void Skyfire::TeleopPeriodic() {
   }
 
   // Only have Teleop and AutoAlign Drivers right now
+  /*
   if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
     // If the auto-align button is pressed, switch to the auto-align driver.
     currDriver_ = autoAlignDriver_;
@@ -411,7 +412,8 @@ void Skyfire::TeleopPeriodic() {
     currDriver_->Reset();
   }
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
-
+*/
+  currDriver_ = teleopDriver_;
   // Calculate the outputs for the drivetrain given the inputs.
   currDriver_->UpdateDriver();
 
@@ -428,7 +430,7 @@ void Skyfire::TeleopPeriodic() {
   //lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Shooter set|mea:");
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "%.1f | %.1f rps", shooterTargetVelocity_,
                    shooter_->GetVelocity());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Angle: %f, x:%f", target_->GetAngle(), target_->GetX());
+//  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Angle: %f, x:%f", target_->GetAngle(), target_->GetX());
   /*
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Ranger: %d", ballRanger_->GetValue());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Gyro: %f", gyro_->GetAngle());
@@ -444,7 +446,7 @@ void Skyfire::TeleopPeriodic() {
   // Set the brake in the last 0.25 seconds of the match
   if(timer_->Get()>=119.75 && fabs(curLeft - prevLeftDist_)/dt < maxSpeed && fabs(curRight - prevRightDist_)/dt < maxSpeed) {
 	  drivebase_->SetBrakeOn(true);
-	  Logger::GetSysLog()->Log("Auto deploying brake: %f\n", timer_->Get());
+	  //Logger::GetSysLog()->Log("Auto deploying brake: %f\n", timer_->Get());
   }
   prevLeftDist_ = curLeft;
   prevRightDist_ = curRight;

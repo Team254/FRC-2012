@@ -23,7 +23,7 @@ void BridgeBallsCommand::Initialize() {
 
 bool BridgeBallsCommand::Run(){
 	
-	printf("ballingggggg %f\n", GetTime());
+	//printf("ballingggggg %f\n", GetTime());
   intake_->SetIntakePower(1);
   shooter_->SetLinearConveyorPower(1);
   

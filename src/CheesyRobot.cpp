@@ -99,6 +99,7 @@ void CheesyRobot::StartCompetition()
 			{
 				FRC_NetworkCommunication_observeUserProgramDisabled();
 				DisabledPeriodic();
+				Wait(0.001);
 			}
 			DisabledContinuous();
 		}
@@ -118,6 +119,7 @@ void CheesyRobot::StartCompetition()
 			{
 				FRC_NetworkCommunication_observeUserProgramDisabled();
 				AutonomousPeriodic();
+				Wait(0.001);
 			}
 			AutonomousContinuous();
 		}
@@ -137,6 +139,7 @@ void CheesyRobot::StartCompetition()
 			{
 				FRC_NetworkCommunication_observeUserProgramDisabled();
 				TeleopPeriodic();
+				Wait(0.001);
 			}
 			TeleopContinuous();
 		}
@@ -166,7 +169,7 @@ bool CheesyRobot::NextPeriodReady()
  */
 void CheesyRobot::RobotInit()
 {
-	printf("Default %s() method... Overload me!\n", __FUNCTION__);
+	//printf("Default %s() method... Overload me!\n", __FUNCTION__);
 }
 
 /**
@@ -177,7 +180,7 @@ void CheesyRobot::RobotInit()
  */
 void CheesyRobot::DisabledInit()
 {
-	printf("Default %s() method... Overload me!\n", __FUNCTION__);
+	//printf("Default %s() method... Overload me!\n", __FUNCTION__);
 }
 
 /**
@@ -188,7 +191,7 @@ void CheesyRobot::DisabledInit()
  */
 void CheesyRobot::AutonomousInit()
 {
-	printf("Default %s() method... Overload me!\n", __FUNCTION__);
+	//printf("Default %s() method... Overload me!\n", __FUNCTION__);
 }
 
 /**
@@ -199,7 +202,7 @@ void CheesyRobot::AutonomousInit()
  */
 void CheesyRobot::TeleopInit()
 {
-	printf("Default %s() method... Overload me!\n", __FUNCTION__);
+	//printf("Default %s() method... Overload me!\n", __FUNCTION__);
 }
 
 /**
@@ -213,7 +216,7 @@ void CheesyRobot::DisabledPeriodic()
 	static bool firstRun = true;
 	if (firstRun)
 	{
-		printf("Default %s() method... Overload me!\n", __FUNCTION__);
+		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
 	taskDelay(1);
@@ -230,7 +233,7 @@ void CheesyRobot::AutonomousPeriodic()
 	static bool firstRun = true;
 	if (firstRun)
 	{
-		printf("Default %s() method... Overload me!\n", __FUNCTION__);
+		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
 	taskDelay(1);
@@ -247,7 +250,7 @@ void CheesyRobot::TeleopPeriodic()
 	static bool firstRun = true;
 	if (firstRun)
 	{
-		printf("Default %s() method... Overload me!\n", __FUNCTION__);
+		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
 	taskDelay(1);
@@ -264,7 +267,7 @@ void CheesyRobot::DisabledContinuous()
 	static bool firstRun = true;
 	if (firstRun)
 	{
-		printf("Default %s() method... Overload me!\n", __FUNCTION__);
+		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
 	m_ds->WaitForData();
@@ -281,7 +284,7 @@ void CheesyRobot::AutonomousContinuous()
 	static bool firstRun = true;
 	if (firstRun)
 	{
-		printf("Default %s() method... Overload me!\n", __FUNCTION__);
+		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
 	m_ds->WaitForData();
@@ -298,7 +301,7 @@ void CheesyRobot::TeleopContinuous()
 	static bool firstRun = true;
 	if (firstRun)
 	{
-		printf("Default %s() method... Overload me!\n", __FUNCTION__);
+		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
 	m_ds->WaitForData();

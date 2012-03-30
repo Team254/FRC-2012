@@ -108,12 +108,12 @@ DECLARE_DOUBLE(turnSensHigh, 1.4)
 DECLARE_DOUBLE(inertiaGain, .0035)
 
 // Shooter
-DECLARE_DOUBLE(shooterFenderSpeed, 37.5)
+DECLARE_DOUBLE(shooterFenderSpeed, 36.0)
 DECLARE_DOUBLE(shooterFarFenderSpeed, 44)
-DECLARE_DOUBLE(shooterKeyCloseSpeed, 46)
+DECLARE_DOUBLE(shooterKeyCloseSpeed, 45.5)
 DECLARE_DOUBLE(shooterKeyFarSpeed, 52.0)
 DECLARE_DOUBLE(shooterSpeedIncrement, 0.5)
-DECLARE_DOUBLE(shooterBridgeSpeed, 56.0)
+DECLARE_DOUBLE(shooterBridgeSpeed, 55.5)
 
 
 // PID constants

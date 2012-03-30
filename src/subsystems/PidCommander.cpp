@@ -41,7 +41,7 @@ double PidCommander::Update(double cur) {
     deltaG = ((-maxDeltaG_ / ((1.0 - decayPercentage_) * range)) * curTemp) + maxDeltaG_;
   }
 
-  Logger::GetSysLog()->Log("PidCommander: cur: %f, deltaG: %f\n\n", (float) cur, deltaG);
+  //Logger::GetSysLog()->Log("PidCommander: cur: %f, deltaG: %f\n\n", (float) cur, deltaG);
   double newgoal = signedCur + (deltaG * direction_);
   
   return pid_->Update(newgoal, cur*direction_);

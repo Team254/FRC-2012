@@ -31,7 +31,7 @@ bool TurnCommand::Run() {
   double curAngle = drive_->GetGyroAngle();
   double power = turnPid_->Update(angle_, curAngle);
   drive_->SetLinearPower(-power, power);
-  printf("Curr Angle: %f, Power: %f\n", drive_->GetGyroAngle(), power);
+  //printf("Curr Angle: %f, Power: %f\n", drive_->GetGyroAngle(), power);
   //PidTuner::PushData(angle_, curAngle, power *100);
 
   /*

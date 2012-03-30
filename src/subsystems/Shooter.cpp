@@ -127,7 +127,7 @@ bool Shooter::PIDUpdate() {
 
   
   atTarget_ = fabs(velocity_ - targetVelocity_) < VELOCITY_THRESHOLD;
-  PidTuner::GetInstance()->PushData(targetVelocity_,velocity_, dt * 1000);
+  //PidTuner::GetInstance()->PushData(targetVelocity_,velocity_, dt * 1000);
   //SetLinearPower(.8);
   //return false;
   return atTarget_;

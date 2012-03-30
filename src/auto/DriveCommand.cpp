@@ -169,13 +169,13 @@ bool DriveCommand::Run() {
 	  doffset = -0.01;
   }
   turnOffset_ += doffset;
-  printf("offset: %f error: %f total: %f\n", turnOffset_, sumStoppedError_, (turnOffset_ + sumStoppedError_) / 2.0);
+  //printf("offset: %f error: %f total: %f\n", turnOffset_, sumStoppedError_, (turnOffset_ + sumStoppedError_) / 2.0);
   flash_matrix(r_, curX_ - (turnOffset_ + sumStoppedError_) / 2.0 - thetaFactor, curV_ - wubbleuFactor, curX_ + (turnOffset_ + sumStoppedError_) / 2.0 + thetaFactor, curV_ + wubbleuFactor);
   flash_matrix(y_, currLeftDist, currRightDist);
   ssc_->update(r_, y_);
   
   //printf("l: %f r: %f g: %f\n", ssc_->U->data[0] / 12.0, ssc_->U->data[1] / 12.0, drive_->GetGyroAngle());
-  PidTuner::PushData(ssc_->X_hat->data[0], currLeftDist, distGoal);
+  //PidTuner::PushData(ssc_->X_hat->data[0], currLeftDist, distGoal);
   //printf("%f %f %f\n",ssc_->X_hat->data[0], currLeftDist, distGoal);
   drive_->SetLinearPower(ssc_->U->data[0] / 12.0, ssc_->U->data[1] / 12.0);
   return false;
