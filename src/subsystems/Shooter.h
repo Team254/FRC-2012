@@ -85,6 +85,8 @@ class Shooter {
    * returns target velocity
    */
   double GetTargetVelocity();
+  
+  static void CallUpdate(void* shooter);
 
  private:
   /**

@@ -122,6 +122,9 @@ Skyfire::Skyfire() {
   prevLeftDist_ = 0.0;
   prevRightDist_ = 0.0;
   prevTime = 0.0;
+  
+  shooterControl_ = new Notifier(Shooter::CallUpdate, shooter_);
+  shooterControl_->StartPeriodic(1.0/50.0);
 
 }
 
@@ -265,7 +268,7 @@ void Skyfire::DisabledPeriodic() {
   timer_->Reset();
   shooter_->Reset();
   shooter_->SetTargetVelocity(0);
-  shooter_->PIDUpdate();
+  //shooter_->PIDUpdate();
   if (operatorControl_->GetIncreaseButton() && !oldIncreaseButton_) {
     autonDelay_ += 0.5;
   } else if (operatorControl_->GetDecreaseButton() && !oldDecreaseButton_) {
@@ -321,7 +324,7 @@ void Skyfire::DisabledPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Delay: %.1f", autonDelay_);
 
   // Show any other pre-match stuff we're interested in on the Driver Station LCD.
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Gyro: %f\n", gyro_->GetAngle());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Gyro: %f\n", gyro_->GetAngle());
   static int i = 0;
   if (++i % 10 == 0)
 	  lcd_->UpdateLCD();
@@ -330,11 +333,11 @@ void Skyfire::DisabledPeriodic() {
 
 void Skyfire::AutonomousPeriodic() {
   GetWatchdog().Feed();
-  shooter_->PIDUpdate();
+  //shooter_->PIDUpdate();
   if ((autonTimer_->Get() > autonDelay_)&& autoBaseCmd_) {
     autoBaseCmd_->Run();
   }
-  autoLogger->Log("%f,%f,%f\n", timer_->GetFPGATimestamp(), shooter_->GetVelocity(), shooter_->GetTargetVelocity());
+  //autoLogger->Log("%f,%f,%f\n", timer_->GetFPGATimestamp(), shooter_->GetVelocity(), shooter_->GetTargetVelocity());
 }
 
 void Skyfire::TeleopPeriodic() {
@@ -371,7 +374,7 @@ void Skyfire::TeleopPeriodic() {
   } else {
     shooter_->SetTargetVelocity(0);
   }
-  bool shooterDone = shooter_->PIDUpdate();
+  bool shooterDone = shooter_->AtTargetVelocity();//PIDUpdate();
 
   // Update shooter button guards
   oldShooterSwitch_ = operatorControl_->GetShooterSwitch();
@@ -438,7 +441,7 @@ void Skyfire::TeleopPeriodic() {
     lcd_->UpdateLCD();
   }
 
-  teleopLogger->Log("%f,%f,%f\n", timer_->GetFPGATimestamp(), shooter_->GetVelocity(), shooter_->GetTargetVelocity());
+  //teleopLogger->Log("%f,%f,%f\n", timer_->GetFPGATimestamp(), shooter_->GetVelocity(), shooter_->GetTargetVelocity());
   
   double curLeft = drivebase_->GetLeftEncoderDistance();
   double curRight = drivebase_->GetRightEncoderDistance();

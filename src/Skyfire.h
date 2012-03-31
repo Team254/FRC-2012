@@ -150,6 +150,7 @@ class Skyfire : public CheesyRobot {
   double prevRightDist_;
   double prevTime;
   Timer* timer_;
+  Notifier* shooterControl_;
 };
 
 // Start the actual program

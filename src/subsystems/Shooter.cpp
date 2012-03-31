@@ -4,6 +4,7 @@
 #include "utils.hpp"
 
 #include "util/PidTuner.h"
+#include "util/Logger.h"
 
 Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightShooterMotor,
                 Encoder* shooterEncoder, Solenoid* hoodSolenoid, AnalogChannel* ballSensor,
@@ -120,9 +121,9 @@ bool Shooter::PIDUpdate() {
 
   prevPos_ = currEncoderPos;
   DriverStationLCD* lcd_ = DriverStationLCD::GetInstance();
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "x0: %f", x_hat0);
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "x1: %f", x_hat1);
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "v: %f g: %f ", velocity_, velocity_goal);
+  //lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "x0: %f", x_hat0);
+  //lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "x1: %f", x_hat1);
+  //lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "v: %f g: %f ", velocity_, velocity_goal);
   static int i = 0;
   if (++i % 10 == 0) {
     lcd_->UpdateLCD();
@@ -228,4 +229,15 @@ double Shooter::GetBallRange() {
 
 double Shooter::GetTargetVelocity() {
 	return targetVelocity_;
+}
+
+void Shooter::CallUpdate(void* shooter){
+	//static Logger* l = new Logger("/shooter.log");
+	static double oldt = 0;
+	double d = Timer::GetFPGATimestamp();// - oldt;
+	double q  = d - oldt;
+	oldt = d;
+	//l->Log("%f\n", q);
+	Shooter* s = (Shooter*) shooter;
+	s->PIDUpdate();
 }
