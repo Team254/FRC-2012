@@ -99,7 +99,7 @@ void CheesyRobot::StartCompetition()
 			{
 				FRC_NetworkCommunication_observeUserProgramDisabled();
 				DisabledPeriodic();
-				Wait(0.001);
+				
 			}
 			DisabledContinuous();
 		}
@@ -119,7 +119,7 @@ void CheesyRobot::StartCompetition()
 			{
 				FRC_NetworkCommunication_observeUserProgramDisabled();
 				AutonomousPeriodic();
-				Wait(0.001);
+				
 			}
 			AutonomousContinuous();
 		}
@@ -139,10 +139,11 @@ void CheesyRobot::StartCompetition()
 			{
 				FRC_NetworkCommunication_observeUserProgramDisabled();
 				TeleopPeriodic();
-				Wait(0.001);
+			
 			}
 			TeleopContinuous();
 		}
+		Wait(0.001);
 	}	
 }
 

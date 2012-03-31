@@ -80,6 +80,11 @@ class Shooter {
   void Reset();
   
   double GetBallRange();
+  
+  /**
+   * returns target velocity
+   */
+  double GetTargetVelocity();
 
  private:
   /**

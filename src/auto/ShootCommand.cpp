@@ -30,12 +30,13 @@ void ShootCommand::Initialize() {
    	  ///reachedSpeed_ = true;
    }
    lastShotTimer_->Reset();
+   lastShotTimer_->Start();
 }
 
 bool ShootCommand::Run() {
   //intake_->SetIntakePosition(Intake::INTAKE_DOWN);
   shooter_->SetTargetVelocity(shootSpeed_);
-  lastShotTimer_->Start();
+
   
   if (timer_->Get() > 2.2 && intakeDown_) {
 	  intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
@@ -43,12 +44,14 @@ bool ShootCommand::Run() {
   if (timer_->Get() > 3.5 && intakeDown_)
 	  intakeDown_ = false;
   // Hacked this at SVR to get the seconds balls to stop before shooting
-  bool atSpeed = shooter_->AtTargetVelocity() || (lastShotTimer_->Get() > 2.0 && lastShotTimer_->Get() < 2.1);
+  bool atSpeed = shooter_->AtTargetVelocity() || lastShotTimer_->Get() > 2.0;
   bool goBack = false;
 
   if (atSpeed) {
-    if (atSpeedCycles_++ > 5)
+    if (atSpeedCycles_++ > 5) {
       reachedSpeed_ = true;
+      lastShotTimer_->Reset();
+    }
     downCycles_ = 0;
   } else {
     atSpeedCycles_ = 0;
@@ -60,6 +63,7 @@ bool ShootCommand::Run() {
         reachedSpeed_ = false; // Stop running the conveyor
         intakeDown_ = false;
         lastShotTimer_->Reset();
+        lastShotTimer_->Start();
         if(shotsFired_ >= shotsToFire_) {
           shotSpotterTimer_->Start();
         }

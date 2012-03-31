@@ -28,8 +28,8 @@
 #include "util/RelativeGyro.h"
 //#include "vision/BackboardFinder.h"
 
-//Logger* autoLogger = new Logger("/timeLog.log");
-
+Logger* autoLogger = new Logger("/timeLog.log");
+Logger* teleopLogger = new Logger("/teleopLog.log");
 Skyfire::Skyfire() {
   SetPeriod(0.02);
   constants_ = Constants::GetInstance();
@@ -322,7 +322,10 @@ void Skyfire::DisabledPeriodic() {
 
   // Show any other pre-match stuff we're interested in on the Driver Station LCD.
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Gyro: %f\n", gyro_->GetAngle());
-  lcd_->UpdateLCD();
+  static int i = 0;
+  if (++i % 10 == 0)
+	  lcd_->UpdateLCD();
+  
 }
 
 void Skyfire::AutonomousPeriodic() {
@@ -331,6 +334,7 @@ void Skyfire::AutonomousPeriodic() {
   if ((autonTimer_->Get() > autonDelay_)&& autoBaseCmd_) {
     autoBaseCmd_->Run();
   }
+  autoLogger->Log("%f,%f,%f\n", timer_->GetFPGATimestamp(), shooter_->GetVelocity(), shooter_->GetTargetVelocity());
 }
 
 void Skyfire::TeleopPeriodic() {
@@ -427,15 +431,14 @@ void Skyfire::TeleopPeriodic() {
   drivebase_->SetControlLoopsOn(operatorControl_->GetControlLoopsSwitch());
 
   // Print useful information to the LCD display.
-  //lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Shooter set|mea:");
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "%.1f | %.1f rps", shooterTargetVelocity_,
                    shooter_->GetVelocity());
-//  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Angle: %f, x:%f", target_->GetAngle(), target_->GetX());
-  /*
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Ranger: %d", ballRanger_->GetValue());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "Gyro: %f", gyro_->GetAngle());
-  */
-  lcd_->UpdateLCD();
+  static int i = 0;
+  if (++i % 10 == 0) {
+    lcd_->UpdateLCD();
+  }
+
+  teleopLogger->Log("%f,%f,%f\n", timer_->GetFPGATimestamp(), shooter_->GetVelocity(), shooter_->GetTargetVelocity());
   
   double curLeft = drivebase_->GetLeftEncoderDistance();
   double curRight = drivebase_->GetRightEncoderDistance();

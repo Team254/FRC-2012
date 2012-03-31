@@ -123,8 +123,10 @@ bool Shooter::PIDUpdate() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "x0: %f", x_hat0);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "x1: %f", x_hat1);
   lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "v: %f g: %f ", velocity_, velocity_goal);
-  lcd_->UpdateLCD();
-
+  static int i = 0;
+  if (++i % 10 == 0) {
+    lcd_->UpdateLCD();
+  }
   
   atTarget_ = fabs(velocity_ - targetVelocity_) < VELOCITY_THRESHOLD;
   //PidTuner::GetInstance()->PushData(targetVelocity_,velocity_, dt * 1000);
@@ -222,4 +224,8 @@ double Shooter::ConveyorLinearize(double x) {
 
 double Shooter::GetBallRange() {
 	return ballRanger_->GetValue();
+}
+
+double Shooter::GetTargetVelocity() {
+	return targetVelocity_;
 }
