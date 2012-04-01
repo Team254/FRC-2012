@@ -12,7 +12,7 @@
 #include "auto/ShootCommand.h"
 #include "auto/TurnCommand.h"
 #include "auto/QueueBallCommand.h"
-//#include "drivers/AutoTurnDriver.h"
+#include "drivers/AutoTurnDriver.h"
 #include "drivers/BaselockDriver.h"
 #include "drivers/Driver.h"
 #include "drivers/TeleopDriver.h"
@@ -26,7 +26,7 @@
 #include "util/Logger.h"
 #include "util/PidTuner.h"
 #include "util/RelativeGyro.h"
-//#include "vision/BackboardFinder.h"
+#include "vision/BackboardFinder.h"
 
 Logger* autoLogger = new Logger("/timeLog.log");
 Logger* teleopLogger = new Logger("/teleopLog.log");
