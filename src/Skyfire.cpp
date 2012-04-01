@@ -88,13 +88,13 @@ Skyfire::Skyfire() {
   operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
 
   // Vision
-  //target_ = new BackboardFinder();
-  //target_->Start();
+  target_ = new BackboardFinder();
+  target_->Start();
 
   // Drivers
   teleopDriver_ = new TeleopDriver(drivebase_, leftJoystick_, rightJoystick_, operatorControl_);
   baselockDriver_ = new BaselockDriver(drivebase_, leftJoystick_);
-  //autoAlignDriver_ = new AutoTurnDriver(drivebase_, target_);
+  autoAlignDriver_ = new AutoTurnDriver(drivebase_, target_);
   currDriver_ = teleopDriver_;
 
   // Watchdog
@@ -244,7 +244,10 @@ void Skyfire::TeleopInit() {
 
 void Skyfire::DisabledPeriodic() {
   GetWatchdog().Feed();
-  //target_->DoVision();
+  
+  // Start a connection to the camera 
+  target_->DoVision();
+  
   // Autonomous delay
   timer_->Reset();
   shooter_->Reset();
@@ -383,7 +386,7 @@ void Skyfire::TeleopPeriodic() {
   }
 
   // Only have Teleop and AutoAlign Drivers right now
-  /*
+  
   if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
     // If the auto-align button is pressed, switch to the auto-align driver.
     currDriver_ = autoAlignDriver_;
@@ -394,8 +397,7 @@ void Skyfire::TeleopPeriodic() {
     currDriver_->Reset();
   }
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
-*/
-  currDriver_ = teleopDriver_;
+
   // Calculate the outputs for the drivetrain given the inputs.
   currDriver_->UpdateDriver();
 

@@ -17,6 +17,7 @@ void VisionProcess::VisionTask(VisionProcess* vp) {
       vp->DoVision();
       vp->timer_->Reset();
     }
+    Wait(0.002);
   }
 }
 
