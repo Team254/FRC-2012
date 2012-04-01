@@ -170,15 +170,7 @@ void Skyfire::AutonomousInit() {
               new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
       	      new DriveCommand(drivebase_, 56, 0.0, false, 3),
       	      new DriveCommand(drivebase_, 30, 0.0, false, .5, .65),
-      	    new ShootCommand(shooter_, intake_, true, 56.5, 99, 16.0, true)
-      	      //AUTO_CONCURRENT(
-         	    //new BridgeBallsCommand(intake_, shooter_, true, 67.5, 3.0)),
-         	  
-         	    //new DriveCommand(drivebase_, 15, 0.0, false, 2.0, .5)),
-           	  //AUTO_CONCURRENT(
-           	    //new DriveCommand(drivebase_, -54, 0.0, false, 1.7)),
-           	  //AUTO_CONCURRENT(
-           	    //new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5)),
+              new ShootCommand(shooter_, intake_, true, 56.5, 99, 16.0, true)
            	  );
             break;  
     case AUTON_SHORT_SIMPLE:
@@ -207,17 +199,6 @@ void Skyfire::AutonomousInit() {
       break;
     
     case AUTON_BRIDGE_FAST:
-      /*autoBaseCmd_ = AUTO_SEQUENTIAL(
-          new DriveCommand(drivebase_, 56, 0.0, false, 5.0, .4),
-          AUTO_SEQUENTIAL(
-        		  new ShootCommand(shooter_, intake_, true, 69, 10, 100),
-        		  //new BridgeBallsCommand(intake_, shooter_, true, 2.3),
-        		  new AutoAlignCommand(drivebase_, autoAlignDriver_, 4.0))
-         // new BridgeBallsCommand(intake_, shooter_, true, 5.0),
-          //new DriveCommand(drivebase_, -50, false, false, 4),
-          //new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.5),
-          //new ShootCommand(shooter_, intake_, true,Constants::GetInstance()->autoShootKeyVel, 2, 10.0)
-          );*/
     	autoBaseCmd_ = AUTO_SEQUENTIAL(
     	          new ShootCommand(shooter_, intake_, true, 52.5, 2, 4.0),
     	  	      new DriveCommand(drivebase_, 44, 0.0, false, 3),
@@ -333,19 +314,13 @@ void Skyfire::DisabledPeriodic() {
 
 void Skyfire::AutonomousPeriodic() {
   GetWatchdog().Feed();
-  //shooter_->PIDUpdate();
   if ((autonTimer_->Get() > autonDelay_)&& autoBaseCmd_) {
     autoBaseCmd_->Run();
   }
-  //autoLogger->Log("%f,%f,%f\n", timer_->GetFPGATimestamp(), shooter_->GetVelocity(), shooter_->GetTargetVelocity());
 }
 
 void Skyfire::TeleopPeriodic() {
   GetWatchdog().Feed();
-  
-  
-  //printf("dt: %f fpga: %f diff: %f\n", dt, dtfpga, dt-dtfpga);
-  
 
   // Update shooter power/manual control
   if (operatorControl_->GetFenderButton()) {
@@ -440,8 +415,6 @@ void Skyfire::TeleopPeriodic() {
   if (++i % 10 == 0) {
     lcd_->UpdateLCD();
   }
-
-  //teleopLogger->Log("%f,%f,%f\n", timer_->GetFPGATimestamp(), shooter_->GetVelocity(), shooter_->GetTargetVelocity());
   
   double curLeft = drivebase_->GetLeftEncoderDistance();
   double curRight = drivebase_->GetRightEncoderDistance();
@@ -452,7 +425,6 @@ void Skyfire::TeleopPeriodic() {
   // Set the brake in the last 0.25 seconds of the match
   if(timer_->Get()>=119.75 && fabs(curLeft - prevLeftDist_)/dt < maxSpeed && fabs(curRight - prevRightDist_)/dt < maxSpeed) {
 	  drivebase_->SetBrakeOn(true);
-	  //Logger::GetSysLog()->Log("Auto deploying brake: %f\n", timer_->Get());
   }
   prevLeftDist_ = curLeft;
   prevRightDist_ = curRight;

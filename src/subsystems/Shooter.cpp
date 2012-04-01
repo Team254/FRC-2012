@@ -68,18 +68,15 @@ void Shooter::SetTargetVelocity(double velocity) {
 bool Shooter::PIDUpdate() {
   double dt = timer_->Get();
   timer_->Reset();
-  
-	  //int currEncoderPos = shooterEncoder_->Get();
+
   double currEncoderPos = shooterEncoder_->GetRaw() / 128.0 * 2 * 3.1415926;
- // printf("encoder: %f | dt %f\n", shooterEncoder_->GetRaw() / 128.0, dt);
-  double velocity_goal = 2 * 3.1415926 * targetVelocity_;
-  double instantVelocity = ((currEncoderPos - prevPos_) /  (1.0/50.0)); // (2 * 3.1415926);
   
-  //printf(" v: %f pow: %f dt: %f\n\n", instantVelocity, ssc_.U->data[0], dt);
+  double velocity_goal = 2 * 3.1415926 * targetVelocity_;
+  double instantVelocity = ((currEncoderPos - prevPos_) /  (1.0/50.0));
+  
   flash_matrix(y_, (double)currEncoderPos);
   const double velocity_weight_scalar = 0.35;
-  //const double max_reference = (U_max[0] - velocity_weight_scalar * (velocity_goal - X_hat[1]) * K[1]) / K[0] + X_hat[0];
-  //const double min_reference = (U_min[0] - velocity_weight_scalar * (velocity_goal - X_hat[1]) * K[1]) / K[0] + X_hat[0];
+
   double u_min = ssc_->U_min->data[0];
   double u_max = ssc_->U_max->data[0];
   double x_hat1 = ssc_->X_hat->data[1];
@@ -88,51 +85,25 @@ bool Shooter::PIDUpdate() {
   double x_hat0 = ssc_->X_hat->data[0];
   const double max_reference = (u_max - velocity_weight_scalar * (velocity_goal - x_hat1) * k1) / k0 + x_hat0;
   const double min_reference = (u_min - velocity_weight_scalar * (velocity_goal - x_hat1) * k1) / k0 + x_hat0;
-  //pidGoal_ = max(min(pidGoal_, max_reference), min_reference);
   double minimum = (pidGoal_ < max_reference) ? pidGoal_ : max_reference;
   pidGoal_ = (minimum > min_reference) ? minimum : min_reference;
-  //printf("min %f max %f r %f\n", min_reference, max_reference, pidGoal_);
+
   flash_matrix(r_, pidGoal_, velocity_goal);
   pidGoal_ += ((1.0/50.0) * velocity_goal);
   ssc_->update(r_, y_);
-  //printf("r: %f %f\n", r_->data[0], r_->data[1]);
-  //printf("y: %f\n", y_->data[0]);
-  //printf("u: %f\n", ssc_.U->data[0]);
+  
   if (velocity_goal < 1.0) {
-	  //printf("minning out\n");
 	  SetLinearPower(0.0);
 	  pidGoal_ = currEncoderPos;
   } else {
-	  //printf("Power: %f\n", ssc_.U->data[0] / 12.0);
 	  SetLinearPower(ssc_->U->data[0] / 12.0);
   }
 
-  //PidTuner::PushData(x_hat1, instantVelocity, targetVelocity_* 6.28);
-  //PidTuner::PushData(x_hat0, x_hat1, x_hat1);
-  
-
-  //double instantVelocity = ((currEncoderPos - prevPos_) /  (1.0/50.0)); // (2 * 3.1415926);
- // printf(" v: %f pow: %f dt: %f\n\n", instantVelocity, ssc_.U->data[0], dt);
-  
-
   instantVelocity =  instantVelocity / (2 * 3.1415926);
   velocity_ = UpdateFilter(instantVelocity);
- // printf("t: %f , v: %f\n", targetVelocity_, velocity_);
 
-  prevPos_ = currEncoderPos;
-  DriverStationLCD* lcd_ = DriverStationLCD::GetInstance();
-  //lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "x0: %f", x_hat0);
-  //lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "x1: %f", x_hat1);
-  //lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "v: %f g: %f ", velocity_, velocity_goal);
-  static int i = 0;
-  if (++i % 10 == 0) {
-    lcd_->UpdateLCD();
-  }
-  
+  prevPos_ = currEncoderPos;  
   atTarget_ = fabs(velocity_ - targetVelocity_) < VELOCITY_THRESHOLD;
-  //PidTuner::GetInstance()->PushData(targetVelocity_,velocity_, dt * 1000);
-  //SetLinearPower(.8);
-  //return false;
   return atTarget_;
 }
 
