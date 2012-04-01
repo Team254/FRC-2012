@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstdio>
 
-//#include "auto/AutoAlignCommand.h"
+#include "auto/AutoAlignCommand.h"
 #include "auto/BridgeBallsCommand.h"
 #include "auto/ConcurrentCommand.h"
 #include "auto/DriveCommand.h"
@@ -195,7 +195,7 @@ void Skyfire::AutonomousInit() {
           AUTO_CONCURRENT(
              new JumbleCommand(shooter_,  intake_, 1.0),
               new DriveCommand(drivebase_, -76, 0.0, false, 6.0)),
-         //new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
+         new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
           new ShootCommand(shooter_, intake_, true, 49, 2, 8.0));
       break;
     
@@ -207,7 +207,7 @@ void Skyfire::AutonomousInit() {
                AUTO_CONCURRENT(
                    new BridgeBallsCommand(intake_, shooter_, true, 60, 3.5),
                    AUTO_SEQUENTIAL(
-                     //new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5),
+                     new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5),
                      new QueueBallCommand(shooter_, intake_, 2))),
                new ShootCommand(shooter_, intake_, true, 60, 99, 3.8)      
                  );
