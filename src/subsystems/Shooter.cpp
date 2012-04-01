@@ -107,7 +107,7 @@ bool Shooter::PIDUpdate() {
 	  SetLinearPower(ssc_->U->data[0] / 12.0);
   }
 
-  //PidTuner::PushData(x_hat1, instantVelocity, dt*50*100);
+  //PidTuner::PushData(x_hat1, instantVelocity, targetVelocity_* 6.28);
   //PidTuner::PushData(x_hat0, x_hat1, x_hat1);
   
 
@@ -232,12 +232,6 @@ double Shooter::GetTargetVelocity() {
 }
 
 void Shooter::CallUpdate(void* shooter){
-	//static Logger* l = new Logger("/shooter.log");
-	static double oldt = 0;
-	double d = Timer::GetFPGATimestamp();// - oldt;
-	double q  = d - oldt;
-	oldt = d;
-	//l->Log("%f\n", q);
 	Shooter* s = (Shooter*) shooter;
 	s->PIDUpdate();
 }
