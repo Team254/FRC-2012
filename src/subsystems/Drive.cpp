@@ -185,7 +185,7 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
   }
   
   if(throttle == 0 && !quickTurn) {
-	  SetLinearPower(0.0, 0.0);
+    SetLinearPower(0.0, 0.0);
   }
   
   //printf("t: %f l: %f r: %f\n", throttle, lPower, rPower);
@@ -195,5 +195,5 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 }
 
 void Drive::SetControlLoopsOn(bool on){
-	controlLoops_ = on;
+  controlLoops_ = on;
 }

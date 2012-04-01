@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008. All Rights Reserved.                */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
 /*----------------------------------------------------------------------------*/
@@ -17,12 +17,12 @@ const double CheesyRobot::kDefaultPeriod;
  * the status of initialization for disabled, autonomous, and teleop code.
  */
 CheesyRobot::CheesyRobot()
-	: m_disabledInitialized (false)
-	, m_autonomousInitialized (false)
-	, m_teleopInitialized (false)
-	, m_period (kDefaultPeriod)
+    : m_disabledInitialized (false)
+    , m_autonomousInitialized (false)
+    , m_teleopInitialized (false)
+    , m_period (kDefaultPeriod)
 {
-	m_watchdog.SetEnabled(false);
+  m_watchdog.SetEnabled(false);
 }
 
 /**
@@ -41,10 +41,10 @@ void CheesyRobot::SetPeriod(double period)
 {
 
     // Not syncing with the DS, so start the timer for the main loop
-	m_mainLoopTimer.Reset();
-    m_mainLoopTimer.Start();
-	
-	m_period = period;
+  m_mainLoopTimer.Reset();
+  m_mainLoopTimer.Start();
+  
+  m_period = period;
 }
 
 /**
@@ -54,7 +54,7 @@ void CheesyRobot::SetPeriod(double period)
  */
 double CheesyRobot::GetPeriod()
 {
-	return m_period;
+  return m_period;
 }
 
 /**
@@ -63,7 +63,7 @@ double CheesyRobot::GetPeriod()
  */
 double CheesyRobot::GetLoopsPerSec()
 {
-	return 1.0 / m_period;
+  return 1.0 / m_period;
 }
 
 /**
@@ -76,75 +76,75 @@ double CheesyRobot::GetLoopsPerSec()
  */
 void CheesyRobot::StartCompetition()
 {
-	// first and one-time initialization
-	RobotInit();
-	static double t = 0;
-	// loop forever, calling the appropriate mode-dependent function
-	while (TRUE)
-	{
-		// Call the appropriate function depending upon the current robot mode
-		if (IsDisabled())
-		{
-			// call DisabledInit() if we are now just entering disabled mode from
-			// either a different mode or from power-on
-			if(!m_disabledInitialized)
-			{
-				DisabledInit();
-				m_disabledInitialized = true;
-				// reset the initialization flags for the other modes
-				m_autonomousInitialized = false;
-				m_teleopInitialized = false;
-			}
-			if (NextPeriodReady())
-			{
-				FRC_NetworkCommunication_observeUserProgramDisabled();
-				DisabledPeriodic();
-				
-			}
-			DisabledContinuous();
-		}
-		else if (IsAutonomous())
-		{
-			// call AutonomousInit() if we are now just entering autonomous mode from
-			// either a different mode or from power-on
-			if(!m_autonomousInitialized)
-			{
-				AutonomousInit();
-				m_autonomousInitialized = true;
-				// reset the initialization flags for the other modes
-				m_disabledInitialized = false;
-				m_teleopInitialized = false;
-			}
-			if (NextPeriodReady())
-			{
-				FRC_NetworkCommunication_observeUserProgramDisabled();
-				AutonomousPeriodic();
-				
-			}
-			AutonomousContinuous();
-		}
-		else
-		{
-			// call TeleopInit() if we are now just entering teleop mode from
-			// either a different mode or from power-on
-			if(!m_teleopInitialized)
-			{
-				TeleopInit();
-				m_teleopInitialized = true;
-				// reset the initialization flags for the other modes
-				m_disabledInitialized = false;
-				m_autonomousInitialized = false;
-			}
-			if (NextPeriodReady())
-			{
-				FRC_NetworkCommunication_observeUserProgramDisabled();
-				TeleopPeriodic();
-			
-			}
-			TeleopContinuous();
-		}
-		Wait(0.001);
-	}	
+  // first and one-time initialization
+  RobotInit();
+  static double t = 0;
+  // loop forever, calling the appropriate mode-dependent function
+  while (TRUE)
+  {
+    // Call the appropriate function depending upon the current robot mode
+    if (IsDisabled())
+    {
+      // call DisabledInit() if we are now just entering disabled mode from
+      // either a different mode or from power-on
+      if(!m_disabledInitialized)
+      {
+        DisabledInit();
+        m_disabledInitialized = true;
+        // reset the initialization flags for the other modes
+        m_autonomousInitialized = false;
+        m_teleopInitialized = false;
+      }
+      if (NextPeriodReady())
+      {
+        FRC_NetworkCommunication_observeUserProgramDisabled();
+        DisabledPeriodic();
+        
+      }
+      DisabledContinuous();
+    }
+    else if (IsAutonomous())
+    {
+      // call AutonomousInit() if we are now just entering autonomous mode from
+      // either a different mode or from power-on
+      if(!m_autonomousInitialized)
+      {
+        AutonomousInit();
+        m_autonomousInitialized = true;
+        // reset the initialization flags for the other modes
+        m_disabledInitialized = false;
+        m_teleopInitialized = false;
+      }
+      if (NextPeriodReady())
+      {
+        FRC_NetworkCommunication_observeUserProgramDisabled();
+        AutonomousPeriodic();
+        
+      }
+      AutonomousContinuous();
+    }
+    else
+    {
+      // call TeleopInit() if we are now just entering teleop mode from
+      // either a different mode or from power-on
+      if(!m_teleopInitialized)
+      {
+        TeleopInit();
+        m_teleopInitialized = true;
+        // reset the initialization flags for the other modes
+        m_disabledInitialized = false;
+        m_autonomousInitialized = false;
+      }
+      if (NextPeriodReady())
+      {
+        FRC_NetworkCommunication_observeUserProgramDisabled();
+        TeleopPeriodic();
+      
+      }
+      TeleopContinuous();
+    }
+    Wait(0.001);
+  }  
 }
 
 /**
@@ -170,7 +170,7 @@ bool CheesyRobot::NextPeriodReady()
  */
 void CheesyRobot::RobotInit()
 {
-	//printf("Default %s() method... Overload me!\n", __FUNCTION__);
+  //printf("Default %s() method... Overload me!\n", __FUNCTION__);
 }
 
 /**
@@ -181,7 +181,7 @@ void CheesyRobot::RobotInit()
  */
 void CheesyRobot::DisabledInit()
 {
-	//printf("Default %s() method... Overload me!\n", __FUNCTION__);
+  //printf("Default %s() method... Overload me!\n", __FUNCTION__);
 }
 
 /**
@@ -192,7 +192,7 @@ void CheesyRobot::DisabledInit()
  */
 void CheesyRobot::AutonomousInit()
 {
-	//printf("Default %s() method... Overload me!\n", __FUNCTION__);
+  //printf("Default %s() method... Overload me!\n", __FUNCTION__);
 }
 
 /**
@@ -203,7 +203,7 @@ void CheesyRobot::AutonomousInit()
  */
 void CheesyRobot::TeleopInit()
 {
-	//printf("Default %s() method... Overload me!\n", __FUNCTION__);
+  //printf("Default %s() method... Overload me!\n", __FUNCTION__);
 }
 
 /**
@@ -214,13 +214,13 @@ void CheesyRobot::TeleopInit()
  */
 void CheesyRobot::DisabledPeriodic()
 {
-	static bool firstRun = true;
-	if (firstRun)
-	{
-		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
-		firstRun = false;
-	}
-	taskDelay(1);
+  static bool firstRun = true;
+  if (firstRun)
+  {
+    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+    firstRun = false;
+  }
+  taskDelay(1);
 }
 
 /**
@@ -231,13 +231,13 @@ void CheesyRobot::DisabledPeriodic()
  */
 void CheesyRobot::AutonomousPeriodic()
 {
-	static bool firstRun = true;
-	if (firstRun)
-	{
-		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
-		firstRun = false;
-	}
-	taskDelay(1);
+  static bool firstRun = true;
+  if (firstRun)
+  {
+    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+    firstRun = false;
+  }
+  taskDelay(1);
 }
 
 /**
@@ -248,13 +248,13 @@ void CheesyRobot::AutonomousPeriodic()
  */
 void CheesyRobot::TeleopPeriodic()
 {
-	static bool firstRun = true;
-	if (firstRun)
-	{
-		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
-		firstRun = false;
-	}
-	taskDelay(1);
+  static bool firstRun = true;
+  if (firstRun)
+  {
+    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+    firstRun = false;
+  }
+  taskDelay(1);
 }
 
 /**
@@ -265,13 +265,13 @@ void CheesyRobot::TeleopPeriodic()
  */
 void CheesyRobot::DisabledContinuous()
 {
-	static bool firstRun = true;
-	if (firstRun)
-	{
-		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
-		firstRun = false;
-	}
-	m_ds->WaitForData();
+  static bool firstRun = true;
+  if (firstRun)
+  {
+    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+    firstRun = false;
+  }
+  m_ds->WaitForData();
 }
 
 /**
@@ -282,13 +282,13 @@ void CheesyRobot::DisabledContinuous()
  */
 void CheesyRobot::AutonomousContinuous()
 {
-	static bool firstRun = true;
-	if (firstRun)
-	{
-		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
-		firstRun = false;
-	}
-	m_ds->WaitForData();
+  static bool firstRun = true;
+  if (firstRun)
+  {
+    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+    firstRun = false;
+  }
+  m_ds->WaitForData();
 }
 
 /**
@@ -299,11 +299,11 @@ void CheesyRobot::AutonomousContinuous()
  */
 void CheesyRobot::TeleopContinuous()
 {
-	static bool firstRun = true;
-	if (firstRun)
-	{
-		//printf("Default %s() method... Overload me!\n", __FUNCTION__);
-		firstRun = false;
-	}
-	m_ds->WaitForData();
+  static bool firstRun = true;
+  if (firstRun)
+  {
+    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+    firstRun = false;
+  }
+  m_ds->WaitForData();
 }

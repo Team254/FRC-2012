@@ -5,7 +5,7 @@
 #include "util/PidTuner.h"
 
 ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
-		                   double shootSpeed, int shotsToFire, double timeout, bool intakeDown) {
+                       double shootSpeed, int shotsToFire, double timeout, bool intakeDown) {
   SetTimeout(timeout);
   shooter_ = shooter;
   intake_ = intake;
@@ -22,12 +22,12 @@ ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
 }
 
 void ShootCommand::Initialize() {
-   shooter_->Reset();	
+   shooter_->Reset();  
    shooter_->SetTargetVelocity(shootSpeed_);
    AutoCommand::Initialize();
    if (intakeDown_) {
-   	  intake_->SetIntakePosition(Intake::INTAKE_DOWN);
-   	  ///reachedSpeed_ = true;
+       intake_->SetIntakePosition(Intake::INTAKE_DOWN);
+       ///reachedSpeed_ = true;
    }
    lastShotTimer_->Reset();
    lastShotTimer_->Start();
@@ -39,10 +39,10 @@ bool ShootCommand::Run() {
 
   
   if (timer_->Get() > 2.2 && intakeDown_) {
-	  intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
+    intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
   }
   if (timer_->Get() > 3.5 && intakeDown_)
-	  intakeDown_ = false;
+    intakeDown_ = false;
   // Hacked this at SVR to get the seconds balls to stop before shooting
   bool atSpeed = shooter_->AtTargetVelocity() || lastShotTimer_->Get() > 2.0;
   bool goBack = false;
@@ -80,18 +80,18 @@ bool ShootCommand::Run() {
     }
   } 
   else if (goBack) {
-	  shooter_->SetLinearConveyorPower(-1);
-	  intake_->SetIntakePower(0);
+    shooter_->SetLinearConveyorPower(-1);
+    intake_->SetIntakePower(0);
   } else if (intakeDown_) {
-	  shooter_->SetLinearConveyorPower(1);
-	  intake_->SetIntakePower(1);
+    shooter_->SetLinearConveyorPower(1);
+    intake_->SetIntakePower(1);
   } else {
     shooter_->SetLinearConveyorPower(0);
     intake_->SetIntakePower(0);
   }
 
   bool done = TimeoutExpired() || (shotsFired_ >= shotsToFire_ && 
-		  shotSpotterTimer_->Get() > .25);
+      shotSpotterTimer_->Get() > .25);
   if (done) {
     //shooter_->SetTargetVelocity(0);
     shooter_->SetLinearConveyorPower(0.0);

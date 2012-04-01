@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008. All Rights Reserved.                */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
 /*----------------------------------------------------------------------------*/
@@ -44,45 +44,45 @@
  */
 
 class CheesyRobot : public RobotBase {
-public:
-	/*
-	 * The default period for the periodic function calls (seconds)
-	 * Setting the period to 0.0 will cause the periodic functions to follow
-	 * the Driver Station packet rate of about 50Hz.
-	 */
-	static const double kDefaultPeriod = 0.0;
+ public:
+  /*
+   * The default period for the periodic function calls (seconds)
+   * Setting the period to 0.0 will cause the periodic functions to follow
+   * the Driver Station packet rate of about 50Hz.
+   */
+  static const double kDefaultPeriod = 0.0;
 
-	virtual void StartCompetition();
+  virtual void StartCompetition();
 
-	virtual void RobotInit();
-	virtual void DisabledInit();
-	virtual void AutonomousInit();
-	virtual void TeleopInit();
+  virtual void RobotInit();
+  virtual void DisabledInit();
+  virtual void AutonomousInit();
+  virtual void TeleopInit();
 
-	virtual void DisabledPeriodic();
-	virtual void AutonomousPeriodic();
-	virtual void TeleopPeriodic();
+  virtual void DisabledPeriodic();
+  virtual void AutonomousPeriodic();
+  virtual void TeleopPeriodic();
 
-	virtual void DisabledContinuous();
-	virtual void AutonomousContinuous();
-	virtual void TeleopContinuous();
+  virtual void DisabledContinuous();
+  virtual void AutonomousContinuous();
+  virtual void TeleopContinuous();
 
-	void SetPeriod(double period);
-	double GetPeriod();
-	double GetLoopsPerSec();
+  void SetPeriod(double period);
+  double GetPeriod();
+  double GetLoopsPerSec();
 
-protected:
-	virtual ~CheesyRobot();
-	CheesyRobot();
+ protected:
+  virtual ~CheesyRobot();
+  CheesyRobot();
 
-private:
-	bool NextPeriodReady();
+ private:
+  bool NextPeriodReady();
 
-	bool m_disabledInitialized;
-	bool m_autonomousInitialized;
-	bool m_teleopInitialized;
-	double m_period;
-	Timer m_mainLoopTimer;
+  bool m_disabledInitialized;
+  bool m_autonomousInitialized;
+  bool m_teleopInitialized;
+  double m_period;
+  Timer m_mainLoopTimer;
 };
 
 #endif

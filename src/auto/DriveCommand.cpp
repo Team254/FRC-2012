@@ -68,61 +68,61 @@ void DriveCommand::Initialize() {
 }
 
 bool DriveCommand::Run() {
-	
-	if (TimeoutExpired()) {
-		drive_->SetLinearPower(0, 0);
-		return true;
-	  }
-	  drive_->SetHighGear(true);
-	  double currLeftDist = drive_->GetLeftEncoderDistance();
-	  double currRightDist = drive_->GetRightEncoderDistance();
-	  double currTime = driveTimer_->Get();
-	  double lVel = (currLeftDist - prevLeftDist_)/(currTime - prevTime_);
-	  double rVel = (currRightDist - prevRightDist_)/(currTime - prevTime_);
-	  prevTime_ = currTime;
-	  prevLeftDist_ = currLeftDist;
-	  prevRightDist_ = currRightDist;
-	  
-
-	  // Get PID feedback and send back to the motors.
-	  double leftPIDOutput = PwmLimit(leftPid_->Update(distanceGoal_, currLeftDist));
-	  double rightPIDOutput = PwmLimit(rightPid_->Update(distanceGoal_, currRightDist));
-	  double angleDiff = drive_->GetGyroAngle() - startingAngle_;
-	  double straightGain = angleDiff * Constants::GetInstance()->straightDriveGain;
-	  double leftPwr = leftPIDOutput - straightGain;
-	  double rightPwr = rightPIDOutput + straightGain;
-	  
-	  leftPwr = (leftPwr < -maxSpeed_) ?  -maxSpeed_: (leftPwr > maxSpeed_) ? maxSpeed_ : leftPwr;
-	  rightPwr = (rightPwr < -maxSpeed_) ?  -maxSpeed_ : (rightPwr > maxSpeed_) ? maxSpeed_ : rightPwr;
-	  
-	  leftPwr -= straightGain;
-	  rightPwr += straightGain;
-	  //PidTuner::PushData(currLeftDist, distanceGoal_, 0.0);    
-	  drive_->SetLinearPower(leftPwr, rightPwr);
-	  
-	  if (fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2) {
-		  //if (coast_) {
-		  if (false) {
-		    drive_->SetLinearPower(0,0);
-		    return true;
-		   }
-		  if (fabs(lVel) < 6 && fabs(rVel) < 6) {
-		    brakeTimer_->Start();
-		  }
-
-	    }
-	  
-	  if (brakeTimer_->Get() > .2) {
-		  drive_->SetPizzaWheelDown(resetPizza_);
-		  drive_->SetLinearPower(0,0);
-		  return true;
-	  }
-	  // Indicate that the goal has not yet been reached.
-	  return false;
-	/*
+  
   if (TimeoutExpired()) {
-	drive_->SetLinearPower(0, 0);
-	return true;
+    drive_->SetLinearPower(0, 0);
+    return true;
+    }
+    drive_->SetHighGear(true);
+    double currLeftDist = drive_->GetLeftEncoderDistance();
+    double currRightDist = drive_->GetRightEncoderDistance();
+    double currTime = driveTimer_->Get();
+    double lVel = (currLeftDist - prevLeftDist_)/(currTime - prevTime_);
+    double rVel = (currRightDist - prevRightDist_)/(currTime - prevTime_);
+    prevTime_ = currTime;
+    prevLeftDist_ = currLeftDist;
+    prevRightDist_ = currRightDist;
+    
+
+    // Get PID feedback and send back to the motors.
+    double leftPIDOutput = PwmLimit(leftPid_->Update(distanceGoal_, currLeftDist));
+    double rightPIDOutput = PwmLimit(rightPid_->Update(distanceGoal_, currRightDist));
+    double angleDiff = drive_->GetGyroAngle() - startingAngle_;
+    double straightGain = angleDiff * Constants::GetInstance()->straightDriveGain;
+    double leftPwr = leftPIDOutput - straightGain;
+    double rightPwr = rightPIDOutput + straightGain;
+    
+    leftPwr = (leftPwr < -maxSpeed_) ?  -maxSpeed_: (leftPwr > maxSpeed_) ? maxSpeed_ : leftPwr;
+    rightPwr = (rightPwr < -maxSpeed_) ?  -maxSpeed_ : (rightPwr > maxSpeed_) ? maxSpeed_ : rightPwr;
+    
+    leftPwr -= straightGain;
+    rightPwr += straightGain;
+    //PidTuner::PushData(currLeftDist, distanceGoal_, 0.0);    
+    drive_->SetLinearPower(leftPwr, rightPwr);
+    
+    if (fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2) {
+      //if (coast_) {
+      if (false) {
+        drive_->SetLinearPower(0,0);
+        return true;
+       }
+      if (fabs(lVel) < 6 && fabs(rVel) < 6) {
+        brakeTimer_->Start();
+      }
+
+      }
+    
+    if (brakeTimer_->Get() > .2) {
+      drive_->SetPizzaWheelDown(resetPizza_);
+      drive_->SetLinearPower(0,0);
+      return true;
+    }
+    // Indicate that the goal has not yet been reached.
+    return false;
+  /*
+  if (TimeoutExpired()) {
+  drive_->SetLinearPower(0, 0);
+  return true;
   }
   drive_->SetHighGear(false);
   double currLeftDist = drive_->GetLeftEncoderDistance() * 0.0254;
@@ -154,19 +154,19 @@ bool DriveCommand::Run() {
   double theta_gyro = -drive_->GetGyroAngle() * 0.01714532925 ;
   double kI = 0.017;
   if (fabs(angGoal - curThet_) < 0.0001 && fabs(angGoal + turnOffset_ - theta_measured) < 18.0 * 0.01714532925) {
-	  double KiTurn = 0.0254;
-	  sumStoppedError_ += (angGoal + turnOffset_ - theta_measured) * KiTurn;
+    double KiTurn = 0.0254;
+    sumStoppedError_ += (angGoal + turnOffset_ - theta_measured) * KiTurn;
   } else {
-	  if (!(fabs(angGoal - curThet_) < 0.0001)) {
-		  sumStoppedError_ *= 0.97;
-	  }
+    if (!(fabs(angGoal - curThet_) < 0.0001)) {
+      sumStoppedError_ *= 0.97;
+    }
   }
   
   double doffset = ((theta_measured - turnOffset_) - theta_gyro) * kI;
   if (doffset > 0.01) {
-	  doffset = 0.01;
+    doffset = 0.01;
   } else if (doffset < -0.01) {
-	  doffset = -0.01;
+    doffset = -0.01;
   }
   turnOffset_ += doffset;
   //printf("offset: %f error: %f total: %f\n", turnOffset_, sumStoppedError_, (turnOffset_ + sumStoppedError_) / 2.0);
@@ -204,20 +204,20 @@ bool DriveCommand::Run() {
   drive_->SetLinearPower(leftPwr, rightPwr);
   
   if (fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2) {
-	  if (coast_) {
-	    drive_->SetLinearPower(0,0);
-	    return true;
-	   }
-	  if (fabs(lVel) < 6 && fabs(rVel) < 6) {
-	    brakeTimer_->Start();
-	  }
+    if (coast_) {
+      drive_->SetLinearPower(0,0);
+      return true;
+     }
+    if (fabs(lVel) < 6 && fabs(rVel) < 6) {
+      brakeTimer_->Start();
+    }
 
     }
   
   if (brakeTimer_->Get() > .2) {
-	  drive_->SetPizzaWheelDown(resetPizza_);
-	  drive_->SetLinearPower(0,0);
-	  return true;
+    drive_->SetPizzaWheelDown(resetPizza_);
+    drive_->SetLinearPower(0,0);
+    return true;
   }
   
   // Indicate that the goal has not yet been reached.

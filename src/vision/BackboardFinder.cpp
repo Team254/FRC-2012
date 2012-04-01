@@ -23,10 +23,10 @@ double BackboardFinder::GetX() {
 }
 
 double BackboardFinder::GetHDiff() {
-	return hDiff_;
+  return hDiff_;
 }
 double BackboardFinder::GetVDiff() {
-	return vDiff_;
+  return vDiff_;
 }
 
 bool BackboardFinder::SeesTarget() {
@@ -38,17 +38,17 @@ void BackboardFinder::LogCamera() {
 }
 
 double BackboardFinder::GetDistance() {
-	return constants_->distanceCoeffA * pow(hDiff_, 2) + 
-		   constants_->distanceCoeffB * hDiff_ + constants_->distanceCoeffC;
+  return constants_->distanceCoeffA * pow(hDiff_, 2) + 
+       constants_->distanceCoeffB * hDiff_ + constants_->distanceCoeffC;
 }
 
 double BackboardFinder::GetAngle() {
-	//normalized x location (-1 to 1) times the pixels along
-	//that one side = number of pixels off
-	//47/320 = degree/pixel based on fov/horizontal resolution
-	//pixels * degrees / pixels = degrees
-	//printf("get: %f\n", (float) GetX());
-	return GetX() * 160.0 * 47.0 / 320.0;
+  //normalized x location (-1 to 1) times the pixels along
+  //that one side = number of pixels off
+  //47/320 = degree/pixel based on fov/horizontal resolution
+  //pixels * degrees / pixels = degrees
+  //printf("get: %f\n", (float) GetX());
+  return GetX() * 160.0 * 47.0 / 320.0;
 }
 
 void BackboardFinder::DoVision() {

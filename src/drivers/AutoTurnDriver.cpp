@@ -55,24 +55,24 @@ bool AutoTurnDriver::UpdateDriver() {
       target_->DoVision();
       
     }else if (!foundTarget_ && target_->SeesTarget()) {
-	  // Grab a camera image angle and reset the gyro
-	  drive_->ResetGyro();
-	  angleGoal_ = -target_->GetAngle();
-	  printf("**********\n**ANGLE: %f %f \n\n", angleGoal_, drive_->GetGyroAngle());
-	  foundTarget_ = true;
+    // Grab a camera image angle and reset the gyro
+    drive_->ResetGyro();
+    angleGoal_ = -target_->GetAngle();
+    printf("**********\n**ANGLE: %f %f \n\n", angleGoal_, drive_->GetGyroAngle());
+    foundTarget_ = true;
   }
   
 
   if(foundTarget_) {
-	int dir = (curAngle < angleGoal_) ? 1 : -1;
-	double output = 0; 
-	double diff = fabs(angleGoal_ - curAngle);
-	if (diff < 4) {
+  int dir = (curAngle < angleGoal_) ? 1 : -1;
+  double output = 0; 
+  double diff = fabs(angleGoal_ - curAngle);
+  if (diff < 4) {
       output = pid_->Update(angleGoal_, curAngle);
-	} else {
+  } else {
       double fastGain = (diff < 10) ? 0.0 : (diff > 25) ? .7 : ((diff - 10) * (0.2/15.0)); 
-	  output = (.45  + fastGain) * dir;
-	}
+    output = (.45  + fastGain) * dir;
+  }
     printf("goal: %f gyro: %f diff: %f out: %f\n", angleGoal_, curAngle, (curAngle - angleGoal_), output);
     drive_->SetLinearPower(-output, output);
   } else {
@@ -86,5 +86,5 @@ bool AutoTurnDriver::UpdateDriver() {
 
   //PidTuner::PushData(angleGoal_, curAngle, 0);
   return (fabs(angleGoal_ - curAngle) < constants_->autoAlignThreshold) &&
-		  (fabs(turnRate) < .1);
+      (fabs(turnRate) < .1);
 }
