@@ -26,14 +26,14 @@ struct matrix *init_matrix(int n_rows,int n_cols){
 //[ ...   ...   ...   (->width-1,->height-1) ]
 */
 double matrix_get(struct matrix *mat,int y,int x){
-  if(x >= mat->width || y >= mat->height){
+  if (x >= mat->width || y >= mat->height){
     fprintf(stderr,"out of bounds(%d,%d)\n",x,y);
     return(0.0);
   }
   return(mat->data[x + mat->width * y]);
 }
 int matrix_set(struct matrix *mat,int y,int x,double val){
-  if(x >= mat->width || y >= mat->height){
+  if (x >= mat->width || y >= mat->height){
     fprintf(stderr,"out of bounds(%d,%d)=%g\n",x,y,val);
     return(0);
   }
@@ -53,7 +53,7 @@ struct matrix *make_eye_matrix(int s){
 }
 int matrix_check_same(struct matrix *dest,
     struct matrix *mat1,struct matrix *mat2){
-  if(mat1->width != mat2->width ||
+  if (mat1->width != mat2->width ||
       mat1->height != mat2->height ||
       mat1->height != dest->height ||
       mat1->width  != dest->width){
@@ -68,7 +68,7 @@ int matrix_check_same(struct matrix *dest,
 }
 int matrix_minus(struct matrix *dest,
     struct matrix *mat1,struct matrix *mat2){
-  if(!matrix_check_same(dest,mat1,mat2))
+  if (!matrix_check_same(dest,mat1,mat2))
     return(0);
   double *data1 = mat1->data;
   double *datadest = dest->data;
@@ -82,7 +82,7 @@ int matrix_minus(struct matrix *dest,
 }
 int matrix_add(struct matrix *dest,
     struct matrix *mat1,struct matrix *mat2){
-  if(!matrix_check_same(dest,mat1,mat2))
+  if (!matrix_check_same(dest,mat1,mat2))
     return(0);
   double *data1 = mat1->data;
   double *datadest = dest->data;
@@ -102,19 +102,19 @@ int matrix_mult(struct matrix *dest,
   int dw_mis = dest->width != dest_width;
   int dh_mis = dest->height != dest_height;
   int p_mis  = mat1->width != mat2->height;
-  if(dw_mis || dh_mis || p_mis){
+  if (dw_mis || dh_mis || p_mis){
     fprintf(stderr,"differences shown:");
-    if(dw_mis)fprintf(stderr," dest={%d,",dest->width);
+    if (dw_mis)fprintf(stderr," dest={%d,",dest->width);
     else fprintf(stderr," dest={__,");
-    if(dh_mis)fprintf(stderr,"%d}",dest->height);
+    if (dh_mis)fprintf(stderr,"%d}",dest->height);
     else fprintf(stderr,"__}");
-    if(p_mis)fprintf(stderr," mat1={%d",mat1->width);
+    if (p_mis)fprintf(stderr," mat1={%d",mat1->width);
     else fprintf(stderr," mat1={__");
-    if(dh_mis)fprintf(stderr,",%d}",mat1->height);
+    if (dh_mis)fprintf(stderr,",%d}",mat1->height);
     else fprintf(stderr,",__}");
-    if(dw_mis)fprintf(stderr," mat1={%d",mat2->width);
+    if (dw_mis)fprintf(stderr," mat1={%d",mat2->width);
     else fprintf(stderr," mat2={__");
-    if(p_mis)fprintf(stderr,",%d}\n",mat2->height);
+    if (p_mis)fprintf(stderr,",%d}\n",mat2->height);
     else fprintf(stderr,",__}\n");
     return(0);
   }
@@ -147,7 +147,7 @@ int matrix_scale(struct matrix *dest,double value,struct matrix *mat){
   double *data_src = mat->data;
   int i;
   int comp = mat->width * mat->height;
-  if(comp != dest->width * dest->height){
+  if (comp != dest->width * dest->height){
     fprintf(stderr,"Invalid Dims\n");
     return(0);
   }

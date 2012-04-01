@@ -184,7 +184,7 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
     rPower = -1.0;
   }
   
-  if(throttle == 0 && !quickTurn) {
+  if (throttle == 0 && !quickTurn) {
     SetLinearPower(0.0, 0.0);
   }
   

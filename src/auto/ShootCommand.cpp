@@ -55,7 +55,7 @@ bool ShootCommand::Run() {
     downCycles_ = 0;
   } else {
     atSpeedCycles_ = 0;
-    if(shooter_->GetVelocity() < shootSpeed_ - 4  && reachedSpeed_) {
+    if (shooter_->GetVelocity() < shootSpeed_ - 4  && reachedSpeed_) {
       if (downCycles_++ > 5) {
         downCycles_ = 0;
         shotsFired_++;
@@ -64,7 +64,7 @@ bool ShootCommand::Run() {
         intakeDown_ = false;
         lastShotTimer_->Reset();
         lastShotTimer_->Start();
-        if(shotsFired_ >= shotsToFire_) {
+        if (shotsFired_ >= shotsToFire_) {
           shotSpotterTimer_->Start();
         }
       }

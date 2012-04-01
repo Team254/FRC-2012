@@ -63,7 +63,7 @@ bool AutoTurnDriver::UpdateDriver() {
   }
   
 
-  if(foundTarget_) {
+  if (foundTarget_) {
   int dir = (curAngle < angleGoal_) ? 1 : -1;
   double output = 0; 
   double diff = fabs(angleGoal_ - curAngle);

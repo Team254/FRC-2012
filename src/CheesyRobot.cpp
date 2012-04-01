@@ -87,7 +87,7 @@ void CheesyRobot::StartCompetition()
     {
       // call DisabledInit() if we are now just entering disabled mode from
       // either a different mode or from power-on
-      if(!m_disabledInitialized)
+      if (!m_disabledInitialized)
       {
         DisabledInit();
         m_disabledInitialized = true;
@@ -107,7 +107,7 @@ void CheesyRobot::StartCompetition()
     {
       // call AutonomousInit() if we are now just entering autonomous mode from
       // either a different mode or from power-on
-      if(!m_autonomousInitialized)
+      if (!m_autonomousInitialized)
       {
         AutonomousInit();
         m_autonomousInitialized = true;
@@ -127,7 +127,7 @@ void CheesyRobot::StartCompetition()
     {
       // call TeleopInit() if we are now just entering teleop mode from
       // either a different mode or from power-on
-      if(!m_teleopInitialized)
+      if (!m_teleopInitialized)
       {
         TeleopInit();
         m_teleopInitialized = true;

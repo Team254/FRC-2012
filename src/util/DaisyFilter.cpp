@@ -19,11 +19,11 @@ DaisyFilter::DaisyFilter(int ffOrder, const float *ffGains, int fbOrder, const f
   mInputOrder = ffOrder;
   mOutputOrder = fbOrder;
   
-  if( ffOrder > 0 )
+  if ( ffOrder > 0 )
   {
     mInputGains = new float[ffOrder];
   }
-  if( fbOrder > 0 )
+  if ( fbOrder > 0 )
   {
     mOutputGains = new float[fbOrder];
   }
@@ -46,11 +46,11 @@ DaisyFilter::DaisyFilter(int ffOrder, const float *ffGains, int fbOrder, const f
  */
 DaisyFilter::~DaisyFilter()
 {
-  if( mInputOrder > 0 )
+  if ( mInputOrder > 0 )
   {
     delete mInputGains;
   }
-  if( mOutputOrder > 0 )
+  if ( mOutputOrder > 0 )
   {
     delete mOutputGains;
   }
@@ -86,7 +86,7 @@ DaisyFilter* DaisyFilter::SinglePoleIIRFilter(float gain)
  */
 DaisyFilter* DaisyFilter::MovingAverageFilter(int taps)
 {
-  if( taps < 1 )
+  if ( taps < 1 )
   {
     taps = 1;
   }
@@ -150,7 +150,7 @@ float DaisyFilter::Calculate(float value)
   float retVal = 0.0;
   
   // Rotate the inputs
-  if( mInputOrder > 0 )
+  if ( mInputOrder > 0 )
   {
     mInputs.Increment();
     mInputs[0] = value;
@@ -167,7 +167,7 @@ float DaisyFilter::Calculate(float value)
   }
   
   // Rotate the outputs
-  if( mOutputOrder > 0 )
+  if ( mOutputOrder > 0 )
   {
     mOutputs.Increment();
     mOutputs[0] = retVal;

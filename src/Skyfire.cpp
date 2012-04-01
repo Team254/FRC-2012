@@ -344,7 +344,7 @@ void Skyfire::TeleopPeriodic() {
   if (operatorControl_->GetShooterSwitch()) {
     // Re-load the shooter PID constants whenever the shooter is turned on.
     if (!oldShooterSwitch_) {
-      if(shooterTargetVelocity_ == 0) {
+      if (shooterTargetVelocity_ == 0) {
         shooterTargetVelocity_ = constants_->shooterFenderSpeed;
       }
       constants_->LoadFile();
@@ -426,7 +426,7 @@ void Skyfire::TeleopPeriodic() {
   prevTime = curTime;
   static const double maxSpeed = 10.0;
   // Set the brake in the last 0.25 seconds of the match
-  if(timer_->Get()>=119.75 && fabs(curLeft - prevLeftDist_)/dt < maxSpeed && fabs(curRight - prevRightDist_)/dt < maxSpeed) {
+  if (timer_->Get()>=119.75 && fabs(curLeft - prevLeftDist_)/dt < maxSpeed && fabs(curRight - prevRightDist_)/dt < maxSpeed) {
     drivebase_->SetBrakeOn(true);
   }
   prevLeftDist_ = curLeft;

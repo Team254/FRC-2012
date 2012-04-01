@@ -192,7 +192,7 @@ void BackboardFinder::DoVision() {
     if (particles->at(0).center_mass_x_normalized > .3 && particles->at(1).center_mass_x_normalized > .3) {
       //case where they are both on the right side of the screen, center axis is the one more to the right
       //if it only sees 2, the other is the left
-      if(particles->at(0).center_mass_x_normalized > particles->at(1).center_mass_x_normalized) {
+      if (particles->at(0).center_mass_x_normalized > particles->at(1).center_mass_x_normalized) {
         top = particles->at(0);
       } else {
         top = particles->at(1);
@@ -200,14 +200,14 @@ void BackboardFinder::DoVision() {
     } else if (particles->at(0).center_mass_x_normalized < -.3 && particles->at(1).center_mass_x_normalized < -.3) {
       //case where both are on the left side of the screen, center axis is the one more to the left
       //if it only sees 2, because the other is to the right
-      if(particles->at(0).center_mass_x_normalized < particles->at(1).center_mass_x_normalized) {
+      if (particles->at(0).center_mass_x_normalized < particles->at(1).center_mass_x_normalized) {
         top = particles->at(0);
       } else {
         top = particles->at(1);
       }
-    } else if(fabs(particles->at(0).center_mass_x_normalized) < .3 && fabs(particles->at(1).center_mass_x_normalized) < .3) {
+    } else if (fabs(particles->at(0).center_mass_x_normalized) < .3 && fabs(particles->at(1).center_mass_x_normalized) < .3) {
       //case where we can only see 2 in the center, possibly super zoomed in, both have same axis
-      if(particles->at(0).center_mass_y_normalized > particles->at(1).center_mass_y_normalized) {
+      if (particles->at(0).center_mass_y_normalized > particles->at(1).center_mass_y_normalized) {
         top = particles->at(0);
       } else {
         top = particles->at(1);

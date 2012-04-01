@@ -74,7 +74,7 @@ void ss_controller::update( matrix *R, struct matrix *Y)
     double* u_i = U->data+i;
     double u_max = U_max->data[i];
     double u_min = U_min->data[i];
-    if(*u_i > u_max) {
+    if (*u_i > u_max) {
       *u_i = u_max;
     } else if (*u_i < u_min) {
       *u_i = u_min;

@@ -18,7 +18,7 @@ bool QueueBallCommand::Run() {
   shooter_->SetLinearConveyorPower(1);
   intake_->SetIntakePower(1);
   bool done = shooter_->GetBallRange() > 180 || TimeoutExpired();
-  if(done) {
+  if (done) {
     shooter_->SetLinearConveyorPower(0);
     intake_->SetIntakePower(0);
   }

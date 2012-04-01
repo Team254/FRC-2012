@@ -77,7 +77,7 @@ private:
 
     virtual ~DaisyCircularBuffer()
     {
-      if( mSize > 0 )
+      if ( mSize > 0 )
       {
         delete mData;
       }
@@ -86,7 +86,7 @@ private:
     void Increment()
     {
       mFront++;
-      if( mFront >= mSize )
+      if ( mFront >= mSize )
       {
         mFront = 0;
       }
