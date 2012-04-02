@@ -1,68 +1,43 @@
-#include "WPILib.h"
-#include "util/PidTuner.h"
 #include "drivers/AutoTurnDriver.h"
+
+#include "WPILib.h"
+#include "auto/DriveCommand.h"
 #include "subsystems/Drive.h"
-#include "util/MovingAverageFilter.h"
-#include "subsystems/Pid.h"
-#include "config/Constants.h"
+#include "util/PidTuner.h"
 #include "vision/BackboardFinder.h"
 
 AutoTurnDriver::AutoTurnDriver(Drive* drive, BackboardFinder* target) : Driver(drive) {
-  timer_ = new Timer();
-  filterL_ = new MovingAverageFilter(5);
-  filterR_ = new MovingAverageFilter(5);
-  constants_ = Constants::GetInstance();
-  pid_ = new Pid(&constants_->autoCameraAlignKP, &constants_->autoCameraAlignKI, &constants_->autoCameraAlignKD);
-  //pid_ = new Pid(&constants_->turnKP, &constants_->turnKI, &constants_->turnKD);
-  pidL_ = new Pid(&constants_->driveVelKP, &constants_->driveVelKI, &constants_->driveVelKD);
-  pidR_ = new Pid(&constants_->driveVelKP, &constants_->driveVelKI, &constants_->driveVelKD);
   target_ = target;
+  command_ = new DriveCommand(drive_, 0.0, 0.0, false, 20.0);
   Reset();
 }
 
 
 void AutoTurnDriver::Reset() {
-  angle_ = 0;
   justReset_ = true;
-  pidL_->ResetError();
-  pidR_->ResetError();
-  pid_->ResetError();
-  outputValueL_ = outputValueR_ = 0;
-  staticFriction_ = true;
-  filterL_->Reset();
-  filterR_->Reset();
-  //target_->DoVision();
   foundTarget_ = false;
-  printf("did reset auto turn\n");
-  
+  delete command_;
+  command_ = new DriveCommand(drive_, 0.0, 0.0, false, 20.0);
 }
 
-
 bool AutoTurnDriver::UpdateDriver() {
-  double curAngle = -drive_->GetGyroAngle();
   if (justReset_) {
     justReset_ = false;
-    timer_->Reset();
-    timer_->Start();
-    lastTimer_ = -1; // fix this later
-    lastPosL_ = drive_->GetLeftEncoderDistance();
-    lastPosR_ = drive_->GetRightEncoderDistance();
     foundTarget_ = false;
   }
-  drive_->SetHighGear(false); 
-  drive_->SetBrakeOn(false);
   if (!foundTarget_ && !target_->SeesTarget()){
       target_->DoVision();
-      
     }else if (!foundTarget_ && target_->SeesTarget()) {
 	  // Grab a camera image angle and reset the gyro
 	  drive_->ResetGyro();
-	  angleGoal_ = -target_->GetAngle();
-	  printf("**********\n**ANGLE: %f %f \n\n", angleGoal_, drive_->GetGyroAngle());
+	  delete command_;
+	  command_ = new DriveCommand(drive_, 0.0, -target_->GetAngle(), false, 20.0);
+	  command_->Initialize();
 	  foundTarget_ = true;
   }
+  return command_->Run();
   
-
+/*
   if(foundTarget_) {
 	int dir = (curAngle < angleGoal_) ? 1 : -1;
 	double output = 0; 
@@ -87,4 +62,5 @@ bool AutoTurnDriver::UpdateDriver() {
   //PidTuner::PushData(angleGoal_, curAngle, 0);
   return (fabs(angleGoal_ - curAngle) < constants_->autoAlignThreshold) &&
 		  (fabs(turnRate) < .1);
+  */
 }

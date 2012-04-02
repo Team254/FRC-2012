@@ -88,7 +88,7 @@ Skyfire::Skyfire() {
   operatorControl_ = new OperatorControl((int)constants_->operatorControlPort);
 
   // Vision
-  target_ = new BackboardFinder();
+  target_ = new BackboardFinder(drivebase_);
   target_->Start();
 
   // Drivers
@@ -114,7 +114,7 @@ Skyfire::Skyfire() {
   // Initialize autonomous variables
   autonDelay_ = 0.0;
   autonTimer_ = new Timer();
-  autonMode_ = AUTON_FENDER;
+  autonMode_ = AUTON_TEST;
   autoBaseCmd_ = NULL;
   timer_ = new Timer();
   timer_->Start();
@@ -217,7 +217,7 @@ void Skyfire::AutonomousInit() {
       break;
     case AUTON_TEST:
     	//printf("auton testing\n");
-    	autoBaseCmd_ = AUTO_SEQUENTIAL(new DriveCommand(drivebase_, 96, 0.0, false, 20.0));
+    	autoBaseCmd_ = AUTO_SEQUENTIAL(new DriveCommand(drivebase_, 0.0, 90.0, false, 20.0));
     	break;
     default:
       autoBaseCmd_ = NULL;
@@ -246,7 +246,7 @@ void Skyfire::DisabledPeriodic() {
   GetWatchdog().Feed();
   
   // Start a connection to the camera 
-  target_->DoVision();
+  //target_->DoVision();
   
   // Autonomous delay
   timer_->Reset();
@@ -308,7 +308,9 @@ void Skyfire::DisabledPeriodic() {
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Delay: %.1f", autonDelay_);
 
   // Show any other pre-match stuff we're interested in on the Driver Station LCD.
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Gyro: %f\n", gyro_->GetAngle());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Gyro: %f", gyro_->GetAngle());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "X: %0.2f A:%0.2f ", target_->GetX(), target_->GetAngle());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "%0.2f %0.2f", target_->GetDistance(), target_->GetHDiff());
   static int i = 0;
   if (++i % 10 == 0)
 	  lcd_->UpdateLCD();
@@ -324,21 +326,63 @@ void Skyfire::AutonomousPeriodic() {
 
 void Skyfire::TeleopPeriodic() {
   GetWatchdog().Feed();
+  static bool autoshooting = false;
+  static double robotWidth = .5818436 / .0254;
+  //PidTuner::PushData(drivebase_->GetGyroAngle() / 180 * 3.14159, (drivebase_->GetLeftEncoderDistance()-drivebase_->GetRightEncoderDistance())/robotWidth, 0);//angGoal*(robotWidth));
 
   // Update shooter power/manual control
   if (operatorControl_->GetFenderButton()) {
+	autoshooting = false;
     shooterTargetVelocity_ = constants_->shooterFenderSpeed;
   } else if (operatorControl_->GetFarFenderButton()) {
+	autoshooting = false;
     shooterTargetVelocity_ = constants_->shooterFarFenderSpeed;
   } else if (operatorControl_->GetKeyCloseButton()) {
+	  autoshooting = false;
     shooterTargetVelocity_ = constants_->shooterKeyCloseSpeed;
   } else if (operatorControl_->GetKeyFarButton()) {
+	  autoshooting = false;
     shooterTargetVelocity_ = constants_->shooterKeyFarSpeed;
   } else if (operatorControl_->GetIncreaseButton() && !oldIncreaseButton_) {
     shooterTargetVelocity_ += constants_->shooterSpeedIncrement;
   } else if (operatorControl_->GetDecreaseButton() && !oldDecreaseButton_) {
     shooterTargetVelocity_ -= constants_->shooterSpeedIncrement;
   }
+  Shooter::hoodPref pref = Shooter::NO;
+  double dist = target_->GetDistance();
+   	double newVel = (((constants_->shooterKeyFarSpeed - constants_->shooterKeyCloseSpeed ) / (190 - 122)) *
+   			        (dist - 122)) + constants_->shooterKeyCloseSpeed;
+   	if(dist < 111) {
+   		pref = Shooter::DOWN;
+   		newVel = (((constants_->shooterFarFenderSpeed - constants_->shooterFenderSpeed ) / (95 - 60)) *
+   		  			        (dist - 60)) + constants_->shooterFenderSpeed;
+   	}
+  if (operatorControl_->GetAutoShootButton()) {
+  	  autoshooting = true;
+      // In auto-shoot mode, only feed the balls if the shooter is up to speed.
+      if (operatorControl_->GetShooterSwitch() && shooter_->AtTargetVelocity()) {
+        shooter_->SetLinearConveyorPower(1.0);
+        intake_->SetIntakePower(1.0);
+      } else {
+        shooter_->SetLinearConveyorPower(0.0);
+        intake_->SetIntakePower(0.0);
+      }
+    } else if (operatorControl_->GetShootButton()) {
+      // In manual shoot mode, run the conveyor and intake to feed the shooter.
+      shooter_->SetLinearConveyorPower(1.0);
+      intake_->SetIntakePower(1.0);
+    } else if (operatorControl_->GetUnjamButton()) {
+      // In exhaust mode, run the conveyor and intake backwards.
+      intake_->SetIntakePower(-1.0);
+      shooter_->SetLinearConveyorPower(-1.0);
+    } else if (operatorControl_->GetIntakeButton()) {
+      // In intake mode, run the intake forwards and the conveyor backwards to jumble balls in the hopper.
+      intake_->SetIntakePower(1.0);
+      shooter_->SetLinearConveyorPower(-1.0);
+    } else {
+      shooter_->SetLinearConveyorPower(0.0);
+      intake_->SetIntakePower(0.0);
+    }
 
   if (operatorControl_->GetShooterSwitch()) {
     // Re-load the shooter PID constants whenever the shooter is turned on.
@@ -348,45 +392,19 @@ void Skyfire::TeleopPeriodic() {
     	}
       constants_->LoadFile();
     }
-    shooter_->SetTargetVelocity(shooterTargetVelocity_);
+    if (autoshooting && target_->SeesTarget()) {
+    	shooterTargetVelocity_ = newVel;
+    }
+    shooter_->SetTargetVelocity(shooterTargetVelocity_, pref);
   } else {
     shooter_->SetTargetVelocity(0);
   }
-  bool shooterDone = shooter_->AtTargetVelocity();//PIDUpdate();
-
   // Update shooter button guards
   oldShooterSwitch_ = operatorControl_->GetShooterSwitch();
   oldIncreaseButton_ = operatorControl_->GetIncreaseButton();
   oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
 
-  if (operatorControl_->GetAutoShootButton()) {
-    // In auto-shoot mode, only feed the balls if the shooter is up to speed.
-    if (operatorControl_->GetShooterSwitch() && shooterDone) {
-      shooter_->SetLinearConveyorPower(1.0);
-      intake_->SetIntakePower(1.0);
-    } else {
-      shooter_->SetLinearConveyorPower(0.0);
-      intake_->SetIntakePower(0.0);
-    }
-  } else if (operatorControl_->GetShootButton()) {
-    // In manual shoot mode, run the conveyor and intake to feed the shooter.
-    shooter_->SetLinearConveyorPower(1.0);
-    intake_->SetIntakePower(1.0);
-  } else if (operatorControl_->GetUnjamButton()) {
-    // In exhaust mode, run the conveyor and intake backwards.
-    intake_->SetIntakePower(-1.0);
-    shooter_->SetLinearConveyorPower(-1.0);
-  } else if (operatorControl_->GetIntakeButton()) {
-    // In intake mode, run the intake forwards and the conveyor backwards to jumble balls in the hopper.
-    intake_->SetIntakePower(1.0);
-    shooter_->SetLinearConveyorPower(-1.0);
-  } else {
-    shooter_->SetLinearConveyorPower(0.0);
-    intake_->SetIntakePower(0.0);
-  }
-
   // Only have Teleop and AutoAlign Drivers right now
-  
   if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
     // If the auto-align button is pressed, switch to the auto-align driver.
     currDriver_ = autoAlignDriver_;
@@ -397,7 +415,6 @@ void Skyfire::TeleopPeriodic() {
     currDriver_->Reset();
   }
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
-
   // Calculate the outputs for the drivetrain given the inputs.
   currDriver_->UpdateDriver();
 
@@ -413,6 +430,9 @@ void Skyfire::TeleopPeriodic() {
   // Print useful information to the LCD display.
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "%.1f | %.1f rps", shooterTargetVelocity_,
                    shooter_->GetVelocity());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "X: %0.2f A:%0.2f ", target_->GetX(), target_->GetAngle());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "%0.2f %0.2f", target_->GetDistance(), target_->GetHDiff());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "%f", target_->GetAngle());
   static int i = 0;
   if (++i % 10 == 0) {
     lcd_->UpdateLCD();

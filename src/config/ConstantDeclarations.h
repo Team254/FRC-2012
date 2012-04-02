@@ -98,9 +98,13 @@ DECLARE_DOUBLE(conveyorCoeffC, 0.3228)
 DECLARE_DOUBLE(conveyorCoeffD, 1.1347)
 
 // Camera relations
-DECLARE_DOUBLE(distanceCoeffA, 244.56)
-DECLARE_DOUBLE(distanceCoeffB, 5)
-DECLARE_DOUBLE(distanceCoeffC, 1.4524)
+DECLARE_DOUBLE(distanceCoeffA, 3.512162035166973e-10)
+DECLARE_DOUBLE(distanceCoeffB, -2.499565619933737e-07)
+DECLARE_DOUBLE(distanceCoeffC, 7.249335506446627e-05)
+DECLARE_DOUBLE(distanceCoeffD, -0.010982102151858)
+DECLARE_DOUBLE(distanceCoeffE, 0.925726454960144)
+DECLARE_DOUBLE(distanceCoeffF, -42.769351848830162)
+DECLARE_DOUBLE(distanceCoeffG, 9.943136608058143e+02)
 
 // Drive tuning
 DECLARE_DOUBLE(turnSensLow, 1.1)
@@ -109,7 +113,7 @@ DECLARE_DOUBLE(inertiaGain, .0035)
 
 // Shooter
 DECLARE_DOUBLE(shooterFenderSpeed, 36.0)
-DECLARE_DOUBLE(shooterFarFenderSpeed, 44)
+DECLARE_DOUBLE(shooterFarFenderSpeed, 40)
 DECLARE_DOUBLE(shooterKeyCloseSpeed, 45.5)
 DECLARE_DOUBLE(shooterKeyFarSpeed, 52.0)
 DECLARE_DOUBLE(shooterSpeedIncrement, 0.5)
@@ -141,3 +145,14 @@ DECLARE_DOUBLE(straightDriveGain, 0.1)
 // Automomous
 DECLARE_DOUBLE(autoShootKeyVel, 53.5)
 DECLARE_DOUBLE(autoAlignThreshold, .5)
+
+// Turning
+DECLARE_DOUBLE(turnNonlinHigh, 0.9)
+DECLARE_DOUBLE(turnNonlinLow, 0.8)
+DECLARE_DOUBLE(negInertiaHigh, 10.0)
+DECLARE_DOUBLE(senseHigh, 1.2)
+DECLARE_DOUBLE(negInertiaLowMore, 5.0)
+DECLARE_DOUBLE(negInertiaLowLessExt, 10.0)
+DECLARE_DOUBLE(negInertiaLowLess, 6.0)
+DECLARE_DOUBLE(senseLow, 1.10)
+DECLARE_DOUBLE(senseCutoff, 0.1)

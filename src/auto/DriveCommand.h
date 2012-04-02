@@ -20,7 +20,7 @@ class DriveCommand : public AutoCommand {
    * Constructor. Accepts drivetrain pointer and goal in terms of distance in inches
    */
 	// coast is defunct - take it out when we refactor
-  DriveCommand(Drive* drive, double distance, double angle, bool usePizza, double timeout, double maxSpeed=240.0, double maxAcceleration=120.0, double maxAlpha=10.0, double maxOmega=10.0);
+  DriveCommand(Drive* drive, double distance, double angle, bool usePizza, double timeout, double maxSpeed=240.0, double maxAcceleration=120.0, double maxAlpha=180.0, double maxOmega=120.0);
 
   /**
    * Clears encoders and gyro

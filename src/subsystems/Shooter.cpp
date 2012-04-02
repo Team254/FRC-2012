@@ -53,16 +53,21 @@ void Shooter::SetLinearPower(double pwm) {
   SetPower(Linearize(pwm));
 }
 
-void Shooter::SetTargetVelocity(double velocity) {
+void Shooter::SetTargetVelocity(double velocity, hoodPref pref) {
   targetVelocity_ = velocity;
   pid_->ResetError();
   outputValue_ = 0;
-  if (velocity > 40) {
-    SetHoodUp(true);
-  } else if (velocity > 0) {
-    SetHoodUp(false);
+  if(pref==UP) {
+	  SetHoodUp(true);
+  } else if (pref==DOWN) {
+	  SetHoodUp(false);
+  } else {
+	  if (velocity > 40) {
+		SetHoodUp(true);
+	  } else if (velocity > 0) {
+		SetHoodUp(false);
+	  }
   }
-
 }
 
 bool Shooter::PIDUpdate() {

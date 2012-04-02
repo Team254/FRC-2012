@@ -21,6 +21,13 @@
  */
 class Shooter {
  public:
+	
+	enum hoodPref {
+		UP,
+		DOWN,
+		NO,
+		NUM_PREFS
+	};
   /**
    * Constructor
    * Accepts the Victors, Encoders, pneumatics, etc. to be used
@@ -39,7 +46,7 @@ class Shooter {
    * Sets the target rotational velocity of the wheel in rotations/second
    * @param velocity the rotational velocity to set
    */
-  void SetTargetVelocity(double velocity);
+  void SetTargetVelocity(double velocity, hoodPref pref=NO);
 
   /**
    * Updates the shooter wheel velocity PID
