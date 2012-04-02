@@ -10,10 +10,11 @@
  */
 class Logger;
 class Constants;
+class Drive;
 
 class BackboardFinder : public VisionProcess {
  public:
-  BackboardFinder();
+  BackboardFinder(Drive* drive);
   /**
    * The current distance offset from the target's center axis.
    * @return offset from target center
@@ -64,10 +65,12 @@ class BackboardFinder : public VisionProcess {
   double angle_;
   bool seesTarget_;
   double lastUpdate_;
-  double hDiff_;
+  double width_;
   double vDiff_;
   Logger* cameraLog_;
   Constants* constants_;
+  bool useTopForWidth_;
+  Drive* drive_;
 };
 
 #endif  // VISION_BACKBOARD_FINDER_H_

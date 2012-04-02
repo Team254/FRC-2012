@@ -3,13 +3,16 @@
 #include "WPILib.h"
 #include "util/Logger.h"
 #include "config/Constants.h"
+#include "subsystems/Drive.h"
 
-BackboardFinder::BackboardFinder() : VisionProcess() {
+BackboardFinder::BackboardFinder(Drive* drive) : VisionProcess() {
   cameraLog_ = new Logger("/cameraLog.log");
   printf("Initting camera\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-  hDiff_ = 0;
+  width_ = 0;
   vDiff_ = 0;
   constants_ = Constants::GetInstance();
+  useTopForWidth_ = false;
+  drive_ = drive;
   //camera.WriteResolution(AxisCameraParams::kResolution_320x240);
 }
 
@@ -23,7 +26,7 @@ double BackboardFinder::GetX() {
 }
 
 double BackboardFinder::GetHDiff() {
-	return hDiff_;
+	return width_;
 }
 double BackboardFinder::GetVDiff() {
 	return vDiff_;
@@ -34,12 +37,20 @@ bool BackboardFinder::SeesTarget() {
 }
 
 void BackboardFinder::LogCamera() {
-  cameraLog_->Log("%f,%f,%f\n", GetX(), hDiff_, vDiff_);
+  cameraLog_->Log("%f,%f,%f\n", GetX(), width_, vDiff_);
 }
 
 double BackboardFinder::GetDistance() {
-	return constants_->distanceCoeffA * pow(hDiff_, 2) + 
-		   constants_->distanceCoeffB * hDiff_ + constants_->distanceCoeffC;
+	double w = width_;
+	if (useTopForWidth_) {
+	  w += 7; // difference between target width and side to side distance
+	}
+	return constants_->distanceCoeffA * pow(width_, 6) + 
+			constants_->distanceCoeffB * pow(width_, 5) + 
+			constants_->distanceCoeffC * pow(width_, 4) + 
+			constants_->distanceCoeffD * pow(width_, 3) + 
+			constants_->distanceCoeffE * pow(width_, 2) + 
+			constants_->distanceCoeffF * width_ + constants_->distanceCoeffG;
 }
 
 double BackboardFinder::GetAngle() {
@@ -48,7 +59,8 @@ double BackboardFinder::GetAngle() {
 	//47/320 = degree/pixel based on fov/horizontal resolution
 	//pixels * degrees / pixels = degrees
 	//printf("get: %f\n", (float) GetX());
-	return GetX() * 160.0 * 47.0 / 320.0;
+	double offset = 1.8;
+	return GetX() * 160.0 * 47.0 / 320.0 + offset;;
 }
 
 void BackboardFinder::DoVision() {
@@ -134,6 +146,7 @@ void BackboardFinder::DoVision() {
   ParticleAnalysisReport left, right, top, bottom;
   vector<ParticleAnalysisReport>* particles = bimg->GetOrderedParticleAnalysisReports();
 
+  
   // Find L,R,T,B based on CoM X,Y
   int i = 0;
 
@@ -253,9 +266,12 @@ void BackboardFinder::DoVision() {
 
 
   // Calculate angle on fieled based on ?
-  //printf("left %f, center %f, right %f\n", left.center_mass_x_normalized, top.center_mass_x_normalized, right.center_mass_x_normalized);
-  hDiff_ = right.center_mass_x_normalized - left.center_mass_x_normalized;
-  vDiff_ = fabs(top.center_mass_y_normalized - bottom.center_mass_y_normalized);
+
+  width_ = top.boundingRect.width;
+  
+
+  static Logger * l = new Logger("/vision.csv");
+  l->Log("%f,%d,%d,%d\n", drive_->GetLeftEncoderDistance(),particles->size(), (right.boundingRect.left  - (left.boundingRect.left + left.boundingRect.width)), top.boundingRect.width );
 
 
   delete bimg;
@@ -272,3 +288,4 @@ void BackboardFinder::DoVision() {
 bool BackboardFinder::HasFreshTarget() {
   return (Timer::GetFPGATimestamp() - lastUpdate_ < .5); // 500ms
 }
+
