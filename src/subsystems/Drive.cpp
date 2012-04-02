@@ -28,6 +28,7 @@ Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Vic
   controlLoops_ = false;
   old_wheel_ = 0.0;
   highGear_ = false;
+  quickStopAccumulator_ = 0.0;
 }
 
 void Drive::SetLinearPower(double left, double right) {
@@ -195,9 +196,13 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 		neg_inertia_accumulator=0;
 	
 	linear_power = throttle;
-	
+		
 	//quickturn!
 	if (isQuickTurn) {
+		if (fabs(linear_power) < 0.2) {
+			double alpha = constants_->quickStopTimeConstant;
+			quickStopAccumulator_ = (1 - alpha) * quickStopAccumulator_ + alpha * PwmLimit(wheel) * constants_->quickStopStickScalar;
+		}
 		overPower = 1.0;
 		if (isHighGear) {
 			sensitivity = 1.0;
@@ -207,7 +212,14 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 		angular_power = wheel;
 	} else {
 		overPower = 0.0;
-		angular_power = fabs(throttle) * wheel * sensitivity;
+		angular_power = fabs(throttle) * wheel * sensitivity - quickStopAccumulator_;
+		if (quickStopAccumulator_ > 1) {
+			quickStopAccumulator_ -= 1;
+		} else if (quickStopAccumulator_ < -1) {
+			quickStopAccumulator_ += 1;
+		} else {
+			quickStopAccumulator_ = 0.0;
+		}
 	}
 	
 	right_pwm = left_pwm = linear_power;
