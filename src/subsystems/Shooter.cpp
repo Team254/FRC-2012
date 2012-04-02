@@ -98,10 +98,10 @@ bool Shooter::PIDUpdate() {
   ssc_->update(r_, y_);
   
   if (velocity_goal < 1.0) {
-	  SetLinearPower(0.0);
-	  pidGoal_ = currEncoderPos;
+    SetLinearPower(0.0);
+    pidGoal_ = currEncoderPos;
   } else {
-	  SetLinearPower(ssc_->U->data[0] / 12.0);
+    SetLinearPower(ssc_->U->data[0] / 12.0);
   }
 
   instantVelocity =  instantVelocity / (2 * 3.1415926);
@@ -117,7 +117,7 @@ void Shooter::SetLinearConveyorPower(double pwm) {
 }
 
 bool Shooter::AtTargetVelocity() {
-	return atTarget_;
+  return atTarget_;
 }
 
 void Shooter::SetHoodUp(bool up) {
@@ -177,7 +177,7 @@ double Shooter::Linearize(double x) {
 void Shooter::Reset() {
   atTarget_ = false;
   for (int i = 0; i < FILTER_SIZE; i++) {
-	velocityFilter_[i] = 0;
+  velocityFilter_[i] = 0;
   }
   flash_matrix(y_, 0.0);
   flash_matrix(r_, 0.0, 0.0);
@@ -200,14 +200,14 @@ double Shooter::ConveyorLinearize(double x) {
 }
 
 double Shooter::GetBallRange() {
-	return ballRanger_->GetValue();
+  return ballRanger_->GetValue();
 }
 
 double Shooter::GetTargetVelocity() {
-	return targetVelocity_;
+  return targetVelocity_;
 }
 
 void Shooter::CallUpdate(void* shooter){
-	Shooter* s = (Shooter*) shooter;
-	s->PIDUpdate();
+  Shooter* s = (Shooter*) shooter;
+  s->PIDUpdate();
 }

@@ -36,31 +36,4 @@ bool AutoTurnDriver::UpdateDriver() {
 	  foundTarget_ = true;
   }
   return command_->Run();
-  
-/*
-  if(foundTarget_) {
-	int dir = (curAngle < angleGoal_) ? 1 : -1;
-	double output = 0; 
-	double diff = fabs(angleGoal_ - curAngle);
-	if (diff < 4) {
-      output = pid_->Update(angleGoal_, curAngle);
-	} else {
-      double fastGain = (diff < 10) ? 0.0 : (diff > 25) ? .7 : ((diff - 10) * (0.2/15.0)); 
-	  output = (.45  + fastGain) * dir;
-	}
-    printf("goal: %f gyro: %f diff: %f out: %f\n", angleGoal_, curAngle, (curAngle - angleGoal_), output);
-    drive_->SetLinearPower(-output, output);
-  } else {
-    angleGoal_ = 0;
-    drive_->SetLinearPower(0, 0);
-  }
-  
-  double turnRate = curAngle - oldAngle_;
-  oldAngle_ = curAngle;
-
-
-  //PidTuner::PushData(angleGoal_, curAngle, 0);
-  return (fabs(angleGoal_ - curAngle) < constants_->autoAlignThreshold) &&
-		  (fabs(turnRate) < .1);
-  */
 }

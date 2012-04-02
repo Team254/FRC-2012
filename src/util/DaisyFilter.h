@@ -52,64 +52,64 @@
 class DaisyFilter
 {
 public:
-	DaisyFilter(int ffOrder, const float *ffGains, int fbOrder, const float *fbGains);
-	virtual ~DaisyFilter();
-	
-	// Static factory methods to create commonly used filters
-	static DaisyFilter* SinglePoleIIRFilter(float gain);
-	static DaisyFilter* MovingAverageFilter(int taps);
-	static DaisyFilter* PIDFilter(float Kp, float Ki, float Kd);
-	
-	float Calculate(float value);
-	
+  DaisyFilter(int ffOrder, const float *ffGains, int fbOrder, const float *fbGains);
+  virtual ~DaisyFilter();
+  
+  // Static factory methods to create commonly used filters
+  static DaisyFilter* SinglePoleIIRFilter(float gain);
+  static DaisyFilter* MovingAverageFilter(int taps);
+  static DaisyFilter* PIDFilter(float Kp, float Ki, float Kd);
+  
+  float Calculate(float value);
+  
 private:
-	// This is a simple circular buffer so we don't need to "bucket brigade" copy old values
-	// If we were so inclined, we could use a template here
-	class DaisyCircularBuffer
-	{
-	public:
-		DaisyCircularBuffer(int size)
-		{
-			mSize = size;
-			mData = new float[size];
-			mFront = 0;
-		}
+  // This is a simple circular buffer so we don't need to "bucket brigade" copy old values
+  // If we were so inclined, we could use a template here
+  class DaisyCircularBuffer
+  {
+  public:
+    DaisyCircularBuffer(int size)
+    {
+      mSize = size;
+      mData = new float[size];
+      mFront = 0;
+    }
 
-		virtual ~DaisyCircularBuffer()
-		{
-			if( mSize > 0 )
-			{
-				delete mData;
-			}
-		}
+    virtual ~DaisyCircularBuffer()
+    {
+      if ( mSize > 0 )
+      {
+        delete mData;
+      }
+    }
 
-		void Increment()
-		{
-			mFront++;
-			if( mFront >= mSize )
-			{
-				mFront = 0;
-			}
-		}
+    void Increment()
+    {
+      mFront++;
+      if ( mFront >= mSize )
+      {
+        mFront = 0;
+      }
+    }
 
         float& operator[] (int index)
-		{ 
-			return mData[ (index+mFront) % mSize ]; 
-		}
+    { 
+      return mData[ (index+mFront) % mSize ]; 
+    }
 
-	private:
-		int mSize;
-		float* mData;
-		int mFront;
-	};
+  private:
+    int mSize;
+    float* mData;
+    int mFront;
+  };
 
-	int mInputOrder;
-	int mOutputOrder;
+  int mInputOrder;
+  int mOutputOrder;
 
-	DaisyCircularBuffer mInputs;
-	DaisyCircularBuffer mOutputs;
-	float *mInputGains;
-	float *mOutputGains;
+  DaisyCircularBuffer mInputs;
+  DaisyCircularBuffer mOutputs;
+  float *mInputGains;
+  float *mOutputGains;
 };
 
 #endif

@@ -69,88 +69,56 @@ void DriveCommand::Initialize() {
 }
 
 bool DriveCommand::Run() {
-
   if (TimeoutExpired()) {
-	drive_->SetLinearPower(0, 0);
-	return true;
-  }
-  drive_->SetHighGear(false);
-  double currLeftDist = drive_->GetLeftEncoderDistance() * 0.0254;
-  double currRightDist = drive_->GetRightEncoderDistance() * 0.0254;
-  
-  // Convert from inches to meters and degrees to radians
-  double distGoal = distanceGoal_ * 0.0254;
-  double maxAcc = maxAcceleration_ * 0.0254;
-  double maxVel = maxSpeed_ * 0.0254;
-  double angGoal = angleGoal_ * 0.0174532925;
-  double maxAlph = maxAlpha_ * 0.0174532925;
-  double maxOmeg = maxOmega_ * 0.0174532925;
-  
-  
-  straightFilter_->CalcSystem(distGoal - curX_, curV_, 0.0, maxAcc, maxVel, 0.02);
-  curA_ = straightFilter_->GetCurrAcc();
-  curV_ = straightFilter_->GetCurrVel();
-  curX_ = straightFilter_->GetCurrPos();
-  
-  turnFilter_->CalcSystem(angGoal - curThet_, curWubl_, 0.0, maxAlph, maxOmeg, 0.02);
-  curJeez_ = turnFilter_->GetCurrAcc();
-  curWubl_ = turnFilter_->GetCurrVel();
-  curThet_ = turnFilter_->GetCurrPos();
-  
-  static double robotWidth = .827096;
-  double wubbleuFactor = curWubl_ * robotWidth / 2;
-  double thetaFactor = curThet_ * robotWidth / 2;
-  double theta_measured = (currRightDist - currLeftDist) / robotWidth;
-  double theta_gyro = -(drive_->GetGyroAngle() - startingAngle_) * 0.0174532925 ;
-  double kI = 0.5;
-  double KpTurn = 0.3;
-  double gyroError = (angGoal + turnOffset_ - theta_measured);
-  if (fabs(angGoal - curThet_) < 0.0001 && fabs(gyroError) < 18.0 * 0.0174532925) {
-	  double KiTurn = 0.15;
-	  sumStoppedError_ += gyroError * KiTurn;
-  } else {
-	  if (!(fabs(angGoal - curThet_) < 0.0001)) {
-		  sumStoppedError_ *= 0.97;
-	  }
-  }
-  
-  double doffset = ((theta_measured - turnOffset_) - theta_gyro) * kI;
-  if (doffset > 0.05) {
-	  doffset = 0.05;
-  } else if (doffset < -0.05) {
-	  doffset = -0.05;
-  }
-  turnOffset_ += doffset;
-  double turnCompensationOffset = (turnOffset_ + sumStoppedError_ + gyroError * KpTurn) * robotWidth;
-  //printf("offset: %f error: %f total: %f\n", turnOffset_, sumStoppedError_, (turnOffset_ + sumStoppedError_) / 2.0);
-  flash_matrix(r_, curX_ - turnCompensationOffset / 2.0 - thetaFactor, curV_ - wubbleuFactor, curX_ + turnCompensationOffset / 2.0 + thetaFactor, curV_ + wubbleuFactor);
-  flash_matrix(y_, currLeftDist, currRightDist);
-  ssc_->update(r_, y_);
-  
-  //printf("l: %f r: %f g: %f\n", ssc_->U->data[0] / 12.0, ssc_->U->data[1] / 12.0, drive_->GetGyroAngle());
-  //PidTuner::PushData((ssc_->X_hat->data[0]-ssc_->X_hat->data[2])/robotWidth, (currLeftDist-currRightDist)/robotWidth, -curThet_);//angGoal*(robotWidth));
-  PidTuner::PushData((-(drive_->GetGyroAngle() - startingAngle_ ) - angleGoal_) * 0.0174532925,
-		  ((curX_ - turnCompensationOffset / 2.0 - thetaFactor)-(curX_ + turnCompensationOffset / 2.0 + thetaFactor))/robotWidth,
-		  (currLeftDist-currRightDist)/robotWidth);//angGoal*(robotWidth));
-  //printf("%f %f %f\n",ssc_->X_hat->data[0], currLeftDist, distGoal);
-  drive_->SetLinearPower(ssc_->U->data[0] / 12.0, ssc_->U->data[1] / 12.0);
-  DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "curX:%f", curX_);
-  DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "stoppedError:%f", sumStoppedError_);
-  DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line3, "thetaFactor:%f", thetaFactor);
-  DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line4, "turnOffset:%f", turnOffset_);
-  DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line5, "compensation:", turnCompensationOffset);
-  DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line6, "%f", 0);
-  DriverStationLCD::GetInstance()->UpdateLCD();
+    drive_->SetLinearPower(0, 0);
+    return true;
+    }
+    drive_->SetHighGear(true);
+    double currLeftDist = drive_->GetLeftEncoderDistance();
+    double currRightDist = drive_->GetRightEncoderDistance();
+    double currTime = driveTimer_->Get();
+    double lVel = (currLeftDist - prevLeftDist_)/(currTime - prevTime_);
+    double rVel = (currRightDist - prevRightDist_)/(currTime - prevTime_);
+    prevTime_ = currTime;
+    prevLeftDist_ = currLeftDist;
+    prevRightDist_ = currRightDist;
+    
 
-  return false;
-  bool angleDone = fabs(drive_->GetGyroAngle() * 0.01714532925 - angGoal) < 1.0;
-  bool leftDone = fabs((distGoal - angGoal * robotWidth / 2.0) - currLeftDist) < 1.0;
-  bool rightDone = fabs((distGoal + angGoal * robotWidth / 2.0) - currRightDist) < 1.0;
-  
-  //return TimeoutExpired() || (angleDone && leftDone && rightDone);
-  return false;
- 
-  
+    // Get PID feedback and send back to the motors.
+    double leftPIDOutput = PwmLimit(leftPid_->Update(distanceGoal_, currLeftDist));
+    double rightPIDOutput = PwmLimit(rightPid_->Update(distanceGoal_, currRightDist));
+    double angleDiff = drive_->GetGyroAngle() - startingAngle_;
+    double straightGain = angleDiff * Constants::GetInstance()->straightDriveGain;
+    double leftPwr = leftPIDOutput - straightGain;
+    double rightPwr = rightPIDOutput + straightGain;
+    
+    leftPwr = (leftPwr < -maxSpeed_) ?  -maxSpeed_: (leftPwr > maxSpeed_) ? maxSpeed_ : leftPwr;
+    rightPwr = (rightPwr < -maxSpeed_) ?  -maxSpeed_ : (rightPwr > maxSpeed_) ? maxSpeed_ : rightPwr;
+    
+    leftPwr -= straightGain;
+    rightPwr += straightGain;
+    //PidTuner::PushData(currLeftDist, distanceGoal_, 0.0);    
+    drive_->SetLinearPower(leftPwr, rightPwr);
+    
+    if (fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2) {
+      //if (coast_) {
+      if (false) {
+        drive_->SetLinearPower(0,0);
+        return true;
+       }
+      if (fabs(lVel) < 6 && fabs(rVel) < 6) {
+        brakeTimer_->Start();
+      }
+
+      }
+    
+    if (brakeTimer_->Get() > .2) {
+      drive_->SetPizzaWheelDown(resetPizza_);
+      drive_->SetLinearPower(0,0);
+      return true;
+    }
+    // Indicate that the goal has not yet been reached.
+    return false;
 }
 
 DriveCommand::~DriveCommand() {

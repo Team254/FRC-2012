@@ -13,22 +13,22 @@
 extern "C" {
 #endif
 struct matrix{
-	int width;
-	int height;
-	double *data;
+  int width;
+  int height;
+  double *data;
 };
 struct matrix *init_matrix(int n_rows,int n_cols);
 double matrix_get(struct matrix *mat,int y,int x);
 int matrix_set(struct matrix *mat,int y,int x,double val);
 struct matrix *make_eye_matrix(int s);
 int matrix_minus(struct matrix *dest,
-		struct matrix *mat1, struct matrix *mat2);
+    struct matrix *mat1, struct matrix *mat2);
 int matrix_add(struct matrix *dest,
-		struct matrix *mat1, struct matrix *mat2);
+    struct matrix *mat1, struct matrix *mat2);
 int matrix_mult(struct matrix *dest,
-		struct matrix *mat1, struct matrix *mat2);
+    struct matrix *mat1, struct matrix *mat2);
 int matrix_scale(struct matrix *dest,
-		double value, struct matrix *mat);
+    double value, struct matrix *mat);
 int print_matrix(struct matrix *mat);
 void flash_matrix(struct matrix *mat,...);
 void free_matrix(struct matrix *mat);

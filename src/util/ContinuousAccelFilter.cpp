@@ -17,17 +17,17 @@ void ContinuousAccelFilter::CalcSystem(double distance_to_target, double v, doub
     double dt2,a,const_time,dtf,af;
     maxAccelTime(distance_to_target,v,goal_v,max_a,max_v,dt2,a,const_time,dtf,af);
     double time_left=dt;
-    if(dt2>time_left)
+    if (dt2>time_left)
         UpdateVals(a,time_left);
     else {
         UpdateVals(a,dt2);
         time_left-=dt2;
-        if(const_time>time_left)
+        if (const_time>time_left)
             UpdateVals(0,time_left);
         else {
             UpdateVals(0,const_time);
             time_left-=const_time;
-            if(dtf>time_left)
+            if (dtf>time_left)
                 UpdateVals(af,time_left);
             else {
                 UpdateVals(af,dtf);
@@ -42,9 +42,9 @@ void ContinuousAccelFilter::maxAccelTime(double distance_left, double curr_vel, 
     //TODO(ebakan): clean up unnecessary return statements
     double const_time=0;
     double start_a=0;
-    if(distance_left > 0)
+    if (distance_left > 0)
         start_a=max_a;
-    else if(distance_left==0) {
+    else if (distance_left==0) {
         //TODO(aschuh): Deal with velocity not right.
         t1=0;
         a1=0;
@@ -60,14 +60,14 @@ void ContinuousAccelFilter::maxAccelTime(double distance_left, double curr_vel, 
         return;
     }
     double max_accel_velocity = distance_left * 2 * fabs(start_a) + curr_vel * curr_vel;
-    if(max_accel_velocity > 0)
+    if (max_accel_velocity > 0)
         max_accel_velocity=sqrt(max_accel_velocity);
     else
         max_accel_velocity=-sqrt(-max_accel_velocity);
 
     //Since we know what we'd have to do if we kept after it to decelerate, we know the sign of the acceleration.
     double final_a;
-    if(max_accel_velocity>goal_vel)
+    if (max_accel_velocity>goal_vel)
         final_a=-max_a;
     else
         final_a=max_a;
@@ -77,7 +77,7 @@ void ContinuousAccelFilter::maxAccelTime(double distance_left, double curr_vel, 
 
     //If it is too fast, we now know how long we get to accelerate for and how long to go at constant velocity
     double accel_time=0;
-    if(top_v > max_v) {
+    if (top_v > max_v) {
         accel_time = (max_v - curr_vel) / max_a;
         const_time = (distance_left + (goal_vel * goal_vel - max_v * max_v) / (2.0 * max_a)) / max_v;
     }

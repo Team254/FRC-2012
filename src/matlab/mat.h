@@ -16,53 +16,53 @@
   */
 class ss_controller
 {
-	public:
+  public:
 
-		enum controllers {
-			SHOOTER,
-			DRIVE,
-			NUM_CONTROLLERS
-		};
-	    int num_inputs;
-	    int num_outputs;
-	    int num_states;
+    enum controllers {
+      SHOOTER,
+      DRIVE,
+      NUM_CONTROLLERS
+    };
+      int num_inputs;
+      int num_outputs;
+      int num_states;
 
-	    //the state matrices, calculated and imported from matlab
-	    struct matrix *A;
-	    struct matrix *B;
-	    struct matrix *C;
-	    struct matrix *D;
-	    struct matrix *L;
-	    struct matrix *K;
-		// other state matrices
-		struct matrix *X;
-		struct matrix *X_hat;
-		struct matrix *U;
-		struct matrix *U_max;
-		struct matrix *U_min;
-		struct matrix *b_u;
-		struct matrix *l_y;
-		struct matrix *l_c;
-		struct matrix *a_lc;
-		struct matrix *alc_xhat;
-		struct matrix *xhatp1;
+      //the state matrices, calculated and imported from matlab
+      struct matrix *A;
+      struct matrix *B;
+      struct matrix *C;
+      struct matrix *D;
+      struct matrix *L;
+      struct matrix *K;
+    // other state matrices
+    struct matrix *X;
+    struct matrix *X_hat;
+    struct matrix *U;
+    struct matrix *U_max;
+    struct matrix *U_min;
+    struct matrix *b_u;
+    struct matrix *l_y;
+    struct matrix *l_c;
+    struct matrix *a_lc;
+    struct matrix *alc_xhat;
+    struct matrix *xhatp1;
 
-	    //temporary matrices needed because of the C-style matrix lib
+      //temporary matrices needed because of the C-style matrix lib
         struct matrix *U_tmp;
-		ss_controller(int inputs, int outputs, int states, controllers controller);
-		
-		void reset();
-		~ss_controller();
+    ss_controller(int inputs, int outputs, int states, controllers controller);
+    
+    void reset();
+    ~ss_controller();
 
-		/**
-		  * The heart of the state space controller
-		  * @param outmat the output matrix of left and right
-		  * voltages
-		  * @param r the r matrix, which holds the goal left
-		  * and right positions and velocities
-		  * @param y the current left and right distances
-		  */
-		void update( matrix *R, struct matrix *Y);
-		
+    /**
+      * The heart of the state space controller
+      * @param outmat the output matrix of left and right
+      * voltages
+      * @param r the r matrix, which holds the goal left
+      * and right positions and velocities
+      * @param y the current left and right distances
+      */
+    void update( matrix *R, struct matrix *Y);
+    
 };
 #endif // MATLAB_MAT_H

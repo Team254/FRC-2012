@@ -14,31 +14,31 @@
  * of at least "fbOrder" length, you WILL get serious errors! 
  */
 DaisyFilter::DaisyFilter(int ffOrder, const float *ffGains, int fbOrder, const float *fbGains) :
-	mInputs(ffOrder), mOutputs(fbOrder)
+  mInputs(ffOrder), mOutputs(fbOrder)
 {
-	mInputOrder = ffOrder;
-	mOutputOrder = fbOrder;
-	
-	if( ffOrder > 0 )
-	{
-		mInputGains = new float[ffOrder];
-	}
-	if( fbOrder > 0 )
-	{
-		mOutputGains = new float[fbOrder];
-	}
-		
-	for( int i = 0; i < ffOrder; i++ )
-	{
-		mInputGains[i] = ffGains[i];
-		mInputs[i] = 0.0f;
-	}
-	
-	for( int i = 0; i < fbOrder; i++ )
-	{
-		mOutputGains[i] = fbGains[i];
-		mOutputs[i] = 0.0f;
-	}
+  mInputOrder = ffOrder;
+  mOutputOrder = fbOrder;
+  
+  if ( ffOrder > 0 )
+  {
+    mInputGains = new float[ffOrder];
+  }
+  if ( fbOrder > 0 )
+  {
+    mOutputGains = new float[fbOrder];
+  }
+    
+  for( int i = 0; i < ffOrder; i++ )
+  {
+    mInputGains[i] = ffGains[i];
+    mInputs[i] = 0.0f;
+  }
+  
+  for( int i = 0; i < fbOrder; i++ )
+  {
+    mOutputGains[i] = fbGains[i];
+    mOutputs[i] = 0.0f;
+  }
 }
 
 /*
@@ -46,14 +46,14 @@ DaisyFilter::DaisyFilter(int ffOrder, const float *ffGains, int fbOrder, const f
  */
 DaisyFilter::~DaisyFilter()
 {
-	if( mInputOrder > 0 )
-	{
-		delete mInputGains;
-	}
-	if( mOutputOrder > 0 )
-	{
-		delete mOutputGains;
-	}
+  if ( mInputOrder > 0 )
+  {
+    delete mInputGains;
+  }
+  if ( mOutputOrder > 0 )
+  {
+    delete mOutputGains;
+  }
 }
 
 /*
@@ -68,10 +68,10 @@ DaisyFilter::~DaisyFilter()
  */
 DaisyFilter* DaisyFilter::SinglePoleIIRFilter(float gain)
 {
-	float ffGain = gain;
-	float fbGain = gain - 1.0f;
-	
-	return new DaisyFilter(1, &ffGain, 1, &fbGain);
+  float ffGain = gain;
+  float fbGain = gain - 1.0f;
+  
+  return new DaisyFilter(1, &ffGain, 1, &fbGain);
 }
 
 /*
@@ -86,23 +86,23 @@ DaisyFilter* DaisyFilter::SinglePoleIIRFilter(float gain)
  */
 DaisyFilter* DaisyFilter::MovingAverageFilter(int taps)
 {
-	if( taps < 1 )
-	{
-		taps = 1;
-	}
+  if ( taps < 1 )
+  {
+    taps = 1;
+  }
 
-	float *gains = new float[taps];
-	
-	float gain = 1.0f/(float)taps;
-	
-	for( int i = 0; i < taps; i++ )
-	{
-		gains[i] = gain;
-	}
-	
-	DaisyFilter *ret = new DaisyFilter(taps, &gains[0], 0, (float *)0);
-	delete gains;
-	return ret;
+  float *gains = new float[taps];
+  
+  float gain = 1.0f/(float)taps;
+  
+  for( int i = 0; i < taps; i++ )
+  {
+    gains[i] = gain;
+  }
+  
+  DaisyFilter *ret = new DaisyFilter(taps, &gains[0], 0, (float *)0);
+  delete gains;
+  return ret;
 }
 
 /*
@@ -129,10 +129,10 @@ DaisyFilter* DaisyFilter::MovingAverageFilter(int taps)
  */
 DaisyFilter* DaisyFilter::PIDFilter(float Kp, float Ki, float Kd)
 {
-	float ffGains[] = {Kp+Ki+Kd, Kp-2*Kd, Kd};
-	float fbGains[] = {-1};
+  float ffGains[] = {Kp+Ki+Kd, Kp-2*Kd, Kd};
+  float fbGains[] = {-1};
 
-	return new DaisyFilter(3, &ffGains[0], 1, &fbGains[0]);
+  return new DaisyFilter(3, &ffGains[0], 1, &fbGains[0]);
 }
 
 /*
@@ -147,31 +147,31 @@ DaisyFilter* DaisyFilter::PIDFilter(float Kp, float Ki, float Kd)
  */
 float DaisyFilter::Calculate(float value)
 {
-	float retVal = 0.0;
-	
-	// Rotate the inputs
-	if( mInputOrder > 0 )
-	{
-		mInputs.Increment();
-		mInputs[0] = value;
-	}
-	
-	// Calculate the new value
-	for( int i = 0; i < mInputOrder; i++ )
-	{
-		retVal += mInputs[i]*mInputGains[i];
-	}
-	for( int i = 0; i < mOutputOrder; i++ )
-	{
-		retVal -= mOutputs[i]*mOutputGains[i];
-	}
-	
-	// Rotate the outputs
-	if( mOutputOrder > 0 )
-	{
-		mOutputs.Increment();
-		mOutputs[0] = retVal;
-	}
-	
-	return retVal;
+  float retVal = 0.0;
+  
+  // Rotate the inputs
+  if ( mInputOrder > 0 )
+  {
+    mInputs.Increment();
+    mInputs[0] = value;
+  }
+  
+  // Calculate the new value
+  for( int i = 0; i < mInputOrder; i++ )
+  {
+    retVal += mInputs[i]*mInputGains[i];
+  }
+  for( int i = 0; i < mOutputOrder; i++ )
+  {
+    retVal -= mOutputs[i]*mOutputGains[i];
+  }
+  
+  // Rotate the outputs
+  if ( mOutputOrder > 0 )
+  {
+    mOutputs.Increment();
+    mOutputs[0] = retVal;
+  }
+  
+  return retVal;
 }
