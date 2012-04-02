@@ -38,13 +38,13 @@ D = [0 0; 0 0];
 dm = c2d(ss(A, B, C, D), dt);
 
 %Controller
-hp = .8;
-lp = .85;
+hp = .74;
+lp = .8;
 K = place(dm.a, dm.b, [hp, hp, lp, lp]);
 
 %Observer
-hlp = 0.07;
-llp = 0.09;
+hlp = 0.08;
+llp = 0.10;
 L = place(dm.a', dm.c', [hlp, hlp, llp, llp])';
 
 % Plot what we computed
