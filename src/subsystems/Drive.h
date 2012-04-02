@@ -141,6 +141,9 @@ class Drive {
   
   double prevAngularPower_;
   bool controlLoops_;
+  double old_wheel_;
+  
+  bool highGear_;
   
 };
 
