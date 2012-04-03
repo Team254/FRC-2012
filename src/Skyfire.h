@@ -128,6 +128,7 @@ class Skyfire : public CheesyRobot {
   bool oldDecreaseButton_;
   bool oldAutonSelectButton_;
   double shooterTargetVelocity_;
+  double shooterIncr_;
 
   // Autonomous
   double autonDelay_;

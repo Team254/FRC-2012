@@ -261,7 +261,7 @@ void BackboardFinder::DoVision() {
   // Calculate distance
 
   // Calculate x offset from target center
-  seesTarget_ = (particles->size() > 1) && particles->size() < 5;
+  seesTarget_ = (particles->size() >= 1) && particles->size() < 5;
   x_ = seesTarget_ ? top.center_mass_x_normalized : 0.0;
 
 

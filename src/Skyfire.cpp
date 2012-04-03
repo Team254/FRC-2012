@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstdio>
 
-#include "auto/AutoAlignCommand.h"
+//#include "auto/AutoAlignCommand.h"
 #include "auto/BridgeBallsCommand.h"
 #include "auto/ConcurrentCommand.h"
 #include "auto/DriveCommand.h"
@@ -123,6 +123,7 @@ Skyfire::Skyfire() {
   prevLeftDist_ = 0.0;
   prevRightDist_ = 0.0;
   prevTime = 0.0;
+  shooterIncr_ = 0.0;
   
   shooterControl_ = new Notifier(Shooter::CallUpdate, shooter_);
   shooterControl_->StartPeriodic(1.0/50.0);
@@ -195,7 +196,7 @@ void Skyfire::AutonomousInit() {
           AUTO_CONCURRENT(
              new JumbleCommand(shooter_,  intake_, 1.0),
               new DriveCommand(drivebase_, -76, 0.0, false, 6.0)),
-         new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
+         //new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
           new ShootCommand(shooter_, intake_, true, 49, 2, 8.0));
       break;
     
@@ -207,7 +208,7 @@ void Skyfire::AutonomousInit() {
                AUTO_CONCURRENT(
                    new BridgeBallsCommand(intake_, shooter_, true, 60, 3.5),
                    AUTO_SEQUENTIAL(
-                     new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5),
+                     //new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5),
                      new QueueBallCommand(shooter_, intake_, 2))),
                new ShootCommand(shooter_, intake_, true, 60, 99, 3.8)      
                  );
@@ -241,6 +242,7 @@ void Skyfire::TeleopInit() {
   currDriver_ = teleopDriver_;
   currDriver_->Reset();
   timer_->Reset();
+  shooterIncr_ = 0.0;
 }
 
 void Skyfire::DisabledPeriodic() {
@@ -331,23 +333,42 @@ void Skyfire::TeleopPeriodic() {
   static double robotWidth = .5818436 / .0254;
   //PidTuner::PushData(drivebase_->GetGyroAngle() / 180 * 3.14159, (drivebase_->GetLeftEncoderDistance()-drivebase_->GetRightEncoderDistance())/robotWidth, 0);//angGoal*(robotWidth));
 
+  //drive stuff up here so we can see if aligning done before shooting
+  // Only have Teleop and AutoAlign Drivers right now
+  if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
+    // If the auto-align button is pressed, switch to the auto-align driver.
+    currDriver_ = autoAlignDriver_;
+    currDriver_->Reset();
+  } else if (!leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && oldAutoAlignButton_) {
+    // If the auto-align button is released, switch back to the teleop driver.
+    currDriver_ = teleopDriver_;
+    currDriver_->Reset();
+  }
+  oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
+  // Calculate the outputs for the drivetrain given the inputs.
+  bool autoAlignDone = currDriver_->UpdateDriver();
+  
   // Update shooter power/manual control
   if (operatorControl_->GetFenderButton()) {
+	  shooterIncr_ = 0.0;
 	autoshooting = false;
     shooterTargetVelocity_ = constants_->shooterFenderSpeed;
   } else if (operatorControl_->GetFarFenderButton()) {
 	autoshooting = false;
+	shooterIncr_ = 0.0;
     shooterTargetVelocity_ = constants_->shooterFarFenderSpeed;
   } else if (operatorControl_->GetKeyCloseButton()) {
-	  autoshooting = false;
+    shooterIncr_ = 0.0;
+    autoshooting = false;
     shooterTargetVelocity_ = constants_->shooterKeyCloseSpeed;
   } else if (operatorControl_->GetKeyFarButton()) {
+	  shooterIncr_ = 0.0;
 	  autoshooting = false;
     shooterTargetVelocity_ = constants_->shooterKeyFarSpeed;
   } else if (operatorControl_->GetIncreaseButton() && !oldIncreaseButton_) {
-    shooterTargetVelocity_ += constants_->shooterSpeedIncrement;
+	  shooterIncr_ += constants_->shooterSpeedIncrement;
   } else if (operatorControl_->GetDecreaseButton() && !oldDecreaseButton_) {
-    shooterTargetVelocity_ -= constants_->shooterSpeedIncrement;
+	  shooterIncr_ -= constants_->shooterSpeedIncrement;
   }
   Shooter::hoodPref pref = Shooter::NO;
   double dist = target_->GetDistance();
@@ -358,16 +379,21 @@ void Skyfire::TeleopPeriodic() {
    		newVel = (((constants_->shooterFarFenderSpeed - constants_->shooterFenderSpeed ) / (95 - 60)) *
    		  			        (dist - 60)) + constants_->shooterFenderSpeed;
    	}
-  if (operatorControl_->GetAutoShootButton()) {
-  	  autoshooting = true;
-      // In auto-shoot mode, only feed the balls if the shooter is up to speed.
-      if (operatorControl_->GetShooterSwitch() && shooter_->AtTargetVelocity()) {
+    if (operatorControl_->GetAutoShootButton()) {
+      if(leftJoystick_->GetRawButton((int)constants_->autoAlignPort)) {
+    	if (operatorControl_->GetShooterSwitch() && shooter_->AtTargetVelocity() && autoAlignDone) {
+          shooter_->SetLinearConveyorPower(1.0);
+    	  intake_->SetIntakePower(1.0);
+    	} 
+      } else if (operatorControl_->GetShooterSwitch() && shooter_->AtTargetVelocity()) {
         shooter_->SetLinearConveyorPower(1.0);
         intake_->SetIntakePower(1.0);
       } else {
         shooter_->SetLinearConveyorPower(0.0);
         intake_->SetIntakePower(0.0);
       }
+      shooterIncr_ = 0.0;
+      autoshooting = true;
     } else if (operatorControl_->GetShootButton()) {
       // In manual shoot mode, run the conveyor and intake to feed the shooter.
       shooter_->SetLinearConveyorPower(1.0);
@@ -396,7 +422,7 @@ void Skyfire::TeleopPeriodic() {
     if (autoshooting && target_->SeesTarget()) {
     	shooterTargetVelocity_ = newVel;
     }
-    shooter_->SetTargetVelocity(shooterTargetVelocity_, pref);
+    shooter_->SetTargetVelocity(shooterTargetVelocity_ + shooterIncr_, pref);
   } else {
     shooter_->SetTargetVelocity(0);
   }
@@ -404,20 +430,6 @@ void Skyfire::TeleopPeriodic() {
   oldShooterSwitch_ = operatorControl_->GetShooterSwitch();
   oldIncreaseButton_ = operatorControl_->GetIncreaseButton();
   oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
-
-  // Only have Teleop and AutoAlign Drivers right now
-  if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
-    // If the auto-align button is pressed, switch to the auto-align driver.
-    currDriver_ = autoAlignDriver_;
-    currDriver_->Reset();
-  } else if (!leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && oldAutoAlignButton_) {
-    // If the auto-align button is released, switch back to the teleop driver.
-    currDriver_ = teleopDriver_;
-    currDriver_->Reset();
-  }
-  oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
-  // Calculate the outputs for the drivetrain given the inputs.
-  currDriver_->UpdateDriver();
 
   if (!drivebase_->GetPizzaUp()) {
     // If pizza wheels are down, set the intake up to prevent damage.
