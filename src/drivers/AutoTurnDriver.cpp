@@ -35,5 +35,9 @@ bool AutoTurnDriver::UpdateDriver() {
 	  command_->Initialize();
 	  foundTarget_ = true;
   }
-  return command_->Run();
+  if (foundTarget_) {
+	  return command_->Run();
+  } else {
+  	return false;
+  }
 }

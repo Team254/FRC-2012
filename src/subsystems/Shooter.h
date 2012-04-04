@@ -10,7 +10,7 @@
 
 
 #define TICKS_PER_REV 32
-#define VELOCITY_THRESHOLD 1.0
+#define VELOCITY_THRESHOLD 1.5
 #define FILTER_SIZE 5
 #define OUTPUT_FILTER_SIZE 3
 
@@ -94,6 +94,8 @@ class Shooter {
   double GetTargetVelocity();
   
   static void CallUpdate(void* shooter);
+  
+  double SetHardnessOffset(double offset);
 
  private:
   /**
@@ -150,6 +152,9 @@ class Shooter {
     struct matrix *y_;
     struct matrix *r_;
     ss_controller *ssc_;
+    
+  // Offset
+  double hardnessOffset_;
     
 };
 

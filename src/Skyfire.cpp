@@ -12,6 +12,8 @@
 #include "auto/ShootCommand.h"
 #include "auto/TurnCommand.h"
 #include "auto/QueueBallCommand.h"
+#include "auto/AutoAlignCommand.h"
+#include "auto/AutoShootCommand.h"
 #include "drivers/AutoTurnDriver.h"
 #include "drivers/BaselockDriver.h"
 #include "drivers/Driver.h"
@@ -111,11 +113,14 @@ Skyfire::Skyfire() {
   oldIncreaseButton_ = operatorControl_->GetIncreaseButton();
   oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
   oldAutonSelectButton_ = operatorControl_->GetAutonSelectButton();
+  oldHardUpButton_ = operatorControl_->GetKeyFarButton();
+  oldHardDownButton_ = operatorControl_->GetKeyCloseButton();
 
   // Initialize autonomous variables
   autonDelay_ = 0.0;
   autonTimer_ = new Timer();
   autonMode_ = AUTON_TEST;
+  ballHardness_ = BALL_DEFAULT;
   autoBaseCmd_ = NULL;
   timer_ = new Timer();
   timer_->Start();
@@ -157,9 +162,36 @@ void Skyfire::AutonomousInit() {
     autoBaseCmd_ = NULL;
   }
 
+  switch (ballHardness_) {
+    case BALL_WTF_SOFT:
+      shooter_->SetHardnessOffset(constants_->wtfSoftBallOffset);
+      break;
+    case BALL_SOFT:
+      shooter_->SetHardnessOffset(constants_->softBallOffset);
+      break;
+    case BALL_DEFAULT:
+      shooter_->SetHardnessOffset(0);
+      break;
+    case BALL_HARD:
+      shooter_->SetHardnessOffset(constants_->hardBallOffset);
+      break;
+    case BALL_WTF_HARD:
+      shooter_->SetHardnessOffset(constants_->wtfHardBallOffset);
+      break;
+    default:
+      shooter_->SetHardnessOffset(0);
+      break;
+  }
+  
   switch (autonMode_) {
     case AUTON_NONE:
       break;
+    case AUTON_START_ANYWHERE:
+      autoBaseCmd_ = AUTO_SEQUENTIAL(
+    	new AutoAlignCommand(drivebase_, new AutoTurnDriver(drivebase_, target_), 3.0),
+        new AutoShootCommand(shooter_, intake_, target_, true, 2, 6.0)
+        );
+      break;  
     case AUTON_FENDER:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new DriveCommand(drivebase_, -68, 0.0, false, 3, .7),
@@ -172,7 +204,9 @@ void Skyfire::AutonomousInit() {
               new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
               new DriveCommand(drivebase_, 56, 0.0, false, 3),
               new DriveCommand(drivebase_, 30, 0.0, false, .5, .65),
-              new ShootCommand(shooter_, intake_, true, 56.5, 99, 16.0, true)
+              AUTO_CONCURRENT(
+                new AutoShootCommand(shooter_, intake_, target_, true, 99, 16.0, true),
+                new AutoAlignCommand(drivebase_, new AutoTurnDriver(drivebase_, target_), 3.0))
                );
             break;  
     case AUTON_SHORT_SIMPLE:
@@ -243,6 +277,26 @@ void Skyfire::TeleopInit() {
   currDriver_->Reset();
   timer_->Reset();
   shooterIncr_ = 0.0;
+  switch (ballHardness_) {
+      case BALL_WTF_SOFT:
+        shooter_->SetHardnessOffset(constants_->wtfSoftBallOffset);
+        break;
+      case BALL_SOFT:
+        shooter_->SetHardnessOffset(constants_->softBallOffset);
+        break;
+      case BALL_DEFAULT:
+        shooter_->SetHardnessOffset(0);
+        break;
+      case BALL_HARD:
+        shooter_->SetHardnessOffset(constants_->hardBallOffset);
+        break;
+      case BALL_WTF_HARD:
+        shooter_->SetHardnessOffset(constants_->wtfHardBallOffset);
+        break;
+      default:
+        shooter_->SetHardnessOffset(0);
+        break;
+    }
 }
 
 void Skyfire::DisabledPeriodic() {
@@ -281,6 +335,9 @@ void Skyfire::DisabledPeriodic() {
     case AUTON_NONE:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "No auton");
       break;
+    case AUTON_START_ANYWHERE:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Shoot two balls from anywhere");	
+      break;
     case AUTON_FENDER:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Fender");
       break;
@@ -309,11 +366,45 @@ void Skyfire::DisabledPeriodic() {
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Invalid auton");
   }
   lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Delay: %.1f", autonDelay_);
+  
+  //Ball hardness selection
+    if (operatorControl_->GetKeyFarButton() && !oldHardUpButton_) {
+      ballHardness_ = (BallHardness)(ballHardness_ + 1);
+      if (ballHardness_ == NUM_BALLS) {
+        ballHardness_ = BALL_DEFAULT;
+      }
+    } else if (operatorControl_->GetKeyCloseButton() && !oldHardDownButton_) {
+        ballHardness_ = (BallHardness)(ballHardness_ - 1);
+        if (ballHardness_ == NUM_BALLS || ballHardness_ < 0) {
+          ballHardness_ = BALL_DEFAULT;
+        }
+      }
+  oldHardUpButton_ = operatorControl_->GetKeyFarButton();
+  oldHardDownButton_ = operatorControl_->GetKeyCloseButton();
+  switch(ballHardness_) {
+      case BALL_WTF_SOFT:
+      	lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "REALLY Soft Balls");
+      	break;
+      case BALL_SOFT:
+        lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Soft Balls");
+        break;
+      case  BALL_DEFAULT:
+        lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Default Ball Hardness");	
+        break;
+      case BALL_HARD:
+        lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Hard Balls");
+        break;
+      case BALL_WTF_HARD:
+        lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "REALLY Hard Balls");
+        break;
+      default:
+    	lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Yo Dawgs you broke something");
+  }
 
   // Show any other pre-match stuff we're interested in on the Driver Station LCD.
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Gyro: %f", gyro_->GetAngle());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "X: %0.2f A:%0.2f ", target_->GetX(), target_->GetAngle());
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "%0.2f %0.2f", target_->GetDistance(), target_->GetHDiff());
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "Gyro: %f", gyro_->GetAngle());
+  //lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "X: %0.2f A:%0.2f ", target_->GetX(), target_->GetAngle());
+  //lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "%0.2f %0.2f", target_->GetDistance(), target_->GetHDiff());
   static int i = 0;
   if (++i % 10 == 0)
     lcd_->UpdateLCD();
@@ -441,8 +532,6 @@ void Skyfire::TeleopPeriodic() {
   drivebase_->SetControlLoopsOn(operatorControl_->GetControlLoopsSwitch());
 
   // Print useful information to the LCD display.
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "%.1f | %.1f rps", shooterTargetVelocity_,
-                   shooter_->GetVelocity());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "X: %0.2f A:%0.2f ", target_->GetX(), target_->GetAngle());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "%0.2f %0.2f", target_->GetDistance(), target_->GetHDiff());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "%f", target_->GetAngle());

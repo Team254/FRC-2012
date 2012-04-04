@@ -48,6 +48,10 @@ class TeleopDriver : public Driver {
   // Pizza cutter wheels!
   bool oldPizzaWheelsButton_;
   bool pizzaWheelsDown_;
+  
+  //initial joystick vals
+  double startLeftJoystick_;
+  double startRightJoystick_;
 };
 
 #endif // DRIVERS_TELEOP_DRIVER_H

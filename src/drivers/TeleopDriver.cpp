@@ -18,8 +18,9 @@ bool TeleopDriver::UpdateDriver() {
   bool wantHighGear = !leftJoystick_->GetRawButton((int)constants_->highGearPort);
   bool quickTurning = rightJoystick_->GetRawButton((int)constants_->quickTurnPort);
   drive_->SetHighGear(wantHighGear);
-  double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
-  double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
+  //add the starting position to the deadband just so we never get any stupid crap
+  double straightPower = HandleDeadband(-leftJoystick_->GetY() + startLeftJoystick_, 0.1);
+  double turnPower = HandleDeadband(rightJoystick_->GetX() - startRightJoystick_, 0.1);
 
   // If the switch has toggled, flip the pizza wheels.
   bool currPizzaWheelsButton = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
@@ -49,6 +50,8 @@ void TeleopDriver::Reset() {
   oldPizzaWheelsButton_ = rightJoystick_->GetRawButton((int)constants_->pizzaSwitchPort);
   pizzaWheelsDown_= false;
   drive_->SetPizzaWheelDown(pizzaWheelsDown_);
+  startLeftJoystick_ = leftJoystick_->GetY();
+  startRightJoystick_ = rightJoystick_->GetX();
 }
 
 TeleopDriver::~TeleopDriver() {

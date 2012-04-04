@@ -158,3 +158,9 @@ DECLARE_DOUBLE(senseLow, 1.10)
 DECLARE_DOUBLE(senseCutoff, 0.1)
 DECLARE_DOUBLE(quickStopTimeConstant, .1)
 DECLARE_DOUBLE(quickStopStickScalar, 8)
+
+// Offsets
+DECLARE_DOUBLE(hardBallOffset, -.2)
+DECLARE_DOUBLE(wtfHardBallOffset, -.5)
+DECLARE_DOUBLE(softBallOffset, .2)
+DECLARE_DOUBLE(wtfSoftBallOffset, .5)

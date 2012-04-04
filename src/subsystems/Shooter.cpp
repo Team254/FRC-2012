@@ -47,6 +47,7 @@ Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightS
     ssc_ = new ss_controller(1, 1, 2, ss_controller::SHOOTER);
     ssc_->reset();
     
+  hardnessOffset_ = 0;  
 }
 
 void Shooter::SetLinearPower(double pwm) {
@@ -54,7 +55,7 @@ void Shooter::SetLinearPower(double pwm) {
 }
 
 void Shooter::SetTargetVelocity(double velocity, hoodPref pref) {
-  targetVelocity_ = velocity;
+  targetVelocity_ = velocity + hardnessOffset_;
   pid_->ResetError();
   outputValue_ = 0;
   if(pref==UP) {
@@ -109,6 +110,9 @@ bool Shooter::PIDUpdate() {
 
   prevPos_ = currEncoderPos;  
   atTarget_ = fabs(velocity_ - targetVelocity_) < VELOCITY_THRESHOLD;
+  DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "%.1f | %.1f rps", targetVelocity_,
+                     velocity_);
+  DriverStationLCD::GetInstance()->UpdateLCD();
   return atTarget_;
 }
 
@@ -211,3 +215,8 @@ void Shooter::CallUpdate(void* shooter){
   Shooter* s = (Shooter*) shooter;
   s->PIDUpdate();
 }
+
+double Shooter::SetHardnessOffset(double offset) {
+  hardnessOffset_ = offset;	
+}
+
