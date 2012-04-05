@@ -43,6 +43,8 @@ DECLARE_DOUBLE(intakeSolenoidUpPort, 5)
 DECLARE_DOUBLE(intakeSolenoidDownPort, 7)
 DECLARE_DOUBLE(brakeSolenoidOnPort, 2)
 DECLARE_DOUBLE(brakeSolenoidOffPort, 3)
+DECLARE_DOUBLE(dingusSolenoidOnPort, 0)
+DECLARE_DOUBLE(dingusSolenoidOffPort, 0)
 DECLARE_DOUBLE(shiftSolenoidPort, 8)
 
 // Vision

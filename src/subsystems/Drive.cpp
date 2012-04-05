@@ -249,7 +249,7 @@ void Drive::SetControlLoopsOn(bool on){
   controlLoops_ = on;
 }
 
-void SetDingusDown(bool on) {
+void Drive::SetDingusDown(bool down) {
   if (down) {
     dingusSolenoid_->Set(DoubleSolenoid::kForward);
   } else {
@@ -257,6 +257,6 @@ void SetDingusDown(bool on) {
   }
 }
 
-bool GetDingusDown() {
+bool Drive::GetDingusDown() {
   return (dingusSolenoid_->Get() == DoubleSolenoid::kForward);
 }

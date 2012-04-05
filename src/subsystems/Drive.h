@@ -98,7 +98,7 @@ class Drive {
   /**
    * Turn dingus down
    */
-  void SetDingusDown(bool on);
+  void SetDingusDown(bool down);
 
   /**
    * Is dingus down?
