@@ -21,7 +21,7 @@ class Drive {
    */
   Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
         Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid, Encoder* leftEncoder,
-        Encoder* rightEncoder, Gyro* gyro, DigitalInput* bumpSensor);
+        Encoder* rightEncoder, Gyro* gyro, DigitalInput* bumpSensor, DoubleSolenoid* dingusSolenoid);
 
   /**
    * Makes drive power linear to input, then sets power to the respective side of the drivetrain
@@ -96,6 +96,16 @@ class Drive {
   void SetBrakeOn(bool on);
 
   /**
+   * Turn dingus down
+   */
+  void SetDingusDown(bool on);
+
+  /**
+   * Is dingus down?
+   */
+  bool GetDingusDown();
+
+  /**
    * Is brake on?
    */
   bool GetBrakeOn();
@@ -132,6 +142,7 @@ class Drive {
   // Pneumatics
   Solenoid* shiftSolenoid_;
   DoubleSolenoid* pizzaWheelSolenoid_;
+  DoubleSolenoid* dingusSolenoid_;
 
   // Brake
   DoubleSolenoid* brakeSolenoid_;

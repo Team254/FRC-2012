@@ -529,7 +529,7 @@ void Skyfire::TeleopPeriodic() {
     intake_->SetIntakePosition(operatorControl_->GetIntakePositionSwitch());
   }
   
-  drivebase_->SetControlLoopsOn(operatorControl_->GetControlLoopsSwitch());
+  drivebase_->SetDingusDown(operatorControl_->GetControlLoopsSwitch());
 
   // Print useful information to the LCD display.
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "X: %0.2f A:%0.2f ", target_->GetX(), target_->GetAngle());
