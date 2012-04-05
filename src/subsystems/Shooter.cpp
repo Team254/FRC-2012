@@ -55,7 +55,9 @@ void Shooter::SetLinearPower(double pwm) {
 }
 
 void Shooter::SetTargetVelocity(double velocity, hoodPref pref) {
-  targetVelocity_ = velocity + hardnessOffset_;
+  if (targetVelocity_ > 0.0) {
+		targetVelocity_ = velocity + hardnessOffset_;
+  }
   pid_->ResetError();
   outputValue_ = 0;
   if(pref==UP) {
