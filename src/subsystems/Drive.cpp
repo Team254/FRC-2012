@@ -6,7 +6,7 @@
 
 Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
        Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid,  Encoder* leftEncoder,
-       Encoder* rightEncoder, Gyro* gyro, DigitalInput* bumpSensor, DoubleSolenoid* dingusSolenoid) {
+       Encoder* rightEncoder, Gyro* gyro, DigitalInput* bumpSensor) {
   constants_ = Constants::GetInstance();
   leftDriveMotorA_ = leftVictorA;
   leftDriveMotorB_ = leftVictorB;
@@ -15,7 +15,6 @@ Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Vic
   shiftSolenoid_ = shiftSolenoid;
   pizzaWheelSolenoid_ = pizzaWheelSolenoid;
   brakeSolenoid_ = brakeSolenoid;
-  dingusSolenoid_ = dingusSolenoid;
   SetBrakeOn(false);
   SetHighGear(true); // Default to high gear
   leftDriveEncoder_ = leftEncoder;
@@ -243,20 +242,78 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 	//printf("left pwm: %f right pwm: %f\n",left_pwm,right_pwm);
 	//printf("left wheel: %f right wheel: %f\n",m_robot->GetLeftDistance(),m_robot->GetRightDistance());
 	  SetLinearPower(left_pwm, right_pwm);
+	
+	/*
+  double angularPower = 0.0;
+  double overPower = 0.0;
+  double sensitivity = 1.0;
+  double rPower = 0.0;
+  double lPower = 0.0;
+  
+  static double fpga = Timer::GetFPGATimestamp();
+    static double prevGyro = gyro_->GetAngle();
+    double curfpga = Timer::GetFPGATimestamp();
+    double curGyro = gyro_->GetAngle();
+    double dt = curfpga - fpga;
+    double dtheta = curGyro - prevGyro;
+    double wubbleu = dtheta / dt;
+    fpga = curfpga;
+    prevGyro = curGyro;
+    //PidTuner::PushData(wubbleu, 0, 0);
+
+  if (!shiftSolenoid_->Get()) //high gear
+    sensitivity = constants_->turnSensHigh;
+  else {
+    sensitivity = constants_->turnSensLow;
+    //printf("low gear....\n");
+  }
+
+  if (quickTurn) {
+    overPower = 1.0;
+    sensitivity = 1.0;
+    angularPower = wheel;
+  }
+  else {
+    overPower = 0.0;
+    angularPower = fabs(throttle) * wheel * sensitivity;
+  }
+  
+  if (!quickTurn && controlLoops_) {
+    angularPower -= wubbleu * constants_->inertiaGain;
+  }
+
+  rPower = lPower = throttle;
+  lPower += angularPower;
+  rPower -= angularPower;
+
+  if (lPower > 1.0) {
+    rPower -= overPower * (lPower - 1.0);
+    lPower = 1.0;
+  }
+  else if (rPower > 1.0) {
+    lPower -= overPower * (rPower - 1.0);
+    rPower = 1.0;
+  }
+  else if (lPower < -1.0) {
+    rPower += overPower * (-1.0 - lPower);
+    lPower = -1.0;
+  }
+  else if (rPower < -1.0) {
+    lPower += overPower * (-1.0 - rPower);
+    rPower = -1.0;
+  }
+  
+  if (throttle == 0 && !quickTurn) {
+    SetLinearPower(0.0, 0.0);
+  }
+  
+  //printf("t: %f l: %f r: %f\n", throttle, lPower, rPower);
+
+  //  printf("ts: %f | lp: %f\nrp: %f\n\n", sensitivity, lPower, rPower);
+  SetLinearPower(lPower, rPower);
+  */
 }
 
 void Drive::SetControlLoopsOn(bool on){
   controlLoops_ = on;
-}
-
-void SetDingusDown(bool on) {
-  if (down) {
-    dingusSolenoid_->Set(DoubleSolenoid::kForward);
-  } else {
-    dingusSolenoid_->Set(DoubleSolenoid::kReverse);
-  }
-}
-
-bool GetDingusDown() {
-  return (dingusSolenoid_->Get() == DoubleSolenoid::kForward);
 }
