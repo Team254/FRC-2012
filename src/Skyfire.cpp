@@ -365,7 +365,7 @@ void Skyfire::DisabledPeriodic() {
     default:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Invalid auton");
   }
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line2, "Delay: %.1f", autonDelay_);
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "Delay: %.1f", autonDelay_);
   
   //Ball hardness selection
     if (operatorControl_->GetKeyFarButton() && !oldHardUpButton_) {
@@ -472,11 +472,11 @@ void Skyfire::TeleopPeriodic() {
    	}
     if (operatorControl_->GetAutoShootButton()) {
       if(leftJoystick_->GetRawButton((int)constants_->autoAlignPort)) {
-    	if (operatorControl_->GetShooterSwitch() && shooter_->AtTargetVelocity() && autoAlignDone) {
+    	if (operatorControl_->GetShooterSwitch() && shooter_->AtTargetVelocity() && autoAlignDone && shooter_->GetTargetVelocity() > 0.0) {
           shooter_->SetLinearConveyorPower(1.0);
     	  intake_->SetIntakePower(1.0);
     	} 
-      } else if (operatorControl_->GetShooterSwitch() && shooter_->AtTargetVelocity()) {
+      } else if (operatorControl_->GetShooterSwitch() && shooter_->AtTargetVelocity() && shooter_->GetTargetVelocity() > 0.0) {
         shooter_->SetLinearConveyorPower(1.0);
         intake_->SetIntakePower(1.0);
       } else {
