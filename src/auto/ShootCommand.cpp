@@ -38,7 +38,7 @@ bool ShootCommand::Run() {
   shooter_->SetTargetVelocity(shootSpeed_);
 
   
-  if (timer_->Get() > 2.2 && intakeDown_) {
+  if (timer_->Get() > 3.0 && intakeDown_) {
     intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
   }
   if (timer_->Get() > 3.5 && intakeDown_)

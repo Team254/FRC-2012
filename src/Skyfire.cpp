@@ -7,6 +7,7 @@
 #include "auto/BridgeBallsCommand.h"
 #include "auto/ConcurrentCommand.h"
 #include "auto/DriveCommand.h"
+#include "auto/OldDriveCommand.h"
 #include "auto/JumbleCommand.h"
 #include "auto/SequentialCommand.h"
 #include "auto/ShootCommand.h"
@@ -30,6 +31,8 @@
 #include "util/RelativeGyro.h"
 #include "vision/BackboardFinder.h"
 
+Logger* voltageLogger = new Logger("/voltage.log");
+AnalogChannel* voltage = new AnalogChannel(2);
 Logger* autoLogger = new Logger("/timeLog.log");
 Logger* teleopLogger = new Logger("/teleopLog.log");
 
@@ -119,7 +122,7 @@ Skyfire::Skyfire() {
   // Initialize autonomous variables
   autonDelay_ = 0.0;
   autonTimer_ = new Timer();
-  autonMode_ = AUTON_TEST;
+  autonMode_ = AUTON_FAR_BRIDGE_SLOW;
   ballHardness_ = BALL_DEFAULT;
   autoBaseCmd_ = NULL;
   timer_ = new Timer();
@@ -196,18 +199,15 @@ void Skyfire::AutonomousInit() {
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new DriveCommand(drivebase_, -68, 0.0, false, 3, .7),
           AUTO_CONCURRENT(
-              new DriveCommand(drivebase_, -25, 0.0, false, .5, .7),
+              new OldDriveCommand(drivebase_, -25, 0.0, false, .5, .7),
                new ShootCommand(shooter_, intake_, true, 37.5, 2, 6.0)));
       break;
     case AUTON_FAR_BRIDGE_SLOW:
           autoBaseCmd_ = AUTO_SEQUENTIAL(
               new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
-              new DriveCommand(drivebase_, 56, 0.0, false, 3),
-              new DriveCommand(drivebase_, 30, 0.0, false, .5, .65),
-              AUTO_CONCURRENT(
-                new AutoShootCommand(shooter_, intake_, target_, true, 99, 16.0, true),
-                new AutoAlignCommand(drivebase_, new AutoTurnDriver(drivebase_, target_), 3.0))
-               );
+              new OldDriveCommand(drivebase_, 56, 0.0, false, 3),
+              new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .65),
+              new ShootCommand(shooter_, intake_, true, constants_->shooterBridgeSpeed, 99, 16.0, true));
             break;  
     case AUTON_SHORT_SIMPLE:
           autoBaseCmd_ = AUTO_SEQUENTIAL (
@@ -222,14 +222,14 @@ void Skyfire::AutonomousInit() {
     case AUTON_CLOSE_BRIDGE_SLOW:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new ShootCommand(shooter_, intake_, true, 48, 2, 7.0),
-         new DriveCommand(drivebase_, 130, 0.0, false, 3.3),
-          new DriveCommand(drivebase_, 100, 0.0, false, 1.5, .4), // square up
+         new OldDriveCommand(drivebase_, 130, 0.0, false, 3.3),
+          new OldDriveCommand(drivebase_, 100, 0.0, false, 1.5, .4), // square up
          AUTO_CONCURRENT(
               new BridgeBallsCommand(intake_, shooter_, true, 45, 4.5),
-             new DriveCommand(drivebase_, -5.0, 0.0, false, 4)),
+             new OldDriveCommand(drivebase_, -5.0, 0.0, false, 4)),
           AUTO_CONCURRENT(
              new JumbleCommand(shooter_,  intake_, 1.0),
-              new DriveCommand(drivebase_, -76, 0.0, false, 6.0)),
+              new OldDriveCommand(drivebase_, -76, 0.0, false, 6.0)),
          //new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
           new ShootCommand(shooter_, intake_, true, 49, 2, 8.0));
       break;
@@ -237,8 +237,8 @@ void Skyfire::AutonomousInit() {
     case AUTON_BRIDGE_FAST:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
                 new ShootCommand(shooter_, intake_, true, 52.5, 2, 4.0),
-                new DriveCommand(drivebase_, 44, 0.0, false, 3),
-                new DriveCommand(drivebase_, 100, 0.0, false, 0.7, 0.4),
+                new OldDriveCommand(drivebase_, 44, 0.0, false, 3),
+                new OldDriveCommand(drivebase_, 100, 0.0, false, 0.7, 0.4),
                AUTO_CONCURRENT(
                    new BridgeBallsCommand(intake_, shooter_, true, 60, 3.5),
                    AUTO_SEQUENTIAL(
@@ -420,6 +420,7 @@ void Skyfire::AutonomousPeriodic() {
 
 void Skyfire::TeleopPeriodic() {
   GetWatchdog().Feed();
+  voltageLogger->Log("%f\n",(double)voltage->GetValue());
   static bool autoshooting = false;
   static double robotWidth = .5818436 / .0254;
   //PidTuner::PushData(drivebase_->GetGyroAngle() / 180 * 3.14159, (drivebase_->GetLeftEncoderDistance()-drivebase_->GetRightEncoderDistance())/robotWidth, 0);//angGoal*(robotWidth));
