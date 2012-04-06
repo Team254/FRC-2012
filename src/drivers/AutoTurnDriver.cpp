@@ -38,6 +38,7 @@ bool AutoTurnDriver::UpdateDriver() {
   if (foundTarget_) {
 	  return command_->Run();
   } else {
+	drive_->SetLinearPower(0,0);
   	return false;
   }
 }

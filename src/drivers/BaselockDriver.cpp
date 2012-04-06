@@ -21,7 +21,7 @@ bool BaselockDriver::UpdateDriver() {
   // Baselock should be in low gear for maximum torque
   drive_->SetHighGear(false);
 
-  double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
+  double straightPower = -leftJoystick_->GetY();
   baseLockPosition_ += straightPower * .1;
   double leftPosition=drive_->GetLeftEncoderDistance();
   double rightPosition=drive_->GetRightEncoderDistance();

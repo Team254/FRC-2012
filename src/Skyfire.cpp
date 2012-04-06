@@ -323,9 +323,11 @@ void Skyfire::DisabledPeriodic() {
       autonMode_ = AUTON_NONE;
     }
   }
-  double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
-  double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
-  DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line5, "l:%0.3f r:%0.3f", straightPower, turnPower);
+  //double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
+  //double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
+  double straightPower = -leftJoystick_->GetY();
+  double turnPower = rightJoystick_->GetX();
+  DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line5, "l:%7.3f r:%7.3f", straightPower, turnPower);
   oldIncreaseButton_ = operatorControl_->GetIncreaseButton();
   oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
   oldAutonSelectButton_ = operatorControl_->GetAutonSelectButton();
