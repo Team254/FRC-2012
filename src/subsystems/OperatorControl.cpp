@@ -10,7 +10,7 @@ OperatorControl::~OperatorControl() {
 }
 
 bool OperatorControl::GetControlLoopsSwitch() {
-  return (operatorJoystick_->GetX() > 0.0);
+  return !(operatorJoystick_->GetX() < -0.75);
 }
 
 bool OperatorControl::GetBrakeSwitch() {
