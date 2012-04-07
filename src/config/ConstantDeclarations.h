@@ -20,9 +20,9 @@ DECLARE_DOUBLE(rightShooterPwm, 8)
 
 // Analog sensors
 DECLARE_DOUBLE(gyroPort, 1)
-DECLARE_DOUBLE(poofMeterPort, 4)
-DECLARE_DOUBLE(ballRangerPort, 2)
-DECLARE_DOUBLE(conveyorBallSensorPort, 3)
+DECLARE_DOUBLE(poofMeterPort, 6)
+DECLARE_DOUBLE(ballRangerPort, 5)
+DECLARE_DOUBLE(conveyorBallSensorPort, 4)
 
 // Digital sensors
 DECLARE_DOUBLE(bumpSensorPort, 1)

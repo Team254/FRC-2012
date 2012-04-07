@@ -31,8 +31,9 @@
 #include "util/RelativeGyro.h"
 #include "vision/BackboardFinder.h"
 
-Logger* voltageLogger = new Logger("/voltage.log");
+Logger* voltageLogger = new Logger("/matchLog.log");
 AnalogChannel* voltage = new AnalogChannel(2);
+AnalogChannel* radioV = new AnalogChannel(3);
 Logger* autoLogger = new Logger("/timeLog.log");
 Logger* teleopLogger = new Logger("/teleopLog.log");
 
@@ -301,7 +302,7 @@ void Skyfire::TeleopInit() {
 
 void Skyfire::DisabledPeriodic() {
   GetWatchdog().Feed();
-  
+  voltageLogger->Log("d %f %f %f\n", Timer::GetFPGATimestamp(),(double)voltage->GetValue(), (double) radioV->GetValue());
   // Start a connection to the camera 
   //target_->DoVision();
   
@@ -414,6 +415,7 @@ void Skyfire::DisabledPeriodic() {
 }
 
 void Skyfire::AutonomousPeriodic() {
+  voltageLogger->Log("a %f %f %f\n", Timer::GetFPGATimestamp(),(double)voltage->GetValue(), (double) radioV->GetValue());
   GetWatchdog().Feed();
   if ((autonTimer_->Get() > autonDelay_)&& autoBaseCmd_) {
     autoBaseCmd_->Run();
@@ -422,7 +424,7 @@ void Skyfire::AutonomousPeriodic() {
 
 void Skyfire::TeleopPeriodic() {
   GetWatchdog().Feed();
-  voltageLogger->Log("%f\n",(double)voltage->GetValue());
+  voltageLogger->Log("t %f %f %f\n", Timer::GetFPGATimestamp(),(double)voltage->GetValue(), (double) radioV->GetValue());
   static bool autoshooting = false;
   static double robotWidth = .5818436 / .0254;
   //PidTuner::PushData(drivebase_->GetGyroAngle() / 180 * 3.14159, (drivebase_->GetLeftEncoderDistance()-drivebase_->GetRightEncoderDistance())/robotWidth, 0);//angGoal*(robotWidth));
