@@ -5,7 +5,7 @@
 #include "util/PidTuner.h"
 
 Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
-       Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid,  Encoder* leftEncoder,
+       Solenoid* shiftSolenoid, Solenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid,  Encoder* leftEncoder,
        Encoder* rightEncoder, Gyro* gyro, DigitalInput* bumpSensor) {
   constants_ = Constants::GetInstance();
   leftDriveMotorA_ = leftVictorA;
@@ -66,11 +66,7 @@ void Drive::SetHighGear(bool highGear) {
 }
 
 void Drive::SetPizzaWheelDown(bool down) {
-  if (down) {
-    pizzaWheelSolenoid_->Set(DoubleSolenoid::kForward);
-  } else {
-    pizzaWheelSolenoid_->Set(DoubleSolenoid::kReverse);
-  }
+  pizzaWheelSolenoid_->Set(down);
 }
 
 void Drive::SetBrakeOn(bool on) {

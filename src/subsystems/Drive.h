@@ -20,7 +20,7 @@ class Drive {
    * Accepts the Victors and Encoders to get and set values
    */
   Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
-        Solenoid* shiftSolenoid, DoubleSolenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid, Encoder* leftEncoder,
+        Solenoid* shiftSolenoid, Solenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid, Encoder* leftEncoder,
         Encoder* rightEncoder, Gyro* gyro, DigitalInput* bumpSensor);
 
   /**
@@ -131,7 +131,7 @@ class Drive {
 
   // Pneumatics
   Solenoid* shiftSolenoid_;
-  DoubleSolenoid* pizzaWheelSolenoid_;
+  Solenoid* pizzaWheelSolenoid_;
 
   // Brake
   DoubleSolenoid* brakeSolenoid_;

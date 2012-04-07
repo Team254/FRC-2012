@@ -73,8 +73,7 @@ Skyfire::Skyfire() {
   compressor_->Start();
   shiftSolenoid_ = new Solenoid((int)constants_->shiftSolenoidPort);
   hoodSolenoid_ = new Solenoid((int)constants_->hoodSolenoidPort);
-  pizzaWheelSolenoid_ = new DoubleSolenoid((int)constants_->pizzaWheelSolenoidDownPort,
-                                           (int)constants_->pizzaWheelSolenoidUpPort);
+  pizzaWheelSolenoid_ = new Solenoid((int)constants_->pizzaWheelSolenoidDownPort);
   intakeUpSolenoid_ = new Solenoid((int)constants_->intakeSolenoidUpPort);
   intakeDownSolenoid_ = new Solenoid((int)constants_->intakeSolenoidDownPort);
   brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidOnPort,
