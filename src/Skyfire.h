@@ -120,6 +120,7 @@ class Skyfire : public CheesyRobot {
   Solenoid* intakeUpSolenoid_;
   Solenoid* intakeDownSolenoid_;
   DoubleSolenoid* brakeSolenoid_;
+  Solenoid* dingusSolenoid_;
 
   DriverStationLCD* lcd_;
   bool oldAutoAlignButton_;

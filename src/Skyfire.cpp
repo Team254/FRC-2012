@@ -78,6 +78,7 @@ Skyfire::Skyfire() {
   intakeDownSolenoid_ = new Solenoid((int)constants_->intakeSolenoidDownPort);
   brakeSolenoid_ = new DoubleSolenoid((int)constants_->brakeSolenoidOnPort,
                                       (int)constants_->brakeSolenoidOffPort);
+  dingusSolenoid_ = new Solenoid((int)constants_->dingusSolenoidPort);
 
   // Subsystems
   drivebase_ = new Drive(leftDriveMotorA_, leftDriveMotorB_, rightDriveMotorA_, rightDriveMotorB_,
@@ -263,6 +264,8 @@ void Skyfire::AutonomousInit() {
     autoBaseCmd_->Initialize();
   }
   
+  dingusSolenoid_->Set(false);
+  
 }
 
 void Skyfire::TeleopInit() {
@@ -297,6 +300,7 @@ void Skyfire::TeleopInit() {
         shooter_->SetHardnessOffset(0);
         break;
     }
+  dingusSolenoid_->Set(false);
 }
 
 void Skyfire::DisabledPeriodic() {
@@ -533,7 +537,16 @@ void Skyfire::TeleopPeriodic() {
     intake_->SetIntakePosition(operatorControl_->GetIntakePositionSwitch());
   }
   
-  drivebase_->SetControlLoopsOn(operatorControl_->GetControlLoopsSwitch());
+  //drivebase_->SetControlLoopsOn(operatorControl_->GetControlLoopsSwitch());
+  
+  //dingusSolenoid_->Set(operatorControl_->GetControlLoopsSwitch());
+  if(operatorControl_->GetAutonSelectButton()) {
+	  if(operatorControl_->GetIncreaseButton()) {
+		  dingusSolenoid_->Set(true);
+	  } else if(operatorControl_->GetDecreaseButton()) {
+		  dingusSolenoid_->Set(false);
+	  }
+  }
 
   // Print useful information to the LCD display.
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "X: %0.2f A:%0.2f ", target_->GetX(), target_->GetAngle());
