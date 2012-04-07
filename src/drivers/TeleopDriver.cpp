@@ -30,9 +30,6 @@ bool TeleopDriver::UpdateDriver() {
   oldPizzaWheelsButton_ = currPizzaWheelsButton;
 
   // Retract the pizza wheels if the sensor has detected the bump.
-  if (pizzaWheelsDown_ && drive_->GetBumpSensorValue()) {
-    pizzaWheelsDown_ = false;
-  }
   drive_->SetPizzaWheelDown(pizzaWheelsDown_);
 
   // Brake
