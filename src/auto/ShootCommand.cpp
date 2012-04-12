@@ -18,7 +18,8 @@ ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
   shotsFired_ = 0;
   downCycles_ = 0;
   atSpeedCycles_ = 0;
-  intakeDown_ = intakeDown;
+  initialIntakeDown_ = intakeDown;
+  intakeDown_ = initialIntakeDown_;
 }
 
 void ShootCommand::Initialize() {
@@ -37,8 +38,13 @@ bool ShootCommand::Run() {
   //intake_->SetIntakePosition(Intake::INTAKE_DOWN);
   shooter_->SetTargetVelocity(shootSpeed_);
 
-  
-  if (timer_->Get() > 2.75 && intakeDown_) {
+  if (timer_->Get() > 6.0 && initialIntakeDown_) {
+  	  intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
+    }
+  else if (timer_->Get() > 4.75 && initialIntakeDown_) {
+	  intake_->SetIntakePosition(Intake::INTAKE_DOWN);
+  }
+  else if (timer_->Get() > 2.75 && initialIntakeDown_) {
     intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
   }
   if (timer_->Get() > 3.5 && intakeDown_)

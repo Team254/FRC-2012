@@ -42,6 +42,7 @@ class ShootCommand : public AutoCommand {
   int downCycles_;
   int atSpeedCycles_;
   bool intakeDown_;
+  bool initialIntakeDown_;
   Timer* lastShotTimer_;
 };
 
