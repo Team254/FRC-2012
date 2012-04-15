@@ -16,7 +16,8 @@ void AutoAlignCommand::Initialize() {
 bool AutoAlignCommand::Run(){
   if (timer_->Get() < .25)
 	  return false;
-  bool ret = autoTurn_->UpdateDriver() || TimeoutExpired();
+  bool ret = TimeoutExpired();
+  autoTurn_->UpdateDriver();
   if (ret){
 	  drive_->SetLinearPower(0,0);
   }

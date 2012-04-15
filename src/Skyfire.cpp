@@ -7,6 +7,7 @@
 #include "auto/BridgeBallsCommand.h"
 #include "auto/ConcurrentCommand.h"
 #include "auto/DriveCommand.h"
+#include "auto/DelayCommand.h"
 #include "auto/OldDriveCommand.h"
 #include "auto/JumbleCommand.h"
 #include "auto/SequentialCommand.h"
@@ -204,13 +205,29 @@ void Skyfire::AutonomousInit() {
               new OldDriveCommand(drivebase_, -25, 0.0, false, .5, .7),
                new ShootCommand(shooter_, intake_, true, 37.5, 2, 6.0)));
       break;
+      
+    // Best Auto Coop Bridge  
     case AUTON_FAR_BRIDGE_SLOW:
           autoBaseCmd_ = AUTO_SEQUENTIAL(
               new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
+              new DriveCommand(drivebase_, 0, 10, false, 2.0),
               new OldDriveCommand(drivebase_, 56, 0.0, false, 3),
               new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .65),
-              new ShootFromBridgeCommand(shooter_, intake_, true, constants_->shooterBridgeSpeed, 99, 16.0, true));
-            break;  
+              AUTO_CONCURRENT(
+                AUTO_SEQUENTIAL(
+                  new OldDriveCommand(drivebase_, -6, 0.0, false, .4, 1.0),
+                  new DelayCommand(.75),
+                  new OldDriveCommand(drivebase_, 16, 0.0, false, .5, 1.0)),
+                new BridgeBallsCommand(intake_, shooter_, true, 3.2)),
+                new OldDriveCommand(drivebase_, -55, 0.0, false, 2.0),
+                new DriveCommand(drivebase_, 0, 0, false, .5),
+                AUTO_CONCURRENT(
+                  new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
+                  new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 10, 10.0))
+                //new ShootFromBridgeCommand(shooter_, intake_, true, constants_->shooterBridgeSpeed, 99, 16.0, true))
+              );
+            break;
+
     case AUTON_SHORT_SIMPLE:
           autoBaseCmd_ = AUTO_SEQUENTIAL (
             new ShootCommand(shooter_, intake_, true, 46, 2, 6.0)
@@ -230,7 +247,7 @@ void Skyfire::AutonomousInit() {
               new BridgeBallsCommand(intake_, shooter_, true, 4.5),
              new OldDriveCommand(drivebase_, -5.0, 0.0, false, 4)),
           AUTO_CONCURRENT(
-             new JumbleCommand(shooter_,  intake_, 1.0),
+              new JumbleCommand(shooter_,  intake_, 1.0),
               new OldDriveCommand(drivebase_, -76, 0.0, false, 6.0)),
          //new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
           new ShootCommand(shooter_, intake_, true, 49, 2, 8.0));
@@ -252,12 +269,15 @@ void Skyfire::AutonomousInit() {
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->shooterKeyCloseSpeed, 2, 3.75),
-          new DriveCommand(drivebase_, 100, 0, false, 10.0),
+          new DriveCommand(drivebase_, 0, 9, false, 1.5),
+          new OldDriveCommand(drivebase_, 165, 0, false, 2.5),
+          //new DriveCommand(drivebase_, 0, -15, false, 1.0),
           new BridgeBallsCommand(intake_, shooter_, true, 3.5));
       break;
     case AUTON_TEST:
     	//printf("auton testing\n");
-    	autoBaseCmd_ = AUTO_SEQUENTIAL(new DriveCommand(drivebase_, 0.0, 90.0, false, 20.0));
+    	autoBaseCmd_ = AUTO_SEQUENTIAL(
+    			new AutoAlignCommand(drivebase_, autoAlignDriver_, 4));
     	break;
     default:
       autoBaseCmd_ = NULL;
@@ -310,7 +330,7 @@ void Skyfire::DisabledPeriodic() {
   GetWatchdog().Feed();
   voltageLogger->Log("d %f %f %f\n", Timer::GetFPGATimestamp(),(double)voltage->GetValue(), (double) radioV->GetValue());
   // Start a connection to the camera 
-  //target_->DoVision();
+  target_->DoVision();
   
   // Autonomous delay
   timer_->Reset();

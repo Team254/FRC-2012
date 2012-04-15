@@ -68,7 +68,7 @@ void OldDriveCommand::Initialize() {
 }
 
 bool OldDriveCommand::Run() {
-  
+  drive_->SetHighGear(true);
   if (TimeoutExpired()) {
     drive_->SetLinearPower(0, 0);
     return true;
