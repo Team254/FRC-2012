@@ -478,25 +478,18 @@ void Skyfire::TeleopPeriodic() {
    		newVel = (((constants_->shooterFarFenderSpeed - constants_->shooterFenderSpeed ) / (95 - 60)) *
    		  			        (dist - 60)) + constants_->shooterFenderSpeed;
    	}
-    if (operatorControl_->GetAutoShootButton()) {
-      if(leftJoystick_->GetRawButton((int)constants_->autoAlignPort)) {
-    	if (operatorControl_->GetShooterSwitch() && shooter_->AtTargetVelocity() && autoAlignDone && shooter_->GetTargetVelocity() > 0.0) {
-          shooter_->SetLinearConveyorPower(1.0);
-    	  intake_->SetIntakePower(1.0);
-    	} 
-      } else if (operatorControl_->GetShooterSwitch() && shooter_->AtTargetVelocity() && shooter_->GetTargetVelocity() > 0.0) {
-        shooter_->SetLinearConveyorPower(1.0);
-        intake_->SetIntakePower(1.0);
-      } else {
-        shooter_->SetLinearConveyorPower(0.0);
-        intake_->SetIntakePower(0.0);
-      }
-      shooterIncr_ = 0.0;
-      autoshooting = true;
-    } else if (operatorControl_->GetShootButton()) {
-      // In manual shoot mode, run the conveyor and intake to feed the shooter.
+   	
+   	if (operatorControl_->GetShootButton()) {
+   	  // In manual shoot mode, run the conveyor and intake to feed the shooter.
+   	  shooter_->SetLinearConveyorPower(1.0);
+   	  intake_->SetIntakePower(1.0);
+   	} 
+   	else if (operatorControl_->GetAutoShootButton()) {
       shooter_->SetLinearConveyorPower(1.0);
-      intake_->SetIntakePower(1.0);
+      intake_->SetIntakePower(0.0);
+    } else if (operatorControl_->GetAutonSelectButton()) {
+      shooter_->SetLinearConveyorPower(-1.0);
+      intake_->SetIntakePower(0.0);
     } else if (operatorControl_->GetUnjamButton()) {
       // In exhaust mode, run the conveyor and intake backwards.
       intake_->SetIntakePower(-1.0);
