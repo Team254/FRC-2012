@@ -5,7 +5,7 @@
 #include "util/PidTuner.h"
 
 ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
-                       double shootSpeed, int shotsToFire, double timeout, bool intakeDown) {
+                       double shootSpeed, int shotsToFire, double timeout) {
   SetTimeout(timeout);
   shooter_ = shooter;
   intake_ = intake;
@@ -18,18 +18,12 @@ ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
   shotsFired_ = 0;
   downCycles_ = 0;
   atSpeedCycles_ = 0;
-  initialIntakeDown_ = intakeDown;
-  intakeDown_ = initialIntakeDown_;
 }
 
 void ShootCommand::Initialize() {
    shooter_->Reset();  
    shooter_->SetTargetVelocity(shootSpeed_);
    AutoCommand::Initialize();
-   if (intakeDown_) {
-       intake_->SetIntakePosition(Intake::INTAKE_DOWN);
-       ///reachedSpeed_ = true;
-   }
    lastShotTimer_->Reset();
    lastShotTimer_->Start();
 }
@@ -38,17 +32,6 @@ bool ShootCommand::Run() {
   //intake_->SetIntakePosition(Intake::INTAKE_DOWN);
   shooter_->SetTargetVelocity(shootSpeed_);
 
-  if (timer_->Get() > 6.0 && initialIntakeDown_) {
-  	  intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
-    }
-  else if (timer_->Get() > 4.75 && initialIntakeDown_) {
-	  intake_->SetIntakePosition(Intake::INTAKE_DOWN);
-  }
-  else if (timer_->Get() > 2.75 && initialIntakeDown_) {
-    intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
-  }
-  if (timer_->Get() > 3.5 && intakeDown_)
-    intakeDown_ = false;
   // Hacked this at SVR to get the seconds balls to stop before shooting
   bool atSpeed = shooter_->AtTargetVelocity() || lastShotTimer_->Get() > 2.0;
   bool goBack = false;
@@ -67,7 +50,6 @@ bool ShootCommand::Run() {
         shotsFired_++;
         goBack = true;
         reachedSpeed_ = false; // Stop running the conveyor
-        intakeDown_ = false;
         lastShotTimer_->Reset();
         lastShotTimer_->Start();
         if (shotsFired_ >= shotsToFire_) {
@@ -88,9 +70,6 @@ bool ShootCommand::Run() {
   else if (goBack) {
     shooter_->SetLinearConveyorPower(-1);
     intake_->SetIntakePower(0);
-  } else if (intakeDown_) {
-    shooter_->SetLinearConveyorPower(1);
-    intake_->SetIntakePower(1);
   } else {
     shooter_->SetLinearConveyorPower(0);
     intake_->SetIntakePower(0);

@@ -3,14 +3,13 @@
 #include "subsystems/Shooter.h"
 
 BridgeBallsCommand::BridgeBallsCommand(Intake* intake, Shooter* shooter, 
-                                       bool runIntake, double speed, double timeout) {
+                                       bool runIntake, double timeout) {
   SetTimeout(timeout);
   intake_ = intake;
   shooter_ = shooter;
   state_ = 0;
   initTime_ = 0;
   runIntake_ = runIntake;
-  speed_ = speed;
 }
 
 void BridgeBallsCommand::Initialize() {
@@ -18,7 +17,6 @@ void BridgeBallsCommand::Initialize() {
   initTime_ = timer_->Get();
   AutoCommand::Initialize();
   intake_->SetIntakePosition(Intake::INTAKE_DOWN);
-  shooter_->SetTargetVelocity(speed_);
 }
 
 bool BridgeBallsCommand::Run(){

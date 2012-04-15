@@ -30,6 +30,7 @@
 #include "util/PidTuner.h"
 #include "util/RelativeGyro.h"
 #include "vision/BackboardFinder.h"
+#include "auto/ShootFromBridgeCommand.h"
 
 Logger* voltageLogger = new Logger("/matchLog.log");
 AnalogChannel* voltage = new AnalogChannel(2);
@@ -208,7 +209,7 @@ void Skyfire::AutonomousInit() {
               new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
               new OldDriveCommand(drivebase_, 56, 0.0, false, 3),
               new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .65),
-              new ShootCommand(shooter_, intake_, true, constants_->shooterBridgeSpeed, 99, 16.0, true));
+              new ShootFromBridgeCommand(shooter_, intake_, true, constants_->shooterBridgeSpeed, 99, 16.0, true));
             break;  
     case AUTON_SHORT_SIMPLE:
           autoBaseCmd_ = AUTO_SEQUENTIAL (
@@ -226,7 +227,7 @@ void Skyfire::AutonomousInit() {
          new OldDriveCommand(drivebase_, 130, 0.0, false, 3.3),
           new OldDriveCommand(drivebase_, 100, 0.0, false, 1.5, .4), // square up
          AUTO_CONCURRENT(
-              new BridgeBallsCommand(intake_, shooter_, true, 45, 4.5),
+              new BridgeBallsCommand(intake_, shooter_, true, 4.5),
              new OldDriveCommand(drivebase_, -5.0, 0.0, false, 4)),
           AUTO_CONCURRENT(
              new JumbleCommand(shooter_,  intake_, 1.0),
@@ -241,7 +242,7 @@ void Skyfire::AutonomousInit() {
                 new OldDriveCommand(drivebase_, 44, 0.0, false, 3),
                 new OldDriveCommand(drivebase_, 100, 0.0, false, 0.7, 0.4),
                AUTO_CONCURRENT(
-                   new BridgeBallsCommand(intake_, shooter_, true, 60, 3.5),
+                   new BridgeBallsCommand(intake_, shooter_, true, 3.5),
                    AUTO_SEQUENTIAL(
                      //new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5),
                      new QueueBallCommand(shooter_, intake_, 2))),
@@ -250,7 +251,9 @@ void Skyfire::AutonomousInit() {
       break;
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
-          new ShootCommand(shooter_, intake_, false, Constants::GetInstance()->autoShootKeyVel, 2, 3.75));
+          new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->shooterKeyCloseSpeed, 2, 3.75),
+          new DriveCommand(drivebase_, 100, 0, false, 10.0),
+          new BridgeBallsCommand(intake_, shooter_, true, 3.5));
       break;
     case AUTON_TEST:
     	//printf("auton testing\n");
@@ -471,37 +474,37 @@ void Skyfire::TeleopPeriodic() {
   }
   Shooter::hoodPref pref = Shooter::NO;
   double dist = target_->GetDistance();
-   	double newVel = (((constants_->shooterKeyFarSpeed - constants_->shooterKeyCloseSpeed ) / (190 - 122)) *
+  double autoDistanceVel = (((constants_->shooterKeyFarSpeed - constants_->shooterKeyCloseSpeed ) / (190 - 122)) *
    			        (dist - 122)) + constants_->shooterKeyCloseSpeed;
-   	if(dist < 111) {
-   		pref = Shooter::DOWN;
-   		newVel = (((constants_->shooterFarFenderSpeed - constants_->shooterFenderSpeed ) / (95 - 60)) *
+  if(dist < 111) {
+    //pref = Shooter::DOWN;
+	autoDistanceVel = (((constants_->shooterFarFenderSpeed - constants_->shooterFenderSpeed ) / (95 - 60)) *
    		  			        (dist - 60)) + constants_->shooterFenderSpeed;
-   	}
+  }
    	
-   	if (operatorControl_->GetShootButton()) {
-   	  // In manual shoot mode, run the conveyor and intake to feed the shooter.
-   	  shooter_->SetLinearConveyorPower(1.0);
-   	  intake_->SetIntakePower(1.0);
-   	} 
-   	else if (operatorControl_->GetAutoShootButton()) {
-      shooter_->SetLinearConveyorPower(1.0);
-      intake_->SetIntakePower(0.0);
-    } else if (operatorControl_->GetAutonSelectButton()) {
-      shooter_->SetLinearConveyorPower(-1.0);
-      intake_->SetIntakePower(0.0);
-    } else if (operatorControl_->GetUnjamButton()) {
-      // In exhaust mode, run the conveyor and intake backwards.
-      intake_->SetIntakePower(-1.0);
-      shooter_->SetLinearConveyorPower(-1.0);
-    } else if (operatorControl_->GetIntakeButton()) {
-      // In intake mode, run the intake forwards and the conveyor backwards to jumble balls in the hopper.
-      intake_->SetIntakePower(1.0);
-      shooter_->SetLinearConveyorPower(-1.0);
-    } else {
-      shooter_->SetLinearConveyorPower(0.0);
-      intake_->SetIntakePower(0.0);
-    }
+  if (operatorControl_->GetShootButton()) {
+    // In manual shoot mode, run the conveyor and intake to feed the shooter.
+    shooter_->SetLinearConveyorPower(1.0);
+   	intake_->SetIntakePower(1.0);
+  } 
+  else if (operatorControl_->GetAutoShootButton()) {
+    shooter_->SetLinearConveyorPower(1.0);
+    intake_->SetIntakePower(0.0);
+  } else if (operatorControl_->GetAutonSelectButton()) {
+    shooter_->SetLinearConveyorPower(-1.0);
+    intake_->SetIntakePower(0.0);
+  } else if (operatorControl_->GetUnjamButton()) {
+    // In exhaust mode, run the conveyor and intake backwards.
+    intake_->SetIntakePower(-1.0);
+    shooter_->SetLinearConveyorPower(-1.0);
+  } else if (operatorControl_->GetIntakeButton()) {
+    // In intake mode, run the intake forwards and the conveyor backwards to jumble balls in the hopper.
+    intake_->SetIntakePower(1.0);
+    shooter_->SetLinearConveyorPower(-1.0);
+  } else {
+    shooter_->SetLinearConveyorPower(0.0);
+    intake_->SetIntakePower(0.0);
+  }
 
   if (operatorControl_->GetShooterSwitch()) {
     // Re-load the shooter PID constants whenever the shooter is turned on.
@@ -512,7 +515,7 @@ void Skyfire::TeleopPeriodic() {
       constants_->LoadFile();
     }
     if (autoshooting && target_->SeesTarget()) {
-    	shooterTargetVelocity_ = newVel;
+    	shooterTargetVelocity_ = autoDistanceVel;
     }
     shooter_->SetTargetVelocity(shooterTargetVelocity_ + shooterIncr_, pref);
   } else {

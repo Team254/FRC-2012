@@ -17,7 +17,7 @@ AutoShootCommand::AutoShootCommand(Shooter* shooter, Intake* intake,
 	intakeDown_ = intakeDown;
 	constants_ = Constants::GetInstance();
 	//Creates default shootcommand to be replaced during initialize
-	cmd_ = new ShootCommand(shooter_, intake_, runIntake_, 0, shotsToFire_, timeout_, intakeDown_);
+	cmd_ = new ShootCommand(shooter_, intake_, runIntake_, 0, shotsToFire_, timeout_);
 }
 
 void AutoShootCommand::Initialize() {
@@ -32,7 +32,7 @@ void AutoShootCommand::Initialize() {
 	   		  		  (dist - 60)) + constants_->shooterFenderSpeed;
 	}
 	delete cmd_;
-	cmd_ = new ShootCommand(shooter_, intake_, runIntake_, newVel, shotsToFire_, timeout_, intakeDown_);
+	cmd_ = new ShootCommand(shooter_, intake_, runIntake_, newVel, shotsToFire_, timeout_);
 	cmd_->Initialize();
 }
 

@@ -62,10 +62,11 @@ void Shooter::SetTargetVelocity(double velocity, hoodPref pref) {
   }
   pid_->ResetError();
   outputValue_ = 0;
+  
   if(pref==UP) {
-	  SetHoodUp(true);
+    SetHoodUp(true);
   } else if (pref==DOWN) {
-	  SetHoodUp(false);
+    SetHoodUp(false);
   } else {
 	  if (velocity > 40) {
 		SetHoodUp(true);
