@@ -70,6 +70,9 @@ void DriveCommand::Initialize() {
 
 bool DriveCommand::Run() {
 
+  if (distanceGoal_ == 0.0  && angleGoal_ == 0.0)
+    return true;
+  
   if (TimeoutExpired()) {
 	drive_->SetLinearPower(0, 0);
 	return true;

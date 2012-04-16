@@ -128,6 +128,7 @@ class Skyfire : public CheesyRobot {
   bool oldIncreaseButton_;
   bool oldDecreaseButton_;
   bool oldAutonSelectButton_;
+  bool oldUnjamButton_;
   bool oldHardUpButton_;
   bool oldHardDownButton_;
   double shooterTargetVelocity_;
@@ -138,18 +139,27 @@ class Skyfire : public CheesyRobot {
   Timer* autonTimer_;
   enum AutonMode {
     AUTON_NONE = 0,
-    AUTON_START_ANYWHERE,
+    AUTON_FAR_SHOOT_FROM_BRIDGE,
+    AUTON_FAR_DRIVE_UP_BRIDGE,
     AUTON_FENDER,
-    AUTON_FAR_BRIDGE_SLOW,
+    AUTON_SIDE,
     AUTON_ALLIANCE_BRIDGE,
     AUTON_SHORT_SIMPLE,
     AUTON_FAR_SIMPLE,
-    AUTON_TEST,
     NUM_AUTON_MODES,
+    AUTON_START_ANYWHERE,
+    AUTON_TEST,
     AUTON_CLOSE_BRIDGE_SLOW,
     AUTON_BRIDGE_FAST
   };
-  
+
+  enum AutonBias {
+	BIAS_NONE = 0,
+	BIAS_LEFT,
+	BIAS_RIGHT,
+	NUM_BIASES
+  };
+
   enum BallHardness {
 	BALL_WTF_SOFT = 0, 
 	BALL_SOFT,
@@ -160,6 +170,7 @@ class Skyfire : public CheesyRobot {
   };
   
   AutonMode autonMode_;
+  AutonBias autonBias_;
   BallHardness ballHardness_;
   SequentialCommand* autoBaseCmd_;
   double prevLeftDist_;

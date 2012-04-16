@@ -5,6 +5,7 @@
 
 //#include "auto/AutoAlignCommand.h"
 #include "auto/BridgeBallsCommand.h"
+#include "auto/ShootFieldCommand.h"
 #include "auto/ConcurrentCommand.h"
 #include "auto/DriveCommand.h"
 #include "auto/DelayCommand.h"
@@ -16,6 +17,7 @@
 #include "auto/QueueBallCommand.h"
 #include "auto/AutoAlignCommand.h"
 #include "auto/AutoShootCommand.h"
+#include "auto/SetWheelSpeedCommand.h"
 #include "drivers/AutoTurnDriver.h"
 #include "drivers/BaselockDriver.h"
 #include "drivers/Driver.h"
@@ -119,13 +121,15 @@ Skyfire::Skyfire() {
   oldIncreaseButton_ = operatorControl_->GetIncreaseButton();
   oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
   oldAutonSelectButton_ = operatorControl_->GetAutonSelectButton();
+  oldUnjamButton_ = operatorControl_->GetUnjamButton();
   oldHardUpButton_ = operatorControl_->GetKeyFarButton();
   oldHardDownButton_ = operatorControl_->GetKeyCloseButton();
 
   // Initialize autonomous variables
   autonDelay_ = 0.0;
   autonTimer_ = new Timer();
-  autonMode_ = AUTON_FAR_BRIDGE_SLOW;
+  autonMode_ = AUTON_FAR_DRIVE_UP_BRIDGE;
+  autonBias_ = BIAS_NONE;
   ballHardness_ = BALL_DEFAULT;
   autoBaseCmd_ = NULL;
   timer_ = new Timer();
@@ -168,6 +172,13 @@ void Skyfire::AutonomousInit() {
     autoBaseCmd_ = NULL;
   }
 
+  double autonBiasTurn = 0;
+  if (autonBias_ == BIAS_LEFT) {
+    autonBiasTurn = -10;
+  } else if (autonBias_ == BIAS_RIGHT) {
+	autonBiasTurn = 10;
+  }
+
   switch (ballHardness_) {
     case BALL_WTF_SOFT:
       shooter_->SetHardnessOffset(constants_->wtfSoftBallOffset);
@@ -200,33 +211,43 @@ void Skyfire::AutonomousInit() {
       break;  
     case AUTON_FENDER:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
-          new DriveCommand(drivebase_, -68, 0.0, false, 3, .7),
+          new OldDriveCommand(drivebase_, -68, 0.0, false, 3, .7),
           AUTO_CONCURRENT(
               new OldDriveCommand(drivebase_, -25, 0.0, false, .5, .7),
                new ShootCommand(shooter_, intake_, true, 37.5, 2, 6.0)));
       break;
       
     // Best Auto Coop Bridge  
-    case AUTON_FAR_BRIDGE_SLOW:
+    case AUTON_FAR_DRIVE_UP_BRIDGE:
           autoBaseCmd_ = AUTO_SEQUENTIAL(
               new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
-              new DriveCommand(drivebase_, 0, 10, false, 2.0),
-              new OldDriveCommand(drivebase_, 56, 0.0, false, 3),
-              new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .65),
+              //new DriveCommand(drivebase_, 0, autonBiasTurn, false, 1.5),
+              new OldDriveCommand(drivebase_, 56, autonBiasTurn * .65, false, 3),
+              new DriveCommand(drivebase_, 0, -autonBiasTurn, false, 1.0),
+              new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
               AUTO_CONCURRENT(
                 AUTO_SEQUENTIAL(
-                  new OldDriveCommand(drivebase_, -6, 0.0, false, .4, 1.0),
+                  new OldDriveCommand(drivebase_, -10, 0.0, false, .5, 1.0),
                   new DelayCommand(.75),
-                  new OldDriveCommand(drivebase_, 16, 0.0, false, .5, 1.0)),
+                  new OldDriveCommand(drivebase_, 20, 0.0, false, .5, 1.0)),
                 new BridgeBallsCommand(intake_, shooter_, true, 3.2)),
+                new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
                 new OldDriveCommand(drivebase_, -55, 0.0, false, 2.0),
-                new DriveCommand(drivebase_, 0, 0, false, .5),
+                new DelayCommand(.25),
                 AUTO_CONCURRENT(
                   new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
-                  new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 10, 10.0))
-                //new ShootFromBridgeCommand(shooter_, intake_, true, constants_->shooterBridgeSpeed, 99, 16.0, true))
+                  new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed + 1.0, 10, 10.0))
               );
             break;
+            
+    case AUTON_FAR_SHOOT_FROM_BRIDGE:
+      autoBaseCmd_ = AUTO_SEQUENTIAL(
+        new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
+        new OldDriveCommand(drivebase_, 56, 0.0 , false, 3),
+        new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
+        new DelayCommand(.5),
+        new ShootFromBridgeCommand(shooter_, intake_, true, constants_->shooterBridgeSpeed, 10, 10));
+      break;
 
     case AUTON_SHORT_SIMPLE:
           autoBaseCmd_ = AUTO_SEQUENTIAL (
@@ -266,18 +287,38 @@ void Skyfire::AutonomousInit() {
                new ShootCommand(shooter_, intake_, true, 60, 99, 3.8)      
                  );
       break;
+    case AUTON_SIDE:
+      autoBaseCmd_ = AUTO_SEQUENTIAL(
+        new ShootCommand(shooter_, intake_, true, constants_->shooterKeyCloseSpeed, 2, 4),
+        new SetWheelSpeedCommand(shooter_, 0));
+      break;
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
-          new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->shooterKeyCloseSpeed, 2, 3.75),
-          new DriveCommand(drivebase_, 0, 9, false, 1.5),
-          new OldDriveCommand(drivebase_, 165, 0, false, 2.5),
-          //new DriveCommand(drivebase_, 0, -15, false, 1.0),
-          new BridgeBallsCommand(intake_, shooter_, true, 3.5));
+          new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->shooterKeyCloseSpeed + 3, 2, 4.5),
+          //new DriveCommand(drivebase_, 0, 9, false, 1.5),
+          new OldDriveCommand(drivebase_, 120, 8, false, 3.0),
+         // new DriveCommand(drivebase_, 0, -25, false, 1.0),
+          new OldDriveCommand(drivebase_, 20, -20, false, .75),
+        //  new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
+          AUTO_CONCURRENT(
+            AUTO_SEQUENTIAL(
+              new OldDriveCommand(drivebase_, -10, 0.0, false, .5, 1.0),
+              new DelayCommand(.75),
+              new OldDriveCommand(drivebase_, 20, 0.0, false, .5, 1.0)),
+              new BridgeBallsCommand(intake_, shooter_, true, 3.2)),
+              new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
+              new OldDriveCommand(drivebase_, -125, 26, false, 3.00),
+              AUTO_CONCURRENT(
+                new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
+                new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyCloseSpeed + 3, 10, 10.0))
+          );
+          break;
       break;
     case AUTON_TEST:
     	//printf("auton testing\n");
     	autoBaseCmd_ = AUTO_SEQUENTIAL(
-    			new AutoAlignCommand(drivebase_, autoAlignDriver_, 4));
+    			new AutoAlignCommand(drivebase_, autoAlignDriver_, 4),
+    			new SetWheelSpeedCommand(shooter_, 0));
     	break;
     default:
       autoBaseCmd_ = NULL;
@@ -350,6 +391,15 @@ void Skyfire::DisabledPeriodic() {
       autonMode_ = AUTON_NONE;
     }
   }
+
+  // Autonomous bias selection
+  if (operatorControl_->GetUnjamButton() && !oldUnjamButton_) {
+	autonBias_ = (AutonBias)(autonBias_ + 1);
+	if (autonBias_ == NUM_BIASES) {
+	  autonBias_ = BIAS_NONE;
+	}
+  }
+
   //double straightPower = HandleDeadband(-leftJoystick_->GetY(), 0.1);
   //double turnPower = HandleDeadband(rightJoystick_->GetX(), 0.1);
   double straightPower = -leftJoystick_->GetY();
@@ -358,6 +408,7 @@ void Skyfire::DisabledPeriodic() {
   oldIncreaseButton_ = operatorControl_->GetIncreaseButton();
   oldDecreaseButton_ = operatorControl_->GetDecreaseButton();
   oldAutonSelectButton_ = operatorControl_->GetAutonSelectButton();
+  oldUnjamButton_ = operatorControl_->GetUnjamButton();
 
   // Show selected mode and delay on the Driver Station LCD.
   switch (autonMode_) {
@@ -365,14 +416,20 @@ void Skyfire::DisabledPeriodic() {
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "No auton");
       break;
     case AUTON_START_ANYWHERE:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Shoot two balls from anywhere");	
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "two anywhere");	
       break;
     case AUTON_FENDER:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Fender");
       break;
-    case AUTON_FAR_BRIDGE_SLOW:
+    case AUTON_FAR_DRIVE_UP_BRIDGE:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Far + bridge");
+      break;
+    case AUTON_FAR_SHOOT_FROM_BRIDGE:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Far shoot@bridge");
       break;  
+    case AUTON_SIDE:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Side Corner");
+      break;
     case AUTON_SHORT_SIMPLE:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Short Simple");
       break;
@@ -394,7 +451,17 @@ void Skyfire::DisabledPeriodic() {
     default:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Invalid auton");
   }
-  lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "Delay: %.1f", autonDelay_);
+  switch (autonBias_) {
+    case BIAS_LEFT:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "B: L D: %.1f", autonDelay_);
+      break;
+    case BIAS_RIGHT:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "B: R D: %.1f", autonDelay_);
+      break;
+    default:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line6, "B: N D: %.1f", autonDelay_);
+      break;
+  }
   
   //Ball hardness selection
     if (operatorControl_->GetKeyFarButton() && !oldHardUpButton_) {

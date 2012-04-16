@@ -10,7 +10,7 @@
 OldDriveCommand::OldDriveCommand(Drive* drive, double distance, double angle, bool usePizza, double timeout, double maxSpeed, double maxAcceleration, double maxAlpha, double maxOmega) {
   SetTimeout(timeout);
   drive_ = drive;
-  angleGoal_ = angle;
+  angleGoal_ = -angle;
   distanceGoal_ = distance;
   usePizza_ = usePizza;
   resetPizza_ =  usePizza; //(usePizza && drive->GetPizzaUp());
@@ -87,7 +87,7 @@ bool OldDriveCommand::Run() {
     // Get PID feedback and send back to the motors.
     double leftPIDOutput = PwmLimit(leftPid_->Update(distanceGoal_, currLeftDist));
     double rightPIDOutput = PwmLimit(rightPid_->Update(distanceGoal_, currRightDist));
-    double angleDiff = drive_->GetGyroAngle() - startingAngle_;
+    double angleDiff = drive_->GetGyroAngle() - (startingAngle_ + angleGoal_);
     double straightGain = angleDiff * Constants::GetInstance()->straightDriveGain;
     double leftPwr = leftPIDOutput - straightGain;
     double rightPwr = rightPIDOutput + straightGain;

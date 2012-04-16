@@ -21,16 +21,15 @@ void BridgeBallsCommand::Initialize() {
 
 bool BridgeBallsCommand::Run(){
   
-  //printf("ballingggggg %f\n", GetTime());
   intake_->SetIntakePower(1);
   shooter_->SetLinearConveyorPower(-1);
   
   // Float intake eventually
-  if (timer_->Get() > 2.3) {
+  if (timer_->Get() > 2.) {
     intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
-  } else if (timer_->Get() > 2.0) {
+  } else if (timer_->Get() > 1.8) {
     intake_->SetIntakePosition(Intake::INTAKE_DOWN);
-  }else if (timer_->Get() > 1.75) {
+  }else if (timer_->Get() > 1.25) {
 	intake_->SetIntakePosition(Intake::INTAKE_UP);
   }
   

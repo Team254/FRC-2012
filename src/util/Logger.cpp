@@ -20,7 +20,6 @@ void Logger::Log(const char* format, ...) {
   if (intervalCounter_ == 0) {
     va_list args;
     va_start(args, format);
-    //printf("Hurr\n");
     vfprintf(logfile_, format, args);
     vprintf(format, args);
     va_end(args);

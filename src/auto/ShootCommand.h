@@ -13,7 +13,7 @@ class ShootCommand : public AutoCommand {
   /**
    * Constructor. Takes shooter and intake objects and whether or not to run the intake
    */
-  ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,double shootSpeed, int shotsToFire, double timeout);
+  ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,double shootSpeed, int shotsToFire, double timeout, bool doJumble=false);
 
   /**
    * Initializes 
@@ -42,6 +42,9 @@ class ShootCommand : public AutoCommand {
   int downCycles_;
   int atSpeedCycles_;
   Timer* lastShotTimer_;
+  Timer* jumbleTimer_;
+  bool doJumble_;
+  int goBack_;
 };
 
 #endif

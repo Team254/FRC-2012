@@ -140,7 +140,7 @@ DECLARE_DOUBLE(breakStaticOffset, 0.4)
 DECLARE_DOUBLE(autoCameraAlignKP, 0.115)
 DECLARE_DOUBLE(autoCameraAlignKI, 0.004)
 DECLARE_DOUBLE(autoCameraAlignKD, 0.05)
-DECLARE_DOUBLE(straightDriveGain, 0.1)
+DECLARE_DOUBLE(straightDriveGain, 0.05)
 
 // Automomous
 DECLARE_DOUBLE(autoShootKeyVel, 53.5)
