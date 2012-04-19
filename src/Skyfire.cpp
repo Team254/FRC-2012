@@ -128,7 +128,7 @@ Skyfire::Skyfire() {
   // Initialize autonomous variables
   autonDelay_ = 0.0;
   autonTimer_ = new Timer();
-  autonMode_ = AUTON_FAR_DRIVE_UP_BRIDGE;
+  autonMode_ = AUTON_2_PLUS_2;
   autonBias_ = BIAS_NONE;
   ballHardness_ = BALL_DEFAULT;
   autoBaseCmd_ = NULL;
@@ -203,12 +203,16 @@ void Skyfire::AutonomousInit() {
   switch (autonMode_) {
     case AUTON_NONE:
       break;
+
+    // Auto distance shooting
     case AUTON_START_ANYWHERE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
     	new AutoAlignCommand(drivebase_, new AutoTurnDriver(drivebase_, target_), 3.0),
         new AutoShootCommand(shooter_, intake_, target_, true, 2, 6.0)
         );
-      break;  
+      break;
+
+    // Start at front center of key. Shoot 2 from fender
     case AUTON_FENDER:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new OldDriveCommand(drivebase_, -68, 0.0, false, 3, .7),
@@ -216,12 +220,11 @@ void Skyfire::AutonomousInit() {
               new OldDriveCommand(drivebase_, -25, 0.0, false, .5, .7),
                new ShootCommand(shooter_, intake_, true, 37.5, 2, 6.0)));
       break;
-      
-    // Best Auto Coop Bridge  
-    case AUTON_FAR_DRIVE_UP_BRIDGE:
+
+    // Shoot 2, go to bridge, gather 2, then shoot them.
+    case AUTON_2_PLUS_2:
           autoBaseCmd_ = AUTO_SEQUENTIAL(
               new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
-              //new DriveCommand(drivebase_, 0, autonBiasTurn, false, 1.5),
               new OldDriveCommand(drivebase_, 56, autonBiasTurn * .65, false, 3),
               new DriveCommand(drivebase_, 0, -autonBiasTurn, false, 1.0),
               new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
@@ -239,8 +242,37 @@ void Skyfire::AutonomousInit() {
                   new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed + 1.0, 10, 10.0))
               );
             break;
-            
-    case AUTON_FAR_SHOOT_FROM_BRIDGE:
+
+    // Shoot 1, go to bridge, gather, then drive back and shoot 3
+    case AUTON_1_PLUS_3:
+          autoBaseCmd_ = AUTO_SEQUENTIAL(
+              new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 1, 6.0),
+              new OldDriveCommand(drivebase_, 56, autonBiasTurn * .65, false, 3),
+              new DriveCommand(drivebase_, 0, -autonBiasTurn, false, 1.0),
+              new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
+              AUTO_CONCURRENT(
+                AUTO_SEQUENTIAL(
+                  new OldDriveCommand(drivebase_, -10, 0.0, false, .5, 1.0),
+                  new DelayCommand(.75),
+                  new OldDriveCommand(drivebase_, 20, 0.0, false, .5, 1.0)),
+                new BridgeBallsCommand(intake_, shooter_, true, 3.2)),
+                new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
+                new OldDriveCommand(drivebase_, -55, 0.0, false, 2.0),
+                new DelayCommand(.25),
+                AUTO_CONCURRENT(
+                  new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
+                  new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed + 1.0, 10, 10.0))
+              );
+            break;
+
+    // Immediately drive to bridge and tip.
+    // Drive forward, shoot orignal 2.
+    // Pick up other 2, shoot those
+    case AUTON_0_PLUS_2_PLUS_2:
+        // intentional fall through. fix me later.
+
+    // Shoot 2, drive to bridge, shoot from bridge
+    case AUTON_SHOOT_FROM_BRIDGE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
         new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
         new OldDriveCommand(drivebase_, 56, 0.0 , false, 3),
@@ -249,49 +281,28 @@ void Skyfire::AutonomousInit() {
         new ShootFromBridgeCommand(shooter_, intake_, true, constants_->shooterBridgeSpeed, 10, 10));
       break;
 
+    // Shoot 2 from front of key
     case AUTON_SHORT_SIMPLE:
           autoBaseCmd_ = AUTO_SEQUENTIAL (
             new ShootCommand(shooter_, intake_, true, 46, 2, 6.0)
             );
           break;
+
+    // Shoot 2 from back of key
     case AUTON_FAR_SIMPLE:
           autoBaseCmd_ = AUTO_SEQUENTIAL (
                 new ShootCommand(shooter_, intake_, true,  constants_->shooterKeyFarSpeed, 2, 6.0)  
             );
-          break;        
-    case AUTON_CLOSE_BRIDGE_SLOW:
-      autoBaseCmd_ = AUTO_SEQUENTIAL(
-          new ShootCommand(shooter_, intake_, true, 48, 2, 7.0),
-         new OldDriveCommand(drivebase_, 130, 0.0, false, 3.3),
-          new OldDriveCommand(drivebase_, 100, 0.0, false, 1.5, .4), // square up
-         AUTO_CONCURRENT(
-              new BridgeBallsCommand(intake_, shooter_, true, 4.5),
-             new OldDriveCommand(drivebase_, -5.0, 0.0, false, 4)),
-          AUTO_CONCURRENT(
-              new JumbleCommand(shooter_,  intake_, 1.0),
-              new OldDriveCommand(drivebase_, -76, 0.0, false, 6.0)),
-         //new AutoAlignCommand(drivebase_, autoAlignDriver_, 2.0),
-          new ShootCommand(shooter_, intake_, true, 49, 2, 8.0));
-      break;
-    
-    case AUTON_BRIDGE_FAST:
-      autoBaseCmd_ = AUTO_SEQUENTIAL(
-                new ShootCommand(shooter_, intake_, true, 52.5, 2, 4.0),
-                new OldDriveCommand(drivebase_, 44, 0.0, false, 3),
-                new OldDriveCommand(drivebase_, 100, 0.0, false, 0.7, 0.4),
-               AUTO_CONCURRENT(
-                   new BridgeBallsCommand(intake_, shooter_, true, 3.5),
-                   AUTO_SEQUENTIAL(
-                     //new AutoAlignCommand(drivebase_, autoAlignDriver_, 1.5),
-                     new QueueBallCommand(shooter_, intake_, 2))),
-               new ShootCommand(shooter_, intake_, true, 60, 99, 3.8)      
-                 );
-      break;
+          break;
+
+    // Side. Start with back left wheel on corner of key.
     case AUTON_SIDE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
         new ShootCommand(shooter_, intake_, true, constants_->shooterKeyCloseSpeed, 2, 4),
         new SetWheelSpeedCommand(shooter_, 0));
       break;
+
+    // Alliance Bridge. Start with front left wheel on right corner of key.
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->shooterKeyCloseSpeed + 3, 2, 4.5),
@@ -314,12 +325,14 @@ void Skyfire::AutonomousInit() {
           );
           break;
       break;
+
     case AUTON_TEST:
     	//printf("auton testing\n");
     	autoBaseCmd_ = AUTO_SEQUENTIAL(
     			new AutoAlignCommand(drivebase_, autoAlignDriver_, 4),
     			new SetWheelSpeedCommand(shooter_, 0));
     	break;
+
     default:
       autoBaseCmd_ = NULL;
   }
@@ -421,10 +434,14 @@ void Skyfire::DisabledPeriodic() {
     case AUTON_FENDER:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Fender");
       break;
-    case AUTON_FAR_DRIVE_UP_BRIDGE:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Far + bridge");
+    case AUTON_2_PLUS_2:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "2, bridge, 2");
+    case AUTON_1_PLUS_3:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "1, bridge, 3");
+    case AUTON_0_PLUS_2_PLUS_2:
+      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "0, br, 2, 2");
       break;
-    case AUTON_FAR_SHOOT_FROM_BRIDGE:
+    case AUTON_SHOOT_FROM_BRIDGE:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Far shoot@bridge");
       break;  
     case AUTON_SIDE:
@@ -435,12 +452,6 @@ void Skyfire::DisabledPeriodic() {
       break;
     case AUTON_FAR_SIMPLE:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Far Simple");
-      break;      
-    case AUTON_CLOSE_BRIDGE_SLOW:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Near bridge slow");
-      break;
-    case AUTON_BRIDGE_FAST:
-      lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Bridge fast");
       break;
     case AUTON_ALLIANCE_BRIDGE:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "Alliance bridge");
