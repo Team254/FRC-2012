@@ -11,7 +11,7 @@ class AutoAlignCommand : public AutoCommand {
 
  public:
   
-  AutoAlignCommand(Drive* drive, AutoTurnDriver* autoTurn, double timeout);
+  AutoAlignCommand(Drive* drive, AutoTurnDriver* autoTurn, double offset, double timeout);
   
   void Initialize();
   
@@ -23,6 +23,7 @@ class AutoAlignCommand : public AutoCommand {
   
   Drive* drive_;
   AutoTurnDriver* autoTurn_;
+  double offset_;
   
 };
 

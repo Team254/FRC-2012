@@ -139,8 +139,10 @@ class Skyfire : public CheesyRobot {
   Timer* autonTimer_;
   enum AutonMode {
     AUTON_NONE = 0,
-    AUTON_FAR_SHOOT_FROM_BRIDGE,
-    AUTON_FAR_DRIVE_UP_BRIDGE,
+    AUTON_SHOOT_FROM_BRIDGE,
+    AUTON_2_PLUS_2,
+    AUTON_1_PLUS_3,
+    AUTON_0_PLUS_2_PLUS_2,
     AUTON_FENDER,
     AUTON_SIDE,
     AUTON_ALLIANCE_BRIDGE,
@@ -148,9 +150,7 @@ class Skyfire : public CheesyRobot {
     AUTON_FAR_SIMPLE,
     NUM_AUTON_MODES,
     AUTON_START_ANYWHERE,
-    AUTON_TEST,
-    AUTON_CLOSE_BRIDGE_SLOW,
-    AUTON_BRIDGE_FAST
+    AUTON_TEST
   };
 
   enum AutonBias {

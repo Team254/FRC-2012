@@ -17,7 +17,8 @@ void AutoTurnDriver::Reset() {
   justReset_ = true;
   foundTarget_ = false;
   delete command_;
-  command_ = new DriveCommand(drive_, 0.0, 0.0, false, 20.0);
+  SetOffsetAngle(0);
+  command_ = new DriveCommand(drive_, 0.0, 0.0, false, 100.0);
 }
 
 bool AutoTurnDriver::UpdateDriver() {
@@ -31,7 +32,7 @@ bool AutoTurnDriver::UpdateDriver() {
 	  // Grab a camera image angle and reset the gyro
 	  drive_->ResetGyro();
 	  delete command_;
-	  command_ = new DriveCommand(drive_, 0.0, -target_->GetAngle(), false, 20.0);
+	  command_ = new DriveCommand(drive_, 0.0, (-target_->GetAngle() + offsetAngle_), false, 20.0);
 	  command_->Initialize();
 	  foundTarget_ = true;
   }
@@ -41,4 +42,8 @@ bool AutoTurnDriver::UpdateDriver() {
 	drive_->SetLinearPower(0,0);
   	return false;
   }
+}
+
+void AutoTurnDriver::SetOffsetAngle(double angle) {
+  offsetAngle_ = angle;
 }
