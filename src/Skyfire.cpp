@@ -4,6 +4,7 @@
 #include <cstdio>
 
 //#include "auto/AutoAlignCommand.h"
+#include "auto/AutoMacros.h"
 #include "auto/BridgeBallsCommand.h"
 #include "auto/ShootFieldCommand.h"
 #include "auto/ConcurrentCommand.h"
@@ -199,7 +200,7 @@ void Skyfire::AutonomousInit() {
       shooter_->SetHardnessOffset(0);
       break;
   }
-  
+
   switch (autonMode_) {
     case AUTON_NONE:
       break;
@@ -228,19 +229,14 @@ void Skyfire::AutonomousInit() {
               new OldDriveCommand(drivebase_, 56, autonBiasTurn * .65, false, 3),
               new DriveCommand(drivebase_, 0, -autonBiasTurn, false, 1.0),
               new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
+              BALLS_FROM_BRIDGE_COMMAND(),
+              new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
+              new OldDriveCommand(drivebase_, -55, 0.0, false, 2.0),
+              new DelayCommand(.25),
               AUTO_CONCURRENT(
-                AUTO_SEQUENTIAL(
-                  new OldDriveCommand(drivebase_, -10, 0.0, false, .5, 1.0),
-                  new DelayCommand(.75),
-                  new OldDriveCommand(drivebase_, 20, 0.0, false, .5, 1.0)),
-                new BridgeBallsCommand(intake_, shooter_, true, 3.2)),
-                new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
-                new OldDriveCommand(drivebase_, -55, 0.0, false, 2.0),
-                new DelayCommand(.25),
-                AUTO_CONCURRENT(
-                  new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
-                  new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed + 1.0, 10, 10.0))
-              );
+                new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
+                new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed + 1.0, 10, 10.0))
+            );
             break;
 
     // Shoot 1, go to bridge, gather, then drive back and shoot 3
@@ -250,19 +246,14 @@ void Skyfire::AutonomousInit() {
               new OldDriveCommand(drivebase_, 56, autonBiasTurn * .65, false, 3),
               new DriveCommand(drivebase_, 0, -autonBiasTurn, false, 1.0),
               new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
+              BALLS_FROM_BRIDGE_COMMAND(),
+              new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
+              new OldDriveCommand(drivebase_, -55, 0.0, false, 2.0),
+              new DelayCommand(.25),
               AUTO_CONCURRENT(
-                AUTO_SEQUENTIAL(
-                  new OldDriveCommand(drivebase_, -10, 0.0, false, .5, 1.0),
-                  new DelayCommand(.75),
-                  new OldDriveCommand(drivebase_, 20, 0.0, false, .5, 1.0)),
-                new BridgeBallsCommand(intake_, shooter_, true, 3.2)),
-                new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
-                new OldDriveCommand(drivebase_, -55, 0.0, false, 2.0),
-                new DelayCommand(.25),
-                AUTO_CONCURRENT(
-                  new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
-                  new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed + 1.0, 10, 10.0))
-              );
+                new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
+                new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed + 1.0, 10, 10.0))
+            );
             break;
 
     // Immediately drive to bridge and tip.
@@ -306,22 +297,14 @@ void Skyfire::AutonomousInit() {
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->shooterKeyCloseSpeed + 3, 2, 4.5),
-          //new DriveCommand(drivebase_, 0, 9, false, 1.5),
           new OldDriveCommand(drivebase_, 120, 8, false, 3.0),
-         // new DriveCommand(drivebase_, 0, -25, false, 1.0),
           new OldDriveCommand(drivebase_, 20, -20, false, .75),
-        //  new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
+          BALLS_FROM_BRIDGE_COMMAND(),
+          new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
+          new OldDriveCommand(drivebase_, -125, 26, false, 3.00),
           AUTO_CONCURRENT(
-            AUTO_SEQUENTIAL(
-              new OldDriveCommand(drivebase_, -10, 0.0, false, .5, 1.0),
-              new DelayCommand(.75),
-              new OldDriveCommand(drivebase_, 20, 0.0, false, .5, 1.0)),
-              new BridgeBallsCommand(intake_, shooter_, true, 3.2)),
-              new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
-              new OldDriveCommand(drivebase_, -125, 26, false, 3.00),
-              AUTO_CONCURRENT(
-                new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
-                new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyCloseSpeed + 3, 10, 10.0))
+            new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
+            new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyCloseSpeed + 3, 10, 10.0))
           );
           break;
       break;
