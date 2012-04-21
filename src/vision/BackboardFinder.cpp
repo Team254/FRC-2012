@@ -1,4 +1,5 @@
 #include "vision/BackboardFinder.h"
+#include "vision/BetterBinaryImage.h"
 #include <math.h>
 #include "WPILib.h"
 #include "util/Logger.h"
@@ -60,7 +61,7 @@ double BackboardFinder::GetAngle() {
 	//pixels * degrees / pixels = degrees
 	//printf("get: %f\n", (float) GetX());
 	double offset = Constants::GetInstance()->cameraOffset;
-	return GetX() * 160.0 * 47.0 / 320.0 + offset;;
+	return GetX() * 160.0 * 47.0 / 320.0 + offset + (orientation_ * 2.0 / 18.0);
 }
 
 void BackboardFinder::DoVision() {
@@ -141,15 +142,13 @@ void BackboardFinder::DoVision() {
   imaqParticleFilter3(image, image, eParticleCriteria, 1, &eParticleFilterOptions, NULL, &eNumParticles);
   free(eParticleCriteria);
   
-
   // Extract Particles (4?)
   ParticleAnalysisReport left, right, top, bottom;
   vector<ParticleAnalysisReport>* particles = bimg->GetOrderedParticleAnalysisReports();
-
   
   // Find L,R,T,B based on CoM X,Y
   int i = 0;
-
+#if 0
   switch (particles->size()) {
 
   case 4:
@@ -172,32 +171,33 @@ void BackboardFinder::DoVision() {
       }
     }
     break;
-#define X_DELTA .05
-#define Y_DELTA .1
+#define X_DELTA .1
+#define Y_DELTA .2
 #define IN_LINE_X(a,b)  (fabs(a.center_mass_x_normalized  - b.center_mass_x_normalized) < X_DELTA)
 #define IN_LINE_Y(a,b)  (fabs(a.center_mass_y_normalized  - b.center_mass_y_normalized) < Y_DELTA)
 #define HIGHEST(a,b)    ((a.center_mass_y_normalized < b.center_mass_y_normalized) ? a : b)
   case 3:
     // Two Horizontal or two vertical targets
     if (IN_LINE_Y(particles->at(0), particles->at(1))){
-      //printf("case A\n");
+      printf("case A\n");
       top = particles->at(2);
     } else if (IN_LINE_Y(particles->at(1), particles->at(2))) {
-      //printf("case B\n");
+      printf("case B\n");
       top = particles->at(0);
     } else if (IN_LINE_Y(particles->at(0), particles->at(2))){
-      //printf("case C\n");
+      printf("case C\n");
       top = particles->at(1);
     } else if (IN_LINE_X(particles->at(0), particles->at(1))){
-      //printf("case D\n");
+      printf("case D\n");
       top = HIGHEST(particles->at(0), particles->at(1));
     } else if (IN_LINE_X(particles->at(1), particles->at(2))){
-      //printf("case E\n");
+      printf("case E\n");
       top = HIGHEST(particles->at(1), particles->at(2));
     } else if (IN_LINE_X(particles->at(0), particles->at(2))){
-      //printf("case F\n");
+      printf("case F\n");
       top = HIGHEST(particles->at(0), particles->at(2));
     } else {
+    	printf("case Q\n");
       // wtf, mate?
     }
     break;
@@ -257,8 +257,32 @@ void BackboardFinder::DoVision() {
 #undef Y_DELTA
 #undef IN_LINE_X
 #undef IN_LINE_Y
+#endif 
+  
+  int topIndex = 0;
+  for (int i = 0; i < particles->size(); i++){
+	  ParticleAnalysisReport p = (*particles)[i];
+	 if (i == 0){
+		 top = p;
+	 }
+	 if (p.center_mass_y_normalized < top.center_mass_y_normalized) {
+		 top = p;
+		 topIndex = i;
+	 }
+  }
 
-  // Calculate distance
+  // Orientation
+  double orientation;
+  if (particles->size() >=1 ) {
+    bimg->ParticleMeasurement(topIndex, IMAQ_MT_ORIENTATION, &orientation);
+  } else {
+	  orientation = 0;
+  }
+
+  if (orientation > 90) {
+	  orientation -= 180;
+  }
+  orientation_ = orientation;
 
   // Calculate x offset from target center
   seesTarget_ = (particles->size() >= 1) && particles->size() < 5;
@@ -268,6 +292,12 @@ void BackboardFinder::DoVision() {
   // Calculate angle on fieled based on ?
 
   width_ = top.boundingRect.width;
+  
+  printf("num particles: %d\n", particles->size());
+  for (int i = 0; i < particles->size(); i++){
+    printf("* i:%d | x:%f y:%f\n", i , particles->at(i).center_mass_x_normalized, particles->at(i).center_mass_y_normalized );  
+  }
+  printf("\n\n");
   
 
   static Logger * l = new Logger("/vision.csv");

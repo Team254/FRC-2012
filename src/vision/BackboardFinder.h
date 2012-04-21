@@ -71,6 +71,7 @@ class BackboardFinder : public VisionProcess {
   Constants* constants_;
   bool useTopForWidth_;
   Drive* drive_;
+  double orientation_;
 };
 
 #endif  // VISION_BACKBOARD_FINDER_H_

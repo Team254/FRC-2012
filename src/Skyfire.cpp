@@ -539,7 +539,6 @@ void Skyfire::TeleopPeriodic() {
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
   // Calculate the outputs for the drivetrain given the inputs.
   bool autoAlignDone = currDriver_->UpdateDriver();
-  printf("aad: %d\n", autoAlignDone);
   
   // Update shooter power/manual control
   if (operatorControl_->GetFenderButton()) {
@@ -664,4 +663,13 @@ void Skyfire::TeleopPeriodic() {
   }
   prevLeftDist_ = curLeft;
   prevRightDist_ = curRight;
+ 
+  static int r = 0;
+  r++;
+  if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && target_->SeesTarget() && target_->GetAngle() > -1 && target_->GetAngle() < 1) {
+    SmartDashboard::GetInstance()->PutBoolean("Aligned", (r % 15) <=8 );
+  }
+  else {
+	SmartDashboard::GetInstance()->PutBoolean("Aligned", false); 
+  }
 }
