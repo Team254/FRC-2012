@@ -59,7 +59,7 @@ double BackboardFinder::GetAngle() {
 	//47/320 = degree/pixel based on fov/horizontal resolution
 	//pixels * degrees / pixels = degrees
 	//printf("get: %f\n", (float) GetX());
-	static const double offset = 1.3;
+	double offset = Constants::GetInstance()->cameraOffset;
 	return GetX() * 160.0 * 47.0 / 320.0 + offset;;
 }
 
