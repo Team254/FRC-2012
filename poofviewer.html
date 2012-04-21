@@ -5,6 +5,7 @@
     <style type="text/css">
       body {
           margin: 0px !important;
+          background: black;
       }
       #img {
         position:absolute;
@@ -20,6 +21,11 @@
     </style>
   <script src="ui/js/jquery.js"></script>
   <script>
+  setInterval("reload()", 5000);
+  function reload() {
+    $("#img").attr("src",$("#img").attr("src"));
+  }
+  
       var angleOffset = 1.3; // get this from robot code (camera misalignment correction factor)
       var realign = function() {
       var w = $(window).width();
@@ -36,7 +42,7 @@
         $("#img").attr('width', newW);
       } 
       $("#img").css('left', ((w - newW)/2.0) + "px");
-      $("#center").css('margin-left', newW * (angleOffset / 47.0));
+      $("#center").css('margin-left', newW * (-angleOffset / 47.0));
     }
     $(function() {
        $(window).resize(realign);

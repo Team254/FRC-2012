@@ -18,13 +18,12 @@ void AutoAlignCommand::Initialize() {
 
 bool AutoAlignCommand::Run(){
   if (timer_->Get() < .25)
-	  return false;
-  bool ret = TimeoutExpired();
-  autoTurn_->UpdateDriver();
-  if (ret){
+	  return false; 
+  bool ret = autoTurn_->UpdateDriver();
+  if (TimeoutExpired()){
 	  drive_->SetLinearPower(0,0);
   }
-  return ret;
+  return TimeoutExpired() || ret;
 }
 
 AutoAlignCommand::~AutoAlignCommand() {

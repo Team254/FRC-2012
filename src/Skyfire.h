@@ -131,6 +131,8 @@ class Skyfire : public CheesyRobot {
   bool oldUnjamButton_;
   bool oldHardUpButton_;
   bool oldHardDownButton_;
+  double reverseConveyor_;
+  
   double shooterTargetVelocity_;
   double shooterIncr_;
 
@@ -148,9 +150,10 @@ class Skyfire : public CheesyRobot {
     AUTON_ALLIANCE_BRIDGE,
     AUTON_SHORT_SIMPLE,
     AUTON_FAR_SIMPLE,
+    AUTON_TEST,
     NUM_AUTON_MODES,
-    AUTON_START_ANYWHERE,
-    AUTON_TEST
+    AUTON_START_ANYWHERE
+
   };
 
   enum AutonBias {

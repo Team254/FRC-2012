@@ -271,7 +271,7 @@ void BackboardFinder::DoVision() {
   
 
   static Logger * l = new Logger("/vision.csv");
-  l->Log("%f,%d,%d,%d\n", drive_->GetLeftEncoderDistance(),particles->size(), (right.boundingRect.left  - (left.boundingRect.left + left.boundingRect.width)), top.boundingRect.width );
+  //l->Log("%f,%d,%d,%d\n", drive_->GetLeftEncoderDistance(),particles->size(), (right.boundingRect.left  - (left.boundingRect.left + left.boundingRect.width)), top.boundingRect.width );
 
 
   delete bimg;

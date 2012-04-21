@@ -52,10 +52,10 @@ bool ShootCommand::Run() {
   } else {
     atSpeedCycles_ = 0;
     if (shooter_->GetVelocity() < shootSpeed_ - 4  && reachedSpeed_) {
-      if (downCycles_++ > 5) {
+      if (downCycles_++ > 4) {
         downCycles_ = 0;
         shotsFired_++;
-        goBack_ = 10;
+        goBack_ = 7;
         reachedSpeed_ = false; // Stop running the conveyor
         lastShotTimer_->Reset();
         lastShotTimer_->Start();

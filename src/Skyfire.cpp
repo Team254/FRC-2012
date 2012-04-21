@@ -6,6 +6,8 @@
 //#include "auto/AutoAlignCommand.h"
 #include "auto/AutoMacros.h"
 #include "auto/BridgeBallsCommand.h"
+#include "auto/SetIntakePositionCommand.h"
+#include "auto/IntakeCommand.h"
 #include "auto/ShootFieldCommand.h"
 #include "auto/ConcurrentCommand.h"
 #include "auto/DriveCommand.h"
@@ -125,6 +127,7 @@ Skyfire::Skyfire() {
   oldUnjamButton_ = operatorControl_->GetUnjamButton();
   oldHardUpButton_ = operatorControl_->GetKeyFarButton();
   oldHardDownButton_ = operatorControl_->GetKeyCloseButton();
+  reverseConveyor_ = 0;
 
   // Initialize autonomous variables
   autonDelay_ = 0.0;
@@ -208,7 +211,7 @@ void Skyfire::AutonomousInit() {
     // Auto distance shooting
     case AUTON_START_ANYWHERE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
-    	new AutoAlignCommand(drivebase_, new AutoTurnDriver(drivebase_, target_), 3.0),
+    	new AutoAlignCommand(drivebase_, new AutoTurnDriver(drivebase_, target_), 0, 3.0),
         new AutoShootCommand(shooter_, intake_, target_, true, 2, 6.0)
         );
       break;
@@ -222,37 +225,22 @@ void Skyfire::AutonomousInit() {
                new ShootCommand(shooter_, intake_, true, 37.5, 2, 6.0)));
       break;
 
+    // Shoot 1, go to bridge, gather, then drive back and shoot 3
+    case AUTON_1_PLUS_3:
+    	// Intentional fall through!
     // Shoot 2, go to bridge, gather 2, then shoot them.
     case AUTON_2_PLUS_2:
           autoBaseCmd_ = AUTO_SEQUENTIAL(
-              new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 2, 6.0),
-              new OldDriveCommand(drivebase_, 56, autonBiasTurn * .65, false, 3),
-              new DriveCommand(drivebase_, 0, -autonBiasTurn, false, 1.0),
-              new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
-              BALLS_FROM_BRIDGE_COMMAND(),
+              new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, (autonMode_ == AUTON_1_PLUS_3) ? 1 : 2, 6.0),
+              new OldDriveCommand(drivebase_, 55, autonBiasTurn * .65, false, 3),
+              new OldDriveCommand(drivebase_, 25, -autonBiasTurn * .75, false, .8, .6),
+              //new DriveCommand(drivebase_, 0, -autonBiasTurn, false, 1.0),
+              //new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
+              BALLS_FROM_BRIDGE_COMMAND(true),
               new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
               new OldDriveCommand(drivebase_, -55, 0.0, false, 2.0),
               new DelayCommand(.25),
-              AUTO_CONCURRENT(
-                new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
-                new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed + 1.0, 10, 10.0))
-            );
-            break;
-
-    // Shoot 1, go to bridge, gather, then drive back and shoot 3
-    case AUTON_1_PLUS_3:
-          autoBaseCmd_ = AUTO_SEQUENTIAL(
-              new ShootCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed, 1, 6.0),
-              new OldDriveCommand(drivebase_, 56, autonBiasTurn * .65, false, 3),
-              new DriveCommand(drivebase_, 0, -autonBiasTurn, false, 1.0),
-              new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
-              BALLS_FROM_BRIDGE_COMMAND(),
-              new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
-              new OldDriveCommand(drivebase_, -55, 0.0, false, 2.0),
-              new DelayCommand(.25),
-              AUTO_CONCURRENT(
-                new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
-                new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed + 1.0, 10, 10.0))
+              AUTO_SHOOT_COMMAND(constants_->shooterKeyFarSpeed, 0)
             );
             break;
 
@@ -260,7 +248,26 @@ void Skyfire::AutonomousInit() {
     // Drive forward, shoot orignal 2.
     // Pick up other 2, shoot those
     case AUTON_0_PLUS_2_PLUS_2:
-        // intentional fall through. fix me later.
+        autoBaseCmd_ = AUTO_SEQUENTIAL(
+            new OldDriveCommand(drivebase_, 57, 0, false, 1.1),
+            new SetIntakePositionCommand(intake_, Intake::INTAKE_DOWN),
+            new OldDriveCommand(drivebase_, -7, 0, false, 1.0),
+            new DelayCommand(.6),
+            new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed),
+            new OldDriveCommand(drivebase_, -45, 0.0, false, 2.0),
+            new DelayCommand(.25),
+            AUTO_CONCURRENT(
+              new AutoAlignCommand(drivebase_, autoAlignDriver_, 0, 2.50),
+              new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed , 2, 4.0)),
+            new IntakeCommand(intake_, shooter_),
+            new OldDriveCommand(drivebase_, 40, 0, false, 2, .85),
+            new OldDriveCommand(drivebase_, -40, 0, false, 1),
+            AUTO_SHOOT_COMMAND(constants_->shooterKeyFarSpeed, 0));
+        break;
+            
+            
+            //new DriveCommand(drivebase_, 0, -autonBiasTurn, false, 1.0),
+            //new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
 
     // Shoot 2, drive to bridge, shoot from bridge
     case AUTON_SHOOT_FROM_BRIDGE:
@@ -297,23 +304,20 @@ void Skyfire::AutonomousInit() {
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->shooterKeyCloseSpeed + 3, 2, 4.5),
-          new OldDriveCommand(drivebase_, 120, 8, false, 3.0),
-          new OldDriveCommand(drivebase_, 20, -20, false, .75),
-          BALLS_FROM_BRIDGE_COMMAND(),
-          new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
-          new OldDriveCommand(drivebase_, -125, 26, false, 3.00),
-          AUTO_CONCURRENT(
-            new AutoAlignCommand(drivebase_, autoAlignDriver_, 10.00),
-            new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyCloseSpeed + 3, 10, 10.0))
-          );
+          new OldDriveCommand(drivebase_, 130, 13, false, 2.75),
+          new OldDriveCommand(drivebase_, 100, -20, false, .6),
+          BALLS_FROM_BRIDGE_COMMAND(true),
+          new SetWheelSpeedCommand(shooter_, constants_->shooterKeyCloseSpeed + 3),
+          new OldDriveCommand(drivebase_, -125, 0, false, .25),
+          new OldDriveCommand(drivebase_, -115, 26, false, 3.0),
+          AUTO_SHOOT_COMMAND(constants_->shooterKeyCloseSpeed + 3, -2.5));
           break;
       break;
 
     case AUTON_TEST:
     	//printf("auton testing\n");
     	autoBaseCmd_ = AUTO_SEQUENTIAL(
-    			new AutoAlignCommand(drivebase_, autoAlignDriver_, 4),
-    			new SetWheelSpeedCommand(shooter_, 0));
+    			AUTO_SHOOT_COMMAND(50, 10));
     	break;
 
     default:
@@ -419,8 +423,10 @@ void Skyfire::DisabledPeriodic() {
       break;
     case AUTON_2_PLUS_2:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "2, bridge, 2");
+      break;
     case AUTON_1_PLUS_3:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "1, bridge, 3");
+      break;
     case AUTON_0_PLUS_2_PLUS_2:
       lcd_->PrintfLine(DriverStationLCD::kUser_Line1, "0, br, 2, 2");
       break;
@@ -511,7 +517,7 @@ void Skyfire::AutonomousPeriodic() {
 
 void Skyfire::TeleopPeriodic() {
   GetWatchdog().Feed();
-  voltageLogger->Log("t %f %f %f\n", Timer::GetFPGATimestamp(),(double)voltage->GetValue(), (double) radioV->GetValue());
+  //voltageLogger->Log("t %f %f %f\n", Timer::GetFPGATimestamp(),(double)voltage->GetValue(), (double) radioV->GetValue());
   static bool autoshooting = false;
   static double robotWidth = .5818436 / .0254;
   //PidTuner::PushData(drivebase_->GetGyroAngle() / 180 * 3.14159, (drivebase_->GetLeftEncoderDistance()-drivebase_->GetRightEncoderDistance())/robotWidth, 0);//angGoal*(robotWidth));
@@ -530,6 +536,7 @@ void Skyfire::TeleopPeriodic() {
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
   // Calculate the outputs for the drivetrain given the inputs.
   bool autoAlignDone = currDriver_->UpdateDriver();
+  printf("aad: %d\n", autoAlignDone);
   
   // Update shooter power/manual control
   if (operatorControl_->GetFenderButton()) {
@@ -571,6 +578,7 @@ void Skyfire::TeleopPeriodic() {
   else if (operatorControl_->GetAutoShootButton()) {
     shooter_->SetLinearConveyorPower(1.0);
     intake_->SetIntakePower(0.0);
+    reverseConveyor_ = 4;
   } else if (operatorControl_->GetAutonSelectButton()) {
     shooter_->SetLinearConveyorPower(-1.0);
     intake_->SetIntakePower(0.0);
@@ -582,10 +590,16 @@ void Skyfire::TeleopPeriodic() {
     // In intake mode, run the intake forwards and the conveyor backwards to jumble balls in the hopper.
     intake_->SetIntakePower(1.0);
     shooter_->SetLinearConveyorPower(-1.0);
+  } else if (reverseConveyor_ > 0) {
+	  shooter_->SetLinearConveyorPower(-1.0);
+	  intake_->SetIntakePower(0.0);
   } else {
     shooter_->SetLinearConveyorPower(0.0);
     intake_->SetIntakePower(0.0);
   }
+  reverseConveyor_--;
+  if (reverseConveyor_ < 0)
+	  reverseConveyor_ = 0;
 
   if (operatorControl_->GetShooterSwitch()) {
     // Re-load the shooter PID constants whenever the shooter is turned on.
@@ -626,6 +640,7 @@ void Skyfire::TeleopPeriodic() {
   }
 
   // Print useful information to the LCD display.
+  lcd_->PrintfLine(DriverStationLCD::kUser_Line3, "Le: %0.2f R: %0.2f", drivebase_->GetLeftEncoderDistance(), drivebase_->GetRightEncoderDistance());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line4, "X: %0.2f A:%0.2f ", target_->GetX(), target_->GetAngle());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "%0.2f %0.2f", target_->GetDistance(), target_->GetHDiff());
   lcd_->PrintfLine(DriverStationLCD::kUser_Line5, "%f", target_->GetAngle());
