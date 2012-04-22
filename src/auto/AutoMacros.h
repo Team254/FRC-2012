@@ -13,8 +13,8 @@
                                         new DelayCommand(.25), \
                                         new BridgeBallsCommand(intake_, shooter_, runIntake, 1.9))))
 
-#define AUTO_SHOOT_COMMAND(speed, offset)  AUTO_CONCURRENT( \
-                new AutoAlignCommand(drivebase_, autoAlignDriver_, offset, 5), \
+#define AUTO_SHOOT_COMMAND(speed, offset, useSkew)  AUTO_CONCURRENT( \
+                new AutoAlignCommand(drivebase_, autoAlignDriver_, target_, offset, 5, useSkew), \
                 AUTO_SEQUENTIAL( \
                   new DelayCommand(.2), \
                   new ShootFieldCommand(shooter_, intake_, true, speed, 10, 10.0)))

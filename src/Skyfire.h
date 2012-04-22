@@ -180,6 +180,7 @@ class Skyfire : public CheesyRobot {
   double prevRightDist_;
   double prevTime;
   Timer* timer_;
+  Timer* lightDelay_;
   Notifier* shooterControl_;
 };
 

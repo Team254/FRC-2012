@@ -2,6 +2,7 @@
 #define AUTO_AUTO_ALIGN_COMMAND_H_
 
 #include "auto/AutoCommand.h"
+#include "vision/BackboardFinder.h"
 
 class Drive;
 class AutoTurnDriver;
@@ -11,7 +12,7 @@ class AutoAlignCommand : public AutoCommand {
 
  public:
   
-  AutoAlignCommand(Drive* drive, AutoTurnDriver* autoTurn, double offset, double timeout);
+  AutoAlignCommand(Drive* drive, AutoTurnDriver* autoTurn, BackboardFinder* target, double offset, double timeout, bool useSkew=true);
   
   void Initialize();
   
@@ -24,7 +25,9 @@ class AutoAlignCommand : public AutoCommand {
   Drive* drive_;
   AutoTurnDriver* autoTurn_;
   double offset_;
-  
+  bool useSkew_;
+  BackboardFinder* target_;
+  Timer* resetTimer_;
 };
 
 #endif 

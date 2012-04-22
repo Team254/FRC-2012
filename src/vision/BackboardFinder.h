@@ -58,6 +58,7 @@ class BackboardFinder : public VisionProcess {
    * Logs camera information
    */
   void LogCamera();
+  void SetUseSkew(bool useSkew);
   
  private:
   double x_;
@@ -72,6 +73,7 @@ class BackboardFinder : public VisionProcess {
   bool useTopForWidth_;
   Drive* drive_;
   double orientation_;
+  bool useSkew_;
 };
 
 #endif  // VISION_BACKBOARD_FINDER_H_

@@ -14,6 +14,7 @@ BackboardFinder::BackboardFinder(Drive* drive) : VisionProcess() {
   constants_ = Constants::GetInstance();
   useTopForWidth_ = false;
   drive_ = drive;
+  useSkew_ = true;
   //camera.WriteResolution(AxisCameraParams::kResolution_320x240);
 }
 
@@ -61,7 +62,15 @@ double BackboardFinder::GetAngle() {
 	//pixels * degrees / pixels = degrees
 	//printf("get: %f\n", (float) GetX());
 	double offset = Constants::GetInstance()->cameraOffset;
-	return GetX() * 160.0 * 47.0 / 320.0 + offset + (orientation_ * 2.0 / 18.0);
+	double ret = GetX() * 160.0 * 47.0 / 320.0 + offset;
+	if (useSkew_) {
+		ret += (orientation_ * 2.0 / 18.0);
+	}
+	return ret;
+}
+
+void BackboardFinder::SetUseSkew(bool useSkew) {
+	useSkew_ = useSkew;
 }
 
 void BackboardFinder::DoVision() {
@@ -297,7 +306,7 @@ void BackboardFinder::DoVision() {
   for (int i = 0; i < particles->size(); i++){
     printf("* i:%d | x:%f y:%f\n", i , particles->at(i).center_mass_x_normalized, particles->at(i).center_mass_y_normalized );  
   }
-  printf("\n\n");
+  printf("or: %f\n\n", orientation_);
   
 
   static Logger * l = new Logger("/vision.csv");

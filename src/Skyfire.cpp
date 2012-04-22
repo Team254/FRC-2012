@@ -144,6 +144,8 @@ Skyfire::Skyfire() {
   prevTime = 0.0;
   shooterIncr_ = 0.0;
   
+  lightDelay_ = new Timer();
+  
   shooterControl_ = new Notifier(Shooter::CallUpdate, shooter_);
   shooterControl_->StartPeriodic(1.0/50.0);
 
@@ -214,7 +216,7 @@ void Skyfire::AutonomousInit() {
     // Auto distance shooting
     case AUTON_START_ANYWHERE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
-    	new AutoAlignCommand(drivebase_, new AutoTurnDriver(drivebase_, target_), 0, 3.0),
+    	new AutoAlignCommand(drivebase_, new AutoTurnDriver(drivebase_, target_), target_, 0, 3.0),
         new AutoShootCommand(shooter_, intake_, target_, true, 2, 6.0)
         );
       break;
@@ -243,7 +245,7 @@ void Skyfire::AutonomousInit() {
               new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
               new OldDriveCommand(drivebase_, -55, 0.0, false, 2.0),
               new DelayCommand(.25),
-              AUTO_SHOOT_COMMAND(constants_->shooterKeyFarSpeed, 0)
+              AUTO_SHOOT_COMMAND(constants_->shooterKeyFarSpeed, 0, false)
             );
             break;
 
@@ -255,17 +257,18 @@ void Skyfire::AutonomousInit() {
             new OldDriveCommand(drivebase_, 57, 0, false, 1.1),
             new SetIntakePositionCommand(intake_, Intake::INTAKE_DOWN),
             new OldDriveCommand(drivebase_, -7, 0, false, 1.0),
-            new DelayCommand(.6),
+            new DelayCommand(.7),
             new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed),
             new OldDriveCommand(drivebase_, -45, 0.0, false, 2.0),
             new DelayCommand(.25),
             AUTO_CONCURRENT(
-              new AutoAlignCommand(drivebase_, autoAlignDriver_, 0, 2.50),
+              new AutoAlignCommand(drivebase_, autoAlignDriver_, 0, 2.50, true),
               new ShootFieldCommand(shooter_, intake_, true, constants_->shooterKeyFarSpeed , 2, 4.0)),
             new IntakeCommand(intake_, shooter_),
             new OldDriveCommand(drivebase_, 50, 0, false, 2, .85),
             new OldDriveCommand(drivebase_, -50, 0, false, 1),
-            AUTO_SHOOT_COMMAND(constants_->shooterKeyFarSpeed, 0));
+            new DelayCommand(.5),
+            AUTO_SHOOT_COMMAND(constants_->shooterKeyFarSpeed, 0, false));
         break;
             
             
@@ -307,20 +310,23 @@ void Skyfire::AutonomousInit() {
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->shooterKeyCloseSpeed + 3, 2, 4.5),
-          new OldDriveCommand(drivebase_, 130, allianceBridgeAngle, false, 2.75),
-          new OldDriveCommand(drivebase_, 100, -20, false, .6),
+          new OldDriveCommand(drivebase_, 120, allianceBridgeAngle, false, 2.75),
+          new OldDriveCommand(drivebase_, 100, -20, false, 1.0, .5),
           BALLS_FROM_BRIDGE_COMMAND(true),
           new SetWheelSpeedCommand(shooter_, constants_->shooterKeyCloseSpeed + 3),
-          new OldDriveCommand(drivebase_, -125, 0, false, .25),
-          new OldDriveCommand(drivebase_, -115, 26, false, 3.0),
-          AUTO_SHOOT_COMMAND(constants_->shooterKeyCloseSpeed + 3, -2.5));
+          new OldDriveCommand(drivebase_, -50, 0, false, .3),
+          new OldDriveCommand(drivebase_, -50, 6, false, .4),
+          new OldDriveCommand(drivebase_, -50, 6, false, .4),
+          new OldDriveCommand(drivebase_, -50, 6, false, .4),
+          new OldDriveCommand(drivebase_, -35, 6, false, 1.5),
+          AUTO_SHOOT_COMMAND(constants_->shooterKeyCloseSpeed + 3, 0, true));
           break;
       break;
 
     case AUTON_TEST:
     	//printf("auton testing\n");
     	autoBaseCmd_ = AUTO_SEQUENTIAL(
-    			AUTO_SHOOT_COMMAND(50, 10));
+    			new DriveCommand(drivebase_, -100, 14, false, 4.0));
     	break;
 
     default:
@@ -368,6 +374,8 @@ void Skyfire::TeleopInit() {
         break;
     }
   dingusSolenoid_->Set(false);
+  target_->SetUseSkew(true);
+  lightDelay_->Start();
 }
 
 void Skyfire::DisabledPeriodic() {
@@ -507,6 +515,8 @@ void Skyfire::DisabledPeriodic() {
   static int i = 0;
   if (++i % 10 == 0)
     lcd_->UpdateLCD();
+  
+  SmartDashboard::GetInstance()->PutBoolean("Aligned", target_->SeesTarget() && target_->GetAngle() < .5 && target_->GetAngle() > -.5);
   
 }
 
@@ -666,10 +676,14 @@ void Skyfire::TeleopPeriodic() {
  
   static int r = 0;
   r++;
-  if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && target_->SeesTarget() && target_->GetAngle() > -1 && target_->GetAngle() < 1) {
-    SmartDashboard::GetInstance()->PutBoolean("Aligned", (r % 15) <=8 );
+  bool light = false;
+  if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && target_->SeesTarget() && target_->GetAngle() > -.85 && target_->GetAngle() < .85) {
+	  if (lightDelay_->Get() > .125) {
+		  light = ((r % 15) <= 8) ;
+	  }
   }
   else {
-	SmartDashboard::GetInstance()->PutBoolean("Aligned", false); 
+	lightDelay_->Reset();
   }
+  SmartDashboard::GetInstance()->PutBoolean("Aligned", light );
 }
