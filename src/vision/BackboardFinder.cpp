@@ -152,125 +152,18 @@ void BackboardFinder::DoVision() {
   free(eParticleCriteria);
   
   // Extract Particles (4?)
-  ParticleAnalysisReport left, right, top, bottom;
-  vector<ParticleAnalysisReport>* particles = bimg->GetOrderedParticleAnalysisReports();
-  
-  // Find L,R,T,B based on CoM X,Y
-  int i = 0;
-#if 0
-  switch (particles->size()) {
-
-  case 4:
-    for (i = 0; i < particles->size(); i++) {
-      ParticleAnalysisReport p = (*particles)[i];
-      if (i == 0) {
-        left = top = right = bottom = p;
-      }
-      if (p.center_mass_x_normalized < left.center_mass_x_normalized) {
-        left = p;
-      }
-      if (p.center_mass_x_normalized > right.center_mass_x_normalized) {
-        right = p;
-      }
-      if (p.center_mass_y_normalized < top.center_mass_y_normalized) {
-        top = p;
-      }
-      if (p.center_mass_y_normalized > bottom.center_mass_y_normalized) {
-        bottom = p;
-      }
-    }
-    break;
-#define X_DELTA .1
-#define Y_DELTA .2
-#define IN_LINE_X(a,b)  (fabs(a.center_mass_x_normalized  - b.center_mass_x_normalized) < X_DELTA)
-#define IN_LINE_Y(a,b)  (fabs(a.center_mass_y_normalized  - b.center_mass_y_normalized) < Y_DELTA)
-#define HIGHEST(a,b)    ((a.center_mass_y_normalized < b.center_mass_y_normalized) ? a : b)
-  case 3:
-    // Two Horizontal or two vertical targets
-    if (IN_LINE_Y(particles->at(0), particles->at(1))){
-      printf("case A\n");
-      top = particles->at(2);
-    } else if (IN_LINE_Y(particles->at(1), particles->at(2))) {
-      printf("case B\n");
-      top = particles->at(0);
-    } else if (IN_LINE_Y(particles->at(0), particles->at(2))){
-      printf("case C\n");
-      top = particles->at(1);
-    } else if (IN_LINE_X(particles->at(0), particles->at(1))){
-      printf("case D\n");
-      top = HIGHEST(particles->at(0), particles->at(1));
-    } else if (IN_LINE_X(particles->at(1), particles->at(2))){
-      printf("case E\n");
-      top = HIGHEST(particles->at(1), particles->at(2));
-    } else if (IN_LINE_X(particles->at(0), particles->at(2))){
-      printf("case F\n");
-      top = HIGHEST(particles->at(0), particles->at(2));
-    } else {
-    	printf("case Q\n");
-      // wtf, mate?
-    }
-    break;
-  case 2:
-    if (particles->at(0).center_mass_x_normalized > .3 && particles->at(1).center_mass_x_normalized > .3) {
-      //case where they are both on the right side of the screen, center axis is the one more to the right
-      //if it only sees 2, the other is the left
-      if (particles->at(0).center_mass_x_normalized > particles->at(1).center_mass_x_normalized) {
-        top = particles->at(0);
-      } else {
-        top = particles->at(1);
-      }
-    } else if (particles->at(0).center_mass_x_normalized < -.3 && particles->at(1).center_mass_x_normalized < -.3) {
-      //case where both are on the left side of the screen, center axis is the one more to the left
-      //if it only sees 2, because the other is to the right
-      if (particles->at(0).center_mass_x_normalized < particles->at(1).center_mass_x_normalized) {
-        top = particles->at(0);
-      } else {
-        top = particles->at(1);
-      }
-    } else if (fabs(particles->at(0).center_mass_x_normalized) < .3 && fabs(particles->at(1).center_mass_x_normalized) < .3) {
-      //case where we can only see 2 in the center, possibly super zoomed in, both have same axis
-      if (particles->at(0).center_mass_y_normalized > particles->at(1).center_mass_y_normalized) {
-        top = particles->at(0);
-      } else {
-        top = particles->at(1);
-      }
-    } else if (fabs(particles->at(0).center_mass_y_normalized) > .3) {
-      //case where one on the side is blocked and one is in the center
-      //the one off from the center line is the top or bottom, central
-      //axis is the same
-      top = particles->at(0);
-    } else {
-      top = particles->at(1);
-    }
-    break;
-  case 1:
-    if (particles->at(0).center_mass_x_normalized > .5) {
-      left = particles->at(0);
-      top = particles->at(0);
-      top.center_mass_x_normalized = 1;
-    } else if (particles->at(0).center_mass_x_normalized < -.5) {
-      right = particles->at(0);
-      top = particles->at(0);
-      top.center_mass_x_normalized = -1;
-    } else {
-      //same desired axis
-      bottom = particles->at(0);
-      top = particles->at(0);
-    }
-    //if it's not left or right and still see's them then the top is set
-    break;
-  default:
-    break;
+  ParticleAnalysisReport top;
+  vector<ParticleAnalysisReport>* particles = new vector<ParticleAnalysisReport>;
+  int particleCount = bimg->GetNumberParticles();
+  for(int particleIndex = 0; particleIndex < particleCount; particleIndex++)
+  {
+  	particles->push_back(bimg->GetParticleAnalysisReport(particleIndex));
   }
-#undef X_DELTA
-#undef Y_DELTA
-#undef IN_LINE_X
-#undef IN_LINE_Y
-#endif 
   
+  // Find top target
   int topIndex = 0;
   for (int i = 0; i < particles->size(); i++){
-	  ParticleAnalysisReport p = (*particles)[i];
+	 ParticleAnalysisReport p = (*particles)[i];
 	 if (i == 0){
 		 top = p;
 	 }
@@ -280,10 +173,12 @@ void BackboardFinder::DoVision() {
 	 }
   }
 
-  // Orientation
-  double orientation;
+  // Skew of target gives us our lateral position on the field
+  double orientation =0;
+  int comx = 0;
   if (particles->size() >=1 ) {
     bimg->ParticleMeasurement(topIndex, IMAQ_MT_ORIENTATION, &orientation);
+    bimg->ParticleMeasurement(topIndex, IMAQ_MT_CENTER_OF_MASS_X, &comx);
   } else {
 	  orientation = 0;
   }
@@ -302,12 +197,16 @@ void BackboardFinder::DoVision() {
 
   width_ = top.boundingRect.width;
   
+#if 0
+  int comx2 = 0;
   printf("num particles: %d\n", particles->size());
   for (int i = 0; i < particles->size(); i++){
-    printf("* i:%d | x:%f y:%f\n", i , particles->at(i).center_mass_x_normalized, particles->at(i).center_mass_y_normalized );  
+	bimg->ParticleMeasurement(i, IMAQ_MT_ORIENTATION, &orientation);
+	 bimg->ParticleMeasurement(i, IMAQ_MT_CENTER_OF_MASS_X, &comx2);
+    printf("* i:%d | x:%d y:%f or:%f comx2:%d\n", i , particles->at(i).center_mass_x, particles->at(i).center_mass_y_normalized, orientation, comx2 );  
   }
-  printf("or: %f\n\n", orientation_);
-  
+  printf("topIndex:%d\ncomxq:%d\nor: %f\n\n", topIndex, comx, orientation_);
+#endif
 
   static Logger * l = new Logger("/vision.csv");
   //l->Log("%f,%d,%d,%d\n", drive_->GetLeftEncoderDistance(),particles->size(), (right.boundingRect.left  - (left.boundingRect.left + left.boundingRect.width)), top.boundingRect.width );
@@ -317,11 +216,7 @@ void BackboardFinder::DoVision() {
   static double t = 0;
   double diff = Timer::GetFPGATimestamp() - t;
   t = Timer::GetFPGATimestamp();
-
   lastUpdate_ = t;
-
-  double middleGap = right.boundingRect.left - (left.boundingRect.left + left.boundingRect.width);
-
 }
 
 bool BackboardFinder::HasFreshTarget() {
