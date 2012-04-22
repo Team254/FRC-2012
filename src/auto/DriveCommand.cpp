@@ -109,7 +109,7 @@ bool DriveCommand::Run() {
   double KpTurn = 0.3;
   double gyroError = (angGoal + turnOffset_ - theta_measured);
   if (fabs(angGoal - curThet_) < 0.0001 && fabs(gyroError) < 18.0 * 0.0174532925) {
-	  double KiTurn = 0.15;
+	  double KiTurn = Constants::GetInstance()->driveControllerKiTurn;
 	  sumStoppedError_ += gyroError * KiTurn;
   } else {
 	  if (!(fabs(angGoal - curThet_) < 0.0001)) {

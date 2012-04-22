@@ -551,7 +551,9 @@ void Skyfire::TeleopPeriodic() {
   bool autoAlignDone = currDriver_->UpdateDriver();
   
   // Update shooter power/manual control
-  if (operatorControl_->GetFenderButton()) {
+  if (operatorControl_->GetKeyFarButton() && operatorControl_->GetIncreaseButton()) {
+    shooterTargetVelocity_ = 75;
+  } else if (operatorControl_->GetFenderButton()) {
 	  shooterIncr_ = 0.0;
 	autoshooting = false;
     shooterTargetVelocity_ = constants_->shooterFenderSpeed;
@@ -572,6 +574,7 @@ void Skyfire::TeleopPeriodic() {
   } else if (operatorControl_->GetDecreaseButton() && !oldDecreaseButton_) {
 	  shooterIncr_ -= constants_->shooterSpeedIncrement;
   }
+
   Shooter::hoodPref pref = Shooter::NO;
   double dist = target_->GetDistance();
   double autoDistanceVel = (((constants_->shooterKeyFarSpeed - constants_->shooterKeyCloseSpeed ) / (190 - 122)) *
@@ -669,7 +672,9 @@ void Skyfire::TeleopPeriodic() {
   static const double maxSpeed = 10.0;
   // Set the brake in the last 0.25 seconds of the match
   if (timer_->Get()>=119.75 && fabs(curLeft - prevLeftDist_)/dt < maxSpeed && fabs(curRight - prevRightDist_)/dt < maxSpeed) {
-    drivebase_->SetBrakeOn(true);
+	  teleopDriver_->AskForBrake(true);
+  } else {
+	  teleopDriver_->AskForBrake(false);
   }
   prevLeftDist_ = curLeft;
   prevRightDist_ = curRight;

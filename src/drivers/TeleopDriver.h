@@ -38,7 +38,9 @@ class TeleopDriver : public Driver {
    * Clean up clean up, everybody do your share!
    */
   virtual ~TeleopDriver();
-
+  
+  void AskForBrake(bool on);
+  
  private:
   Constants* constants_;
   Joystick* leftJoystick_;
@@ -48,6 +50,7 @@ class TeleopDriver : public Driver {
   // Pizza cutter wheels!
   bool oldPizzaWheelsButton_;
   bool pizzaWheelsDown_;
+  bool askForBrake_;
   
   //initial joystick vals
   double startLeftJoystick_;

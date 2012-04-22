@@ -159,6 +159,7 @@ DECLARE_DOUBLE(senseLow, 1.10)
 DECLARE_DOUBLE(senseCutoff, 0.1)
 DECLARE_DOUBLE(quickStopTimeConstant, .1)
 DECLARE_DOUBLE(quickStopStickScalar, 5)
+DECLARE_DOUBLE(driveControllerKiTurn, 0.15)
 
 // Offsets
 DECLARE_DOUBLE(hardBallOffset, -.2)

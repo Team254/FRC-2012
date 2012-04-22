@@ -33,7 +33,7 @@ bool TeleopDriver::UpdateDriver() {
   drive_->SetPizzaWheelDown(pizzaWheelsDown_);
 
   // Brake
-  drive_->SetBrakeOn(operatorControl_->GetBrakeSwitch());
+  drive_->SetBrakeOn(askForBrake_ || operatorControl_->GetBrakeSwitch());
 
   // Drive
   DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "l:%0.3f r:%0.3f", straightPower, turnPower);
@@ -49,6 +49,11 @@ void TeleopDriver::Reset() {
   drive_->SetPizzaWheelDown(pizzaWheelsDown_);
   startLeftJoystick_ = leftJoystick_->GetY();
   startRightJoystick_ = rightJoystick_->GetX();
+  AskForBrake(false);
+}
+
+void TeleopDriver::AskForBrake(bool on){
+	askForBrake_ = on;
 }
 
 TeleopDriver::~TeleopDriver() {
