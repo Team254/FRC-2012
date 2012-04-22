@@ -3,43 +3,32 @@
 #include "config/Constants.h"
 #include "subsystems/Drive.h"
 #include "subsystems/OperatorControl.h"
+#include "auto/DriveCommand.h"
 #include "subsystems/Pid.h"
 #include "utils.hpp"
 
-BaselockDriver::BaselockDriver(Drive* drive, Joystick* leftJoystick) : Driver(drive) {
+BaselockDriver::BaselockDriver(Drive* drive, Joystick* leftJoystick, Joystick* rightJoystick) : Driver(drive) {
   constants_ = Constants::GetInstance();
   leftJoystick_ = leftJoystick;
-  leftPid_ = new Pid(&constants_->baseLockKP, &constants_->baseLockKI, &constants_->baseLockKD);
-  rightPid_ = new Pid(&constants_->baseLockKP, &constants_->baseLockKI, &constants_->baseLockKD);
-  Reset();
+  rightJoystick_ = rightJoystick;
+  cmd_ = new DriveCommand(drive, 0, 0, false, 99999999);
 }
 
 bool BaselockDriver::UpdateDriver() {
-  // printf wasn't working, switched to DriverStationLCD temporarily
-  DriverStationLCD* lcd = DriverStationLCD::GetInstance();
-
-  // Baselock should be in low gear for maximum torque
-  drive_->SetHighGear(false);
-
-  double straightPower = -leftJoystick_->GetY();
-  baseLockPosition_ += straightPower * .1;
-  double leftPosition=drive_->GetLeftEncoderDistance();
-  double rightPosition=drive_->GetRightEncoderDistance();
-  double leftPower = leftPid_->Update(baseLockPosition_, leftPosition);
-  double rightPower = rightPid_->Update(baseLockPosition_, rightPosition);
-  static const double baselockErr=0.1;
-  double leftError = fabs(leftPosition-baseLockPosition_);
-  double rightError = fabs(rightPosition-baseLockPosition_);
-  drive_->SetLinearPower(leftPower, rightPower);
-  return leftError<baselockErr && rightError<baselockErr;
+  cmd_->Run();
+  distanceGoal_ += leftJoystick_->GetY() / 4.0 ;
+  angleGoal_ = rightJoystick_->GetX() * 15;
+  cmd_->SetGoals(distanceGoal_, angleGoal_);
+  return false;
 }
 
 void BaselockDriver::Reset() {
-  // Reset encoders and PID
-  leftPid_->ResetError();
-  rightPid_->ResetError();
   drive_->ResetEncoders();
-  baseLockPosition_=0.0;
+  angleGoal_ = 0;
+  distanceGoal_ = 0;
+  delete cmd_;
+  cmd_ = new DriveCommand(drive_, 0.1, 0.1, false, 99999999);
+  cmd_->Initialize();
 }
 
 BaselockDriver::~BaselockDriver() {

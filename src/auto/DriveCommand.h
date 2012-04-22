@@ -30,6 +30,8 @@ class DriveCommand : public AutoCommand {
    * Uses PID update values to set motors and reach distance goal with minimum error
    */
   bool Run();
+  
+  void SetGoals(double distance, double angle);
 
   /**
    * Destructor

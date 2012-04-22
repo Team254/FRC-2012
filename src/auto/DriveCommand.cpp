@@ -156,3 +156,8 @@ bool DriveCommand::Run() {
 
 DriveCommand::~DriveCommand() {
 }
+
+void DriveCommand::SetGoals(double distance, double angle) {
+	distanceGoal_ = distance;
+	angleGoal_ = angle;
+}

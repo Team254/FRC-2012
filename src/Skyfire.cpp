@@ -107,7 +107,7 @@ Skyfire::Skyfire() {
 
   // Drivers
   teleopDriver_ = new TeleopDriver(drivebase_, leftJoystick_, rightJoystick_, operatorControl_);
-  baselockDriver_ = new BaselockDriver(drivebase_, leftJoystick_);
+  baselockDriver_ = new BaselockDriver(drivebase_, leftJoystick_, rightJoystick_);
   autoAlignDriver_ = new AutoTurnDriver(drivebase_, target_);
   currDriver_ = teleopDriver_;
 
@@ -537,16 +537,21 @@ void Skyfire::TeleopPeriodic() {
 
   //drive stuff up here so we can see if aligning done before shooting
   // Only have Teleop and AutoAlign Drivers right now
-  if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
+  if (operatorControl_->GetControlLoopsSwitch()) {
+	currDriver_ = baselockDriver_;
+	if (!oldControlLoopsSwitch_)
+	  currDriver_->Reset();
+  } else if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
     // If the auto-align button is pressed, switch to the auto-align driver.
     currDriver_ = autoAlignDriver_;
     currDriver_->Reset();
-  } else if (!leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && oldAutoAlignButton_) {
+  } else if (!leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && (oldAutoAlignButton_ || oldControlLoopsSwitch_)) {
     // If the auto-align button is released, switch back to the teleop driver.
     currDriver_ = teleopDriver_;
     currDriver_->Reset();
   }
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
+  oldControlLoopsSwitch_ = operatorControl_->GetControlLoopsSwitch();
   // Calculate the outputs for the drivetrain given the inputs.
   bool autoAlignDone = currDriver_->UpdateDriver();
   

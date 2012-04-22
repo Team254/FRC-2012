@@ -7,7 +7,7 @@ class Constants;
 class Joystick;
 class OperatorControl;
 class Pid;
-
+class DriveCommand;
 /**
  * @author Eric Bakan
  *
@@ -20,7 +20,7 @@ class BaselockDriver : public Driver {
   /**
    * Only needs a drive and control board inputs
    */
-  BaselockDriver(Drive* drive, Joystick* leftJoystick);
+  BaselockDriver(Drive* drive, Joystick* leftJoystick, Joystick* rightJoystick);
 
   /**
    * Updates the driver
@@ -42,9 +42,11 @@ class BaselockDriver : public Driver {
  private:
   Constants* constants_;
   Joystick* leftJoystick_;
-  Pid* leftPid_;
-  Pid* rightPid_;
+  Joystick* rightJoystick_;
+  DriveCommand* cmd_;
   double baseLockPosition_;
+  double angleGoal_;
+  double distanceGoal_;
 };
 
 #endif // DRIVERS_BASELOCK_DRIVER_H

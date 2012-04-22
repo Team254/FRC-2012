@@ -132,6 +132,7 @@ class Skyfire : public CheesyRobot {
   bool oldHardUpButton_;
   bool oldHardDownButton_;
   double reverseConveyor_;
+  bool oldControlLoopsSwitch_;
   
   double shooterTargetVelocity_;
   double shooterIncr_;
