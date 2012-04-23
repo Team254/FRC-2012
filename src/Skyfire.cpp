@@ -537,15 +537,11 @@ void Skyfire::TeleopPeriodic() {
 
   //drive stuff up here so we can see if aligning done before shooting
   // Only have Teleop and AutoAlign Drivers right now
-  if (operatorControl_->GetControlLoopsSwitch()) {
-	currDriver_ = baselockDriver_;
-	if (!oldControlLoopsSwitch_)
-	  currDriver_->Reset();
-  } else if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
+  if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && !oldAutoAlignButton_) {
     // If the auto-align button is pressed, switch to the auto-align driver.
     currDriver_ = autoAlignDriver_;
     currDriver_->Reset();
-  } else if (!leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && (oldAutoAlignButton_ || oldControlLoopsSwitch_)) {
+  } else if (!leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && oldAutoAlignButton_) {
     // If the auto-align button is released, switch back to the teleop driver.
     currDriver_ = teleopDriver_;
     currDriver_->Reset();
