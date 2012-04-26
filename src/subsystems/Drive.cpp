@@ -183,7 +183,7 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 	
 	
 	
-	wheel = wheel;// + neg_inertia_accumulator;
+	wheel = wheel + neg_inertia_accumulator;
 	if(neg_inertia_accumulator>1)
 		neg_inertia_accumulator-=1;
 	else if (neg_inertia_accumulator<-1)

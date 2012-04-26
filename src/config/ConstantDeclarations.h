@@ -150,11 +150,11 @@ DECLARE_DOUBLE(autoAlignThreshold, .5)
 // Turning
 DECLARE_DOUBLE(turnNonlinHigh, 0.9)
 DECLARE_DOUBLE(turnNonlinLow, 0.8)
-DECLARE_DOUBLE(negInertiaHigh, 10.0)
+DECLARE_DOUBLE(negInertiaHigh, 5.0) // Was 10.0
 DECLARE_DOUBLE(senseHigh, 1.2)
-DECLARE_DOUBLE(negInertiaLowMore, 5.0)
-DECLARE_DOUBLE(negInertiaLowLessExt, 10.0)
-DECLARE_DOUBLE(negInertiaLowLess, 6.0)
+DECLARE_DOUBLE(negInertiaLowMore, 2.5)  // Was 5.0
+DECLARE_DOUBLE(negInertiaLowLessExt, 5.0)  // Was 10.0
+DECLARE_DOUBLE(negInertiaLowLess, 3.0)  // Was 6.0
 DECLARE_DOUBLE(senseLow, 1.10)
 DECLARE_DOUBLE(senseCutoff, 0.1)
 DECLARE_DOUBLE(quickStopTimeConstant, .1)
