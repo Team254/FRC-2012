@@ -183,6 +183,8 @@ class Skyfire : public CheesyRobot {
   Timer* timer_;
   Timer* lightDelay_;
   Notifier* shooterControl_;
+  Timer* autonSafetyTimer_;
+  bool autonRanOnce_;
 };
 
 // Start the actual program

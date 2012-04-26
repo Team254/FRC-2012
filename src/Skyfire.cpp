@@ -145,6 +145,9 @@ Skyfire::Skyfire() {
   shooterIncr_ = 0.0;
   
   lightDelay_ = new Timer();
+  autonSafetyTimer_ = new Timer();
+  autonSafetyTimer_->Start();
+  autonRanOnce_ = false;
   
   shooterControl_ = new Notifier(Shooter::CallUpdate, shooter_);
   shooterControl_->StartPeriodic(1.0/50.0);
@@ -165,6 +168,12 @@ void Skyfire::DisabledInit() {
 }
 
 void Skyfire::AutonomousInit() {
+	
+  if (autonSafetyTimer_->Get() < 5.0 && autonRanOnce_) {
+	  return;
+  }
+  autonRanOnce_ = true;
+  
   constants_->LoadFile();
   ResetMotors();
   
@@ -522,6 +531,7 @@ void Skyfire::AutonomousPeriodic() {
   if ((autonTimer_->Get() > autonDelay_)&& autoBaseCmd_) {
     autoBaseCmd_->Run();
   }
+  autonSafetyTimer_->Reset();
 }
 
 void Skyfire::TeleopPeriodic() {
