@@ -132,9 +132,9 @@ bool DriveCommand::Run() {
   
   //printf("l: %f r: %f g: %f\n", ssc_->U->data[0] / 12.0, ssc_->U->data[1] / 12.0, drive_->GetGyroAngle());
   //PidTuner::PushData((ssc_->X_hat->data[0]-ssc_->X_hat->data[2])/robotWidth, (currLeftDist-currRightDist)/robotWidth, -curThet_);//angGoal*(robotWidth));
-  PidTuner::PushData((-(drive_->GetGyroAngle() - startingAngle_ ) - angleGoal_) * 0.0174532925,
+  /*PidTuner::PushData((-(drive_->GetGyroAngle() - startingAngle_ ) - angleGoal_) * 0.0174532925,
 		  ((curX_ - turnCompensationOffset / 2.0 - thetaFactor)-(curX_ + turnCompensationOffset / 2.0 + thetaFactor))/robotWidth,
-		  (currLeftDist-currRightDist)/robotWidth);//angGoal*(robotWidth));
+		  (currLeftDist-currRightDist)/robotWidth);//angGoal*(robotWidth));*/
   //printf("%f %f %f\n",ssc_->X_hat->data[0], currLeftDist, distGoal);
   drive_->SetLinearPower(ssc_->U->data[0] / 12.0, ssc_->U->data[1] / 12.0);
   DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "curX:%f", curX_);

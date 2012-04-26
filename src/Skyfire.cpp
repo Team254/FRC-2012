@@ -379,11 +379,7 @@ void Skyfire::TeleopInit() {
 }
 
 void Skyfire::DisabledPeriodic() {
-  GetWatchdog().Feed();
-  voltageLogger->Log("d %f %f %f\n", Timer::GetFPGATimestamp(),(double)voltage->GetValue(), (double) radioV->GetValue());
-  // Start a connection to the camera 
-  target_->DoVision();
-  
+  GetWatchdog().Feed();  
   // Autonomous delay
   timer_->Reset();
   shooter_->Reset();
@@ -521,7 +517,7 @@ void Skyfire::DisabledPeriodic() {
 }
 
 void Skyfire::AutonomousPeriodic() {
-  voltageLogger->Log("a %f %f %f\n", Timer::GetFPGATimestamp(),(double)voltage->GetValue(), (double) radioV->GetValue());
+  //voltageLogger->Log("a %f %f %f\n", Timer::GetFPGATimestamp(),(double)voltage->GetValue(), (double) radioV->GetValue());
   GetWatchdog().Feed();
   if ((autonTimer_->Get() > autonDelay_)&& autoBaseCmd_) {
     autoBaseCmd_->Run();

@@ -52,7 +52,7 @@ DECLARE_DOUBLE(thresholdGMin, 0)
 DECLARE_DOUBLE(thresholdGMax, 50)
 DECLARE_DOUBLE(thresholdBMin, 80)
 DECLARE_DOUBLE(thresholdBMax, 255)
-DECLARE_DOUBLE(cameraOffset, 0)
+DECLARE_DOUBLE(cameraOffset, 0.0)
 
 // Driver controls
 DECLARE_DOUBLE(leftJoystickPort, 1)
