@@ -251,10 +251,10 @@ void Skyfire::AutonomousInit() {
               //new DriveCommand(drivebase_, 0, -autonBiasTurn, false, 1.0),
               //new OldDriveCommand(drivebase_, 30, 0.0, false, .5, .45),
               BALLS_FROM_BRIDGE_COMMAND(true),
-              new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed + 1.0),
+              new SetWheelSpeedCommand(shooter_, constants_->shooterKeyFarSpeed - 6),
               new OldDriveCommand(drivebase_, -55, 0.0, false, 2.0),
               new DelayCommand(.25),
-              AUTO_SHOOT_COMMAND(constants_->shooterKeyFarSpeed, 0, false)
+              AUTO_SHOOT_COMMAND(constants_->shooterKeyFarSpeed + .6, 0, false)
             );
             break;
 
