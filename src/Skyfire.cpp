@@ -188,13 +188,13 @@ void Skyfire::AutonomousInit() {
   }
 
   double autonBiasTurn = 0;
-  double allianceBridgeAngle = 12;
+  double allianceBridgeAngle = 13.0;
   if (autonBias_ == BIAS_LEFT) {
     autonBiasTurn = -10;
-    allianceBridgeAngle = 11;
+    allianceBridgeAngle -= 1;
   } else if (autonBias_ == BIAS_RIGHT) {
 	autonBiasTurn = 10;
-	allianceBridgeAngle = 13;
+	allianceBridgeAngle += 1;
   }
 
   switch (ballHardness_) {
@@ -319,12 +319,12 @@ void Skyfire::AutonomousInit() {
     case AUTON_ALLIANCE_BRIDGE:
       autoBaseCmd_ = AUTO_SEQUENTIAL(
           new ShootCommand(shooter_, intake_, true, Constants::GetInstance()->shooterKeyCloseSpeed + 3, 2, 4.5),
-          new OldDriveCommand(drivebase_, 120, allianceBridgeAngle, false, 2.75),
+          new OldDriveCommand(drivebase_, 120, allianceBridgeAngle, false, 2.4),
           new OldDriveCommand(drivebase_, 100, -20, false, 1.0, .5),
           BALLS_FROM_BRIDGE_COMMAND(true),
-          new SetWheelSpeedCommand(shooter_, constants_->shooterKeyCloseSpeed + 3),
+          new SetWheelSpeedCommand(shooter_, constants_->shooterKeyCloseSpeed + 2),
           new OldDriveCommand(drivebase_, -50, 0, false, .3),
-          new OldDriveCommand(drivebase_, -50, 6, false, .4),
+          new OldDriveCommand(drivebase_, -50, 7, false, .4),
           new OldDriveCommand(drivebase_, -50, 6, false, .4),
           new OldDriveCommand(drivebase_, -50, 6, false, .4),
           new OldDriveCommand(drivebase_, -35, 6, false, 1.5),
