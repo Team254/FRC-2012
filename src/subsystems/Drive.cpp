@@ -69,7 +69,7 @@ void Drive::SetPizzaWheelDown(bool down) {
   pizzaWheelSolenoid_->Set(down);
 }
 
-void Drive::SetBrakeOn(bool on) {
+void Drive::SetBrakeOn(bool on) {	
   if (on) {  
     brakeSolenoid_->Set(DoubleSolenoid::kForward);
   } else { 
@@ -235,7 +235,7 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 		left_pwm += overPower*(-1.0 - right_pwm);
 		right_pwm = -1.0;
 	}
-	//printf("left pwm: %f right pwm: %f\n",left_pwm,right_pwm);
+	printf("left pwm: %f right pwm: %f\n",left_pwm,right_pwm);
 	//printf("left wheel: %f right wheel: %f\n",m_robot->GetLeftDistance(),m_robot->GetRightDistance());
 	  SetLinearPower(left_pwm, right_pwm);
 	

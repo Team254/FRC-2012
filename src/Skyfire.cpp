@@ -297,8 +297,15 @@ void Skyfire::AutonomousInit() {
     // Shoot 2 from front of key
     case AUTON_SHORT_SIMPLE:
           autoBaseCmd_ = AUTO_SEQUENTIAL (
-            new ShootCommand(shooter_, intake_, true, 46, 2, 6.0)
-            );
+        	AUTO_CONCURRENT(
+        	  AUTO_SEQUENTIAL(
+        	    new SetIntakePositionCommand(intake_, Intake::INTAKE_DOWN),
+        	    new DelayCommand(.5),
+        	    new SetIntakePositionCommand(intake_, Intake::INTAKE_FLOATING)
+              ),
+              new ShootCommand(shooter_, intake_, true, 46, 100, 100)
+            )
+          );
           break;
 
     // Shoot 2 from back of key
@@ -535,6 +542,7 @@ void Skyfire::AutonomousPeriodic() {
 }
 
 void Skyfire::TeleopPeriodic() {
+
   GetWatchdog().Feed();
   //voltageLogger->Log("t %f %f %f\n", Timer::GetFPGATimestamp(),(double)voltage->GetValue(), (double) radioV->GetValue());
   static bool autoshooting = false;
@@ -679,7 +687,8 @@ void Skyfire::TeleopPeriodic() {
   static const double maxSpeed = 10.0;
   // Set the brake in the last 0.25 seconds of the match
   if (timer_->Get()>=119.75 && fabs(curLeft - prevLeftDist_)/dt < maxSpeed && fabs(curRight - prevRightDist_)/dt < maxSpeed) {
-	  teleopDriver_->AskForBrake(true);
+	  //Dawg does this is set to false for demos doe, for competition make it true
+	  teleopDriver_->AskForBrake(false);
   } else {
 	  teleopDriver_->AskForBrake(false);
   }
@@ -698,4 +707,8 @@ void Skyfire::TeleopPeriodic() {
 	lightDelay_->Reset();
   }
   SmartDashboard::GetInstance()->PutBoolean("Aligned", light );
+  /*
+  leftDriveMotorA_->Set(1);
+  rightDriveMotorA_->Set(1);
+  */
 }
