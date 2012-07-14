@@ -69,10 +69,10 @@ void Drive::SetPizzaWheelDown(bool down) {
   pizzaWheelSolenoid_->Set(down);
 }
 
-void Drive::SetBrakeOn(bool on) {	
-  if (on) {  
+void Drive::SetBrakeOn(bool on) {
+  if (on) {
     brakeSolenoid_->Set(DoubleSolenoid::kForward);
-  } else { 
+  } else {
     brakeSolenoid_->Set(DoubleSolenoid::kReverse);
   }
 }
@@ -127,16 +127,14 @@ double Drive::Linearize(double x) {
 void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 	bool isQuickTurn = quickTurn;
 	bool isHighGear = highGear_;
-	//printf("Drive Distance ld %f rd %f\n", m_robot->GetLeftDistance(), m_robot->GetRightDistance());
-	
+
 	double wheelNonLinearity;
-	
+
 	double neg_inertia = wheel - old_wheel_;
 	old_wheel_ = wheel;
-	
+
 	double M_PI = 3.141592;
-	//triple sine wave ftw!
-	// WHAT DOES IT MEAN???
+
 	if (isHighGear) {
 		wheelNonLinearity = constants_->turnNonlinHigh;
 		// Apply a sin function that's scaled to make it feel better.
@@ -149,14 +147,14 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
 		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
 	}
-	
+
 	double left_pwm, right_pwm, overPower;
 	float sensitivity = 1.7;
-	
+
 	float angular_power;
 	float linear_power;
-	
-	//negative inertia!
+
+	// Negative inertia!
 	static double neg_inertia_accumulator = 0.0;
 	double neg_inertia_scalar;
 	if (isHighGear) {
@@ -173,27 +171,27 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 			}
 		}
 		sensitivity = constants_->senseLow;
-		
+
 		if (fabs(throttle) > constants_->senseCutoff) {
 			sensitivity = 1 - (1 - sensitivity) / fabs(throttle);
 		}
 	}
-	double neg_inertia_power=neg_inertia * neg_inertia_scalar;
-	neg_inertia_accumulator+=neg_inertia_power;
-	
-	
-	
+	double neg_inertia_power = neg_inertia * neg_inertia_scalar;
+	neg_inertia_accumulator += neg_inertia_power;
+
+
+
 	wheel = wheel + neg_inertia_accumulator;
-	if(neg_inertia_accumulator>1)
-		neg_inertia_accumulator-=1;
-	else if (neg_inertia_accumulator<-1)
-		neg_inertia_accumulator+=1;
+	if(neg_inertia_accumulator > 1)
+		neg_inertia_accumulator -= 1;
+	else if (neg_inertia_accumulator < -1)
+		neg_inertia_accumulator += 1;
 	else
-		neg_inertia_accumulator=0;
-	
+		neg_inertia_accumulator = 0;
+
 	linear_power = throttle;
-		
-	//quickturn!
+
+	// Quickturn!
 	if (isQuickTurn) {
 		if (fabs(linear_power) < 0.2) {
 			double alpha = constants_->quickStopTimeConstant;
@@ -217,97 +215,27 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 			quickStopAccumulator_ = 0.0;
 		}
 	}
-	
+
 	right_pwm = left_pwm = linear_power;
 	left_pwm += angular_power;
 	right_pwm -= angular_power;
-	
+
 	if (left_pwm > 1.0) {
-		right_pwm -= overPower*(left_pwm - 1.0);
+		right_pwm -= overPower * (left_pwm - 1.0);
 		left_pwm = 1.0;
 	} else if (right_pwm > 1.0) {
-		left_pwm -= overPower*(right_pwm - 1.0);
+		left_pwm -= overPower * (right_pwm - 1.0);
 		right_pwm = 1.0;
 	} else if (left_pwm < -1.0) {
-		right_pwm += overPower*(-1.0 - left_pwm);
+		right_pwm += overPower * (-1.0 - left_pwm);
 		left_pwm = -1.0;
 	} else if (right_pwm < -1.0) {
-		left_pwm += overPower*(-1.0 - right_pwm);
+		left_pwm += overPower * (-1.0 - right_pwm);
 		right_pwm = -1.0;
 	}
+
 	printf("left pwm: %f right pwm: %f\n",left_pwm,right_pwm);
-	//printf("left wheel: %f right wheel: %f\n",m_robot->GetLeftDistance(),m_robot->GetRightDistance());
-	  SetLinearPower(left_pwm, right_pwm);
-	
-	/*
-  double angularPower = 0.0;
-  double overPower = 0.0;
-  double sensitivity = 1.0;
-  double rPower = 0.0;
-  double lPower = 0.0;
-  
-  static double fpga = Timer::GetFPGATimestamp();
-    static double prevGyro = gyro_->GetAngle();
-    double curfpga = Timer::GetFPGATimestamp();
-    double curGyro = gyro_->GetAngle();
-    double dt = curfpga - fpga;
-    double dtheta = curGyro - prevGyro;
-    double wubbleu = dtheta / dt;
-    fpga = curfpga;
-    prevGyro = curGyro;
-    //PidTuner::PushData(wubbleu, 0, 0);
-
-  if (!shiftSolenoid_->Get()) //high gear
-    sensitivity = constants_->turnSensHigh;
-  else {
-    sensitivity = constants_->turnSensLow;
-    //printf("low gear....\n");
-  }
-
-  if (quickTurn) {
-    overPower = 1.0;
-    sensitivity = 1.0;
-    angularPower = wheel;
-  }
-  else {
-    overPower = 0.0;
-    angularPower = fabs(throttle) * wheel * sensitivity;
-  }
-  
-  if (!quickTurn && controlLoops_) {
-    angularPower -= wubbleu * constants_->inertiaGain;
-  }
-
-  rPower = lPower = throttle;
-  lPower += angularPower;
-  rPower -= angularPower;
-
-  if (lPower > 1.0) {
-    rPower -= overPower * (lPower - 1.0);
-    lPower = 1.0;
-  }
-  else if (rPower > 1.0) {
-    lPower -= overPower * (rPower - 1.0);
-    rPower = 1.0;
-  }
-  else if (lPower < -1.0) {
-    rPower += overPower * (-1.0 - lPower);
-    lPower = -1.0;
-  }
-  else if (rPower < -1.0) {
-    lPower += overPower * (-1.0 - rPower);
-    rPower = -1.0;
-  }
-  
-  if (throttle == 0 && !quickTurn) {
-    SetLinearPower(0.0, 0.0);
-  }
-  
-  //printf("t: %f l: %f r: %f\n", throttle, lPower, rPower);
-
-  //  printf("ts: %f | lp: %f\nrp: %f\n\n", sensitivity, lPower, rPower);
-  SetLinearPower(lPower, rPower);
-  */
+  SetLinearPower(left_pwm, right_pwm);
 }
 
 void Drive::SetControlLoopsOn(bool on){

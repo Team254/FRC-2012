@@ -41,7 +41,6 @@ bool SequentialCommand::Run() {
       return true;
     } else {
       // More commands to process, Initialize the next one
-      //printf("****** Initing Command: %d\n", commandIndex_);
       commands_[commandIndex_]->Initialize();
     }
   }

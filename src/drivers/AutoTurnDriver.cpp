@@ -27,9 +27,7 @@ bool AutoTurnDriver::UpdateDriver() {
     foundTarget_ = false;
   }
   drive_->SetHighGear(false);
-  if (!foundTarget_ && !target_->SeesTarget()){
-      //target_->DoVision();
-    }else if (!foundTarget_ && target_->SeesTarget()) {
+  if (!foundTarget_ && target_->SeesTarget()) {
 	  // Grab a camera image angle and reset the gyro
 	  drive_->ResetGyro();
 	  delete command_;

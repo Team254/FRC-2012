@@ -19,8 +19,7 @@ class OldDriveCommand : public AutoCommand {
   /**
    * Constructor. Accepts drivetrain pointer and goal in terms of distance in inches
    */
-	// coast is defunct - take it out when we refactor
-  OldDriveCommand(Drive* drive, double distance, double angle, bool usePizza, double timeout, double maxSpeed=240.0, double maxAcceleration=120.0, double maxAlpha=10.0, double maxOmega=10.0);
+  OldDriveCommand(Drive* drive, double distance, double angle, bool usePizza, double timeout, double maxSpeed = 240.0, double maxAcceleration = 120.0, double maxAlpha = 10.0, double maxOmega = 10.0);
 
   /**
    * Clears encoders and gyro
@@ -39,7 +38,7 @@ class OldDriveCommand : public AutoCommand {
  private:
   // Drivebase object for motor control and encoder reading functionality
   Drive* drive_;
-  
+
   //Timer for velocity calcs
   Timer* brakeTimer_;
 
@@ -56,7 +55,7 @@ class OldDriveCommand : public AutoCommand {
   double maxOmega_;
   double turnOffset_;
   double sumStoppedError_;
-  
+
   // State space stuff
   double curA_;
   double curV_;
@@ -69,7 +68,7 @@ class OldDriveCommand : public AutoCommand {
   ss_controller *ssc_;
   AccelFilterBase* straightFilter_;
   AccelFilterBase* turnFilter_;
-  
+
   // Old
   Pid* leftPid_;
   Pid* rightPid_;

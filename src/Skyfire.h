@@ -60,7 +60,7 @@ class Skyfire : public CheesyRobot {
    * Is called periodically as long as the robot is in Teleop mode
    */
   virtual void TeleopPeriodic();
-  
+
   /**
    * Resets motor powers to zero.
    */
@@ -111,7 +111,7 @@ class Skyfire : public CheesyRobot {
   DigitalInput* bumpSensor_;
   AnalogChannel* conveyorBallSensor_;
   AnalogChannel* ballRanger_;
- 
+
   // Pneumatics
   Compressor* compressor_;
   Solenoid* shiftSolenoid_;
@@ -133,7 +133,7 @@ class Skyfire : public CheesyRobot {
   bool oldHardDownButton_;
   double reverseConveyor_;
   bool oldControlLoopsSwitch_;
-  
+
   double shooterTargetVelocity_;
   double shooterIncr_;
 
@@ -154,25 +154,24 @@ class Skyfire : public CheesyRobot {
     AUTON_TEST,
     NUM_AUTON_MODES,
     AUTON_START_ANYWHERE
-
   };
 
   enum AutonBias {
-	BIAS_NONE = 0,
-	BIAS_LEFT,
-	BIAS_RIGHT,
-	NUM_BIASES
+    BIAS_NONE = 0,
+    BIAS_LEFT,
+    BIAS_RIGHT,
+    NUM_BIASES
   };
 
   enum BallHardness {
-	BALL_WTF_SOFT = 0, 
-	BALL_SOFT,
-	BALL_DEFAULT,
-	BALL_HARD,
-	BALL_WTF_HARD,
-	NUM_BALLS
+    BALL_WTF_SOFT = 0,
+    BALL_SOFT,
+    BALL_DEFAULT,
+    BALL_HARD,
+    BALL_WTF_HARD,
+    NUM_BALLS
   };
-  
+
   AutonMode autonMode_;
   AutonBias autonBias_;
   BallHardness ballHardness_;

@@ -39,15 +39,15 @@ Shooter::Shooter(Victor* conveyorMotor, Victor* leftShooterMotor, Victor* rightS
   filter_ = DaisyFilter::SinglePoleIIRFilter(0.5f);
   pidGoal_ = 0.0;
   atTarget_ = false;
-  
+
   y_ = init_matrix(1,1);
-    r_ = init_matrix(2,1);
-    flash_matrix(y_, 0.0);
-    flash_matrix(r_, 0.0, 0.0);
-    ssc_ = new ss_controller(1, 1, 2, ss_controller::SHOOTER);
-    ssc_->reset();
-    
-  hardnessOffset_ = 0;  
+  r_ = init_matrix(2,1);
+  flash_matrix(y_, 0.0);
+  flash_matrix(r_, 0.0, 0.0);
+  ssc_ = new ss_controller(1, 1, 2, ss_controller::SHOOTER);
+  ssc_->reset();
+
+  hardnessOffset_ = 0;
 }
 
 void Shooter::SetLinearPower(double pwm) {
@@ -62,16 +62,16 @@ void Shooter::SetTargetVelocity(double velocity, hoodPref pref) {
   }
   pid_->ResetError();
   outputValue_ = 0;
-  
+
   if(pref==UP) {
     SetHoodUp(true);
   } else if (pref==DOWN) {
     SetHoodUp(false);
   } else {
 	  if (velocity > 40) {
-		SetHoodUp(true);
+      SetHoodUp(true);
 	  } else if (velocity > 0) {
-		SetHoodUp(false);
+      SetHoodUp(false);
 	  }
   }
 }
@@ -81,10 +81,10 @@ bool Shooter::PIDUpdate() {
   timer_->Reset();
 
   double currEncoderPos = shooterEncoder_->GetRaw() / 128.0 * 2 * 3.1415926;
-  
+
   double velocity_goal = 2 * 3.1415926 * targetVelocity_;
-  double instantVelocity = ((currEncoderPos - prevPos_) /  (1.0/50.0));
-  
+  double instantVelocity = ((currEncoderPos - prevPos_) / (1.0 / 50.0));
+
   flash_matrix(y_, (double)currEncoderPos);
   const double velocity_weight_scalar = 0.35;
 
@@ -100,9 +100,9 @@ bool Shooter::PIDUpdate() {
   pidGoal_ = (minimum > min_reference) ? minimum : min_reference;
 
   flash_matrix(r_, pidGoal_, velocity_goal);
-  pidGoal_ += ((1.0/50.0) * velocity_goal);
+  pidGoal_ += ((1.0 / 50.0) * velocity_goal);
   ssc_->update(r_, y_);
-  
+
   if (velocity_goal < 1.0) {
     SetLinearPower(0.0);
     pidGoal_ = currEncoderPos;
@@ -113,7 +113,7 @@ bool Shooter::PIDUpdate() {
   instantVelocity =  instantVelocity / (2 * 3.1415926);
   velocity_ = UpdateFilter(instantVelocity);
 
-  prevPos_ = currEncoderPos;  
+  prevPos_ = currEncoderPos;
   atTarget_ = fabs(velocity_ - targetVelocity_) < VELOCITY_THRESHOLD;
   DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line2, "%.1f | %.1f rps", targetVelocity_,
                      velocity_);
@@ -134,7 +134,6 @@ void Shooter::SetHoodUp(bool up) {
 }
 
 double Shooter::UpdateFilter(double value) {
-  //return value;
   velocityFilter_[filterIndex_] = value;
   filterIndex_++;
   if (filterIndex_ == FILTER_SIZE) {
@@ -186,7 +185,7 @@ double Shooter::Linearize(double x) {
 void Shooter::Reset() {
   atTarget_ = false;
   for (int i = 0; i < FILTER_SIZE; i++) {
-  velocityFilter_[i] = 0;
+    velocityFilter_[i] = 0;
   }
   flash_matrix(y_, 0.0);
   flash_matrix(r_, 0.0, 0.0);
@@ -222,6 +221,6 @@ void Shooter::CallUpdate(void* shooter){
 }
 
 double Shooter::SetHardnessOffset(double offset) {
-  hardnessOffset_ = offset;	
+  hardnessOffset_ = offset;
 }
 

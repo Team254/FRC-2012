@@ -15,14 +15,12 @@ BackboardFinder::BackboardFinder(Drive* drive) : VisionProcess() {
   useTopForWidth_ = false;
   drive_ = drive;
   useSkew_ = true;
-  //camera.WriteResolution(AxisCameraParams::kResolution_320x240);
 }
 
 double BackboardFinder::GetX() {
   if (-1.0 <= x_ && x_ <= 1.0) {
     return x_;
   } else {
-  //  printf("Bad x val :( %f\n", x_);
     return 0;
   }
 }
@@ -47,11 +45,11 @@ double BackboardFinder::GetDistance() {
 	if (useTopForWidth_) {
 	  w += 7; // difference between target width and side to side distance
 	}
-	return constants_->distanceCoeffA * pow(width_, 6) + 
-			constants_->distanceCoeffB * pow(width_, 5) + 
-			constants_->distanceCoeffC * pow(width_, 4) + 
-			constants_->distanceCoeffD * pow(width_, 3) + 
-			constants_->distanceCoeffE * pow(width_, 2) + 
+	return constants_->distanceCoeffA * pow(width_, 6) +
+			constants_->distanceCoeffB * pow(width_, 5) +
+			constants_->distanceCoeffC * pow(width_, 4) +
+			constants_->distanceCoeffD * pow(width_, 3) +
+			constants_->distanceCoeffE * pow(width_, 2) +
 			constants_->distanceCoeffF * width_ + constants_->distanceCoeffG;
 }
 
@@ -114,7 +112,7 @@ void BackboardFinder::DoVision() {
   ParticleFilterOptions pParticleFilterOptions;
   int pNumParticles;
 
-  
+
   pParticleCriteria = (ParticleFilterCriteria2*)malloc(sizeof(ParticleFilterCriteria2));
   pParticleCriteria[0].parameter = (MeasurementType)pParameter[0];
   pParticleCriteria[0].lower = pLower[0];
@@ -150,27 +148,26 @@ void BackboardFinder::DoVision() {
   eParticleFilterOptions.connectivity8 = TRUE;
   imaqParticleFilter3(image, image, eParticleCriteria, 1, &eParticleFilterOptions, NULL, &eNumParticles);
   free(eParticleCriteria);
-  
+
   // Extract Particles (4?)
   ParticleAnalysisReport top;
   vector<ParticleAnalysisReport>* particles = new vector<ParticleAnalysisReport>;
   int particleCount = bimg->GetNumberParticles();
-  for(int particleIndex = 0; particleIndex < particleCount; particleIndex++)
-  {
+  for(int particleIndex = 0; particleIndex < particleCount; particleIndex++) {
   	particles->push_back(bimg->GetParticleAnalysisReport(particleIndex));
   }
-  
+
   // Find top target
   int topIndex = 0;
-  for (int i = 0; i < particles->size(); i++){
-	 ParticleAnalysisReport p = (*particles)[i];
-	 if (i == 0){
-		 top = p;
-	 }
-	 if (p.center_mass_y_normalized < top.center_mass_y_normalized) {
-		 top = p;
-		 topIndex = i;
-	 }
+  for (int i = 0; i < particles->size(); i++) {
+    ParticleAnalysisReport p = (*particles)[i];
+    if (i == 0){
+      top = p;
+    }
+    if (p.center_mass_y_normalized < top.center_mass_y_normalized) {
+      top = p;
+      topIndex = i;
+    }
   }
 
   // Skew of target gives us our lateral position on the field
@@ -192,25 +189,21 @@ void BackboardFinder::DoVision() {
   seesTarget_ = (particles->size() >= 1) && particles->size() < 5;
   x_ = seesTarget_ ? top.center_mass_x_normalized : 0.0;
 
-
   // Calculate angle on fieled based on ?
-
   width_ = top.boundingRect.width;
-  
+
 #if 0
   int comx2 = 0;
   printf("num particles: %d\n", particles->size());
   for (int i = 0; i < particles->size(); i++){
 	bimg->ParticleMeasurement(i, IMAQ_MT_ORIENTATION, &orientation);
 	 bimg->ParticleMeasurement(i, IMAQ_MT_CENTER_OF_MASS_X, &comx2);
-    printf("* i:%d | x:%d y:%f or:%f comx2:%d\n", i , particles->at(i).center_mass_x, particles->at(i).center_mass_y_normalized, orientation, comx2 );  
+    printf("* i:%d | x:%d y:%f or:%f comx2:%d\n", i , particles->at(i).center_mass_x, particles->at(i).center_mass_y_normalized, orientation, comx2 );
   }
   printf("topIndex:%d\ncomxq:%d\nor: %f\n\n", topIndex, comx, orientation_);
 #endif
 
   static Logger * l = new Logger("/vision.csv");
-  //l->Log("%f,%d,%d,%d\n", drive_->GetLeftEncoderDistance(),particles->size(), (right.boundingRect.left  - (left.boundingRect.left + left.boundingRect.width)), top.boundingRect.width );
-
 
   delete bimg;
   static double t = 0;

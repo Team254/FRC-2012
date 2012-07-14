@@ -23,17 +23,19 @@ class ss_controller
       DRIVE,
       NUM_CONTROLLERS
     };
-      int num_inputs;
-      int num_outputs;
-      int num_states;
 
-      //the state matrices, calculated and imported from matlab
-      struct matrix *A;
-      struct matrix *B;
-      struct matrix *C;
-      struct matrix *D;
-      struct matrix *L;
-      struct matrix *K;
+    int num_inputs;
+    int num_outputs;
+    int num_states;
+
+    //the state matrices, calculated and imported from matlab
+    struct matrix *A;
+    struct matrix *B;
+    struct matrix *C;
+    struct matrix *D;
+    struct matrix *L;
+    struct matrix *K;
+
     // other state matrices
     struct matrix *X;
     struct matrix *X_hat;
@@ -47,10 +49,10 @@ class ss_controller
     struct matrix *alc_xhat;
     struct matrix *xhatp1;
 
-      //temporary matrices needed because of the C-style matrix lib
-        struct matrix *U_tmp;
+    //temporary matrices needed because of the C-style matrix lib
+    struct matrix *U_tmp;
     ss_controller(int inputs, int outputs, int states, controllers controller);
-    
+
     void reset();
     ~ss_controller();
 
@@ -63,6 +65,6 @@ class ss_controller
       * @param y the current left and right distances
       */
     void update( matrix *R, struct matrix *Y);
-    
+
 };
 #endif // MATLAB_MAT_H

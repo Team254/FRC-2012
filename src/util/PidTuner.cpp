@@ -27,29 +27,16 @@ void PidTuner::PushData(double setpoint, double value, double control) {
 }
 
 PidTuner::PidTuner() {
-/* create client's socket */
+  /* build server socket address */
+  sockAddrSize_ = sizeof (struct sockaddr_in);
+  bzero ((char *) &serverAddr_, sockAddrSize_);
+  serverAddr_.sin_len = (u_char) sockAddrSize_;
+  serverAddr_.sin_family = AF_INET;
+  serverAddr_.sin_port = htons (SERVER_PORT_NUM);
 
- if ((sFd_ = socket (AF_INET, SOCK_DGRAM, 0)) == ERROR) {
-   //perror ("socket");
-   // return (ERROR);
-   }
-
- /* bind not required - port number is dynamic */
-
- /* build server socket address */
-
- sockAddrSize_ = sizeof (struct sockaddr_in);
- bzero ((char *) &serverAddr_, sockAddrSize_);
- serverAddr_.sin_len = (u_char) sockAddrSize_;
- serverAddr_.sin_family = AF_INET;
- serverAddr_.sin_port = htons (SERVER_PORT_NUM);
-
- if (((serverAddr_.sin_addr.s_addr = inet_addr ("10.2.54.125")) == ERROR)) {
-   //perror ("unknown server name");
-   close (sFd_);
-   //    return (ERROR);
-   }
-
+  if (((serverAddr_.sin_addr.s_addr = inet_addr ("10.2.54.125")) == ERROR)) {
+    close (sFd_);
+  }
 }
 
 void PidTuner::Push(double setpoint, double value, double control) {
@@ -57,7 +44,6 @@ void PidTuner::Push(double setpoint, double value, double control) {
   sprintf(myRequest, "{\"S\":%f, \"V\":%f, \"C\":%f}\0", (float) setpoint, (float) value, (float) control);
   if (sendto(sFd_, (caddr_t) myRequest, strlen(myRequest), 0,
      (struct sockaddr *) &serverAddr_, sockAddrSize_) == ERROR) {
-    //perror ("sendto");
     close (sFd_);
-   }
+  }
 }

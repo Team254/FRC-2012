@@ -21,7 +21,7 @@
  */
 class Shooter {
  public:
-	
+
 	enum hoodPref {
 		UP,
 		DOWN,
@@ -83,18 +83,18 @@ class Shooter {
   void SetPower(double power);
 
   bool AtTargetVelocity();
-  
+
   void Reset();
-  
+
   double GetBallRange();
-  
+
   /**
    * returns target velocity
    */
   double GetTargetVelocity();
-  
+
   static void CallUpdate(void* shooter);
-  
+
   double SetHardnessOffset(double offset);
 
  private:
@@ -111,7 +111,7 @@ class Shooter {
    * @return the linearized output
    */
   double ConveyorLinearize(double x);
-  
+
 
 
   // Motors
@@ -145,17 +145,16 @@ class Shooter {
   bool prevBallSensor_;
   bool atTarget_;
   DaisyFilter *filter_;
-  
-  
+
+
   // Matrix Stuff
-  
-    struct matrix *y_;
-    struct matrix *r_;
-    ss_controller *ssc_;
-    
+  struct matrix *y_;
+  struct matrix *r_;
+  ss_controller *ssc_;
+
   // Offset
   double hardnessOffset_;
-    
+
 };
 
 #endif  // SUBSYSTEMS_SHOOTER_H_

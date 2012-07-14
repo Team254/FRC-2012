@@ -23,7 +23,7 @@ ShootCommand::ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,
 }
 
 void ShootCommand::Initialize() {
-   shooter_->Reset();  
+   shooter_->Reset();
    shooter_->SetTargetVelocity(shootSpeed_);
    AutoCommand::Initialize();
    lastShotTimer_->Reset();
@@ -33,7 +33,6 @@ void ShootCommand::Initialize() {
 }
 
 bool ShootCommand::Run() {
-  //intake_->SetIntakePosition(Intake::INTAKE_DOWN);
   shooter_->SetTargetVelocity(shootSpeed_);
 
   // Hacked this at SVR to get the seconds balls to stop before shooting
@@ -75,12 +74,12 @@ bool ShootCommand::Run() {
       }
       else if (doJumble_ && jumbleTimer_->Get() > .6)
         intake_->SetIntakePower(-1);
-      else 
+      else
     	intake_->SetIntakePower(1);
     } else {
        intake_->SetIntakePower(0);
     }
-  } 
+  }
   else if (goBack_ > 0) {
     shooter_->SetLinearConveyorPower(-1);
     intake_->SetIntakePower(0);
@@ -89,10 +88,9 @@ bool ShootCommand::Run() {
     intake_->SetIntakePower(0);
   }
 
-  bool done = TimeoutExpired() || (shotsFired_ >= shotsToFire_ && 
+  bool done = TimeoutExpired() || (shotsFired_ >= shotsToFire_ &&
       shotSpotterTimer_->Get() > .15);
   if (done) {
-    //shooter_->SetTargetVelocity(0);
     shooter_->SetLinearConveyorPower(0.0);
     intake_->SetIntakePower(0);
   }
@@ -100,6 +98,5 @@ bool ShootCommand::Run() {
 }
 
 ShootCommand::~ShootCommand()  {
-  //printf("destrcutor for shoot command\n");
 }
 

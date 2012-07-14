@@ -13,7 +13,7 @@ OldDriveCommand::OldDriveCommand(Drive* drive, double distance, double angle, bo
   angleGoal_ = -angle;
   distanceGoal_ = distance;
   usePizza_ = usePizza;
-  resetPizza_ =  usePizza; //(usePizza && drive->GetPizzaUp());
+  resetPizza_ =  usePizza;
   maxSpeed_ = maxSpeed;
   maxAcceleration_ = maxAcceleration;
   maxOmega_ = maxOmega;
@@ -28,7 +28,7 @@ OldDriveCommand::OldDriveCommand(Drive* drive, double distance, double angle, bo
   r_ = init_matrix(4, 1);
   straightFilter_ = new ContinuousAccelFilter();
   turnFilter_ = new ContinuousAccelFilter();
-  
+
   // Old
   driveTimer_ = new Timer();
   prevTime_ = 0;
@@ -57,7 +57,7 @@ void OldDriveCommand::Initialize() {
   delete turnFilter_;
   straightFilter_ = new ContinuousAccelFilter();
   turnFilter_ = new ContinuousAccelFilter();
-  
+
   // Old
   prevTime_ = 0;
   prevLeftDist_ = drive_->GetLeftEncoderDistance();;
@@ -72,53 +72,51 @@ bool OldDriveCommand::Run() {
   if (TimeoutExpired()) {
     drive_->SetLinearPower(0, 0);
     return true;
-    }
-    drive_->SetHighGear(true);
-    double currLeftDist = drive_->GetLeftEncoderDistance();
-    double currRightDist = drive_->GetRightEncoderDistance();
-    double currTime = driveTimer_->Get();
-    double lVel = (currLeftDist - prevLeftDist_)/(currTime - prevTime_);
-    double rVel = (currRightDist - prevRightDist_)/(currTime - prevTime_);
-    prevTime_ = currTime;
-    prevLeftDist_ = currLeftDist;
-    prevRightDist_ = currRightDist;
-    
+  }
+  drive_->SetHighGear(true);
+  double currLeftDist = drive_->GetLeftEncoderDistance();
+  double currRightDist = drive_->GetRightEncoderDistance();
+  double currTime = driveTimer_->Get();
+  double lVel = (currLeftDist - prevLeftDist_)/(currTime - prevTime_);
+  double rVel = (currRightDist - prevRightDist_)/(currTime - prevTime_);
+  prevTime_ = currTime;
+  prevLeftDist_ = currLeftDist;
+  prevRightDist_ = currRightDist;
 
-    // Get PID feedback and send back to the motors.
-    double leftPIDOutput = PwmLimit(leftPid_->Update(distanceGoal_, currLeftDist));
-    double rightPIDOutput = PwmLimit(rightPid_->Update(distanceGoal_, currRightDist));
-    double angleDiff = drive_->GetGyroAngle() - (startingAngle_ + angleGoal_);
-    double straightGain = angleDiff * Constants::GetInstance()->straightDriveGain;
-    double leftPwr = leftPIDOutput - straightGain;
-    double rightPwr = rightPIDOutput + straightGain;
-    
-    leftPwr = (leftPwr < -maxSpeed_) ?  -maxSpeed_: (leftPwr > maxSpeed_) ? maxSpeed_ : leftPwr;
-    rightPwr = (rightPwr < -maxSpeed_) ?  -maxSpeed_ : (rightPwr > maxSpeed_) ? maxSpeed_ : rightPwr;
-    
-    leftPwr -= straightGain;
-    rightPwr += straightGain;
-    //PidTuner::PushData(currLeftDist, distanceGoal_, 0.0);    
-    drive_->SetLinearPower(leftPwr, rightPwr);
-    
-    if (fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2) {
-      //if (coast_) {
-      if (false) {
-        drive_->SetLinearPower(0,0);
-        return true;
-       }
-      if (fabs(lVel) < 6 && fabs(rVel) < 6) {
-        brakeTimer_->Start();
-      }
 
-      }
-    
-    if (brakeTimer_->Get() > .2) {
-      drive_->SetPizzaWheelDown(resetPizza_);
+  // Get PID feedback and send back to the motors.
+  double leftPIDOutput = PwmLimit(leftPid_->Update(distanceGoal_, currLeftDist));
+  double rightPIDOutput = PwmLimit(rightPid_->Update(distanceGoal_, currRightDist));
+  double angleDiff = drive_->GetGyroAngle() - (startingAngle_ + angleGoal_);
+  double straightGain = angleDiff * Constants::GetInstance()->straightDriveGain;
+  double leftPwr = leftPIDOutput - straightGain;
+  double rightPwr = rightPIDOutput + straightGain;
+
+  leftPwr = (leftPwr < -maxSpeed_) ?  -maxSpeed_: (leftPwr > maxSpeed_) ? maxSpeed_ : leftPwr;
+  rightPwr = (rightPwr < -maxSpeed_) ?  -maxSpeed_ : (rightPwr > maxSpeed_) ? maxSpeed_ : rightPwr;
+
+  leftPwr -= straightGain;
+  rightPwr += straightGain;
+  //PidTuner::PushData(currLeftDist, distanceGoal_, 0.0);
+  drive_->SetLinearPower(leftPwr, rightPwr);
+
+  if (fabs(currLeftDist - distanceGoal_ ) < 2 || fabs(currRightDist- distanceGoal_) < 2) {
+    if (false) {
       drive_->SetLinearPower(0,0);
       return true;
+     }
+    if (fabs(lVel) < 6 && fabs(rVel) < 6) {
+      brakeTimer_->Start();
     }
-    // Indicate that the goal has not yet been reached.
-    return false;
+  }
+
+  if (brakeTimer_->Get() > .2) {
+    drive_->SetPizzaWheelDown(resetPizza_);
+    drive_->SetLinearPower(0,0);
+    return true;
+  }
+  // Indicate that the goal has not yet been reached.
+  return false;
 }
 
 OldDriveCommand::~OldDriveCommand() {

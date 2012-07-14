@@ -20,27 +20,15 @@ void TurnCommand::Initialize() {
 }
 
 bool TurnCommand::Run() {
-
   if (timer_->Get() > timeout_) {
-    angle_*=-1;
+    angle_*= -1;
     timer_->Reset();
     Constants* constants = Constants::GetInstance();
     constants->LoadFile();
   }
-  
+
   double curAngle = drive_->GetGyroAngle();
   double power = turnPid_->Update(angle_, curAngle);
   drive_->SetLinearPower(-power, power);
-  //printf("Curr Angle: %f, Power: %f\n", drive_->GetGyroAngle(), power);
-  //PidTuner::PushData(angle_, curAngle, power *100);
-
-  /*
-  if (curAngle - angle_ < 1.0 && curAngle - oldAngle_ < .1) { // Make this better
-    return true;
-  }
-  oldAngle_ = curAngle;
-
-  return TimeoutExpired();
-  */
   return false;
 }

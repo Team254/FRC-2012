@@ -12,7 +12,7 @@ const double CheesyRobot::kDefaultPeriod;
 
 /**
  * Constructor for RobotCheesyBase
- * 
+ *
  * The constructor initializes the instance variables for the robot to indicate
  * the status of initialization for disabled, autonomous, and teleop code.
  */
@@ -20,30 +20,26 @@ CheesyRobot::CheesyRobot()
     : m_disabledInitialized (false)
     , m_autonomousInitialized (false)
     , m_teleopInitialized (false)
-    , m_period (kDefaultPeriod)
-{
+    , m_period (kDefaultPeriod) {
   m_watchdog.SetEnabled(false);
 }
 
 /**
  * Free the resources for a RobotCheesyBase class.
  */
-CheesyRobot::~CheesyRobot()
-{
+CheesyRobot::~CheesyRobot() {
 }
 
 /**
  * Set the period for the periodic functions.
- * 
+ *
  * @param period The period of the periodic function calls.  0.0 means sync to driver station control data.
  */
-void CheesyRobot::SetPeriod(double period)
-{
-
-    // Not syncing with the DS, so start the timer for the main loop
+void CheesyRobot::SetPeriod(double period) {
+  // Not syncing with the DS, so start the timer for the main loop
   m_mainLoopTimer.Reset();
   m_mainLoopTimer.Start();
-  
+
   m_period = period;
 }
 
@@ -52,8 +48,7 @@ void CheesyRobot::SetPeriod(double period)
  * Returns 0.0 if configured to syncronize with DS control data packets.
  * @return Period of the periodic function calls
  */
-double CheesyRobot::GetPeriod()
-{
+double CheesyRobot::GetPeriod() {
   return m_period;
 }
 
@@ -61,90 +56,75 @@ double CheesyRobot::GetPeriod()
  * Get the number of loops per second for the CheesyRobot
  * @return Frequency of the periodic function calls
  */
-double CheesyRobot::GetLoopsPerSec()
-{
+double CheesyRobot::GetLoopsPerSec() {
   return 1.0 / m_period;
 }
 
 /**
  * Provide an alternate "main loop" via StartCompetition().
- * 
+ *
  * This specific StartCompetition() implements "main loop" behavior like that of the FRC
  * control system in 2008 and earlier, with a primary (slow) loop that is
- * called periodically, and a "fast loop" (a.k.a. "spin loop") that is 
- * called as fast as possible with no delay between calls. 
+ * called periodically, and a "fast loop" (a.k.a. "spin loop") that is
+ * called as fast as possible with no delay between calls.
  */
-void CheesyRobot::StartCompetition()
-{
+void CheesyRobot::StartCompetition() {
   // first and one-time initialization
   RobotInit();
   static double t = 0;
   // loop forever, calling the appropriate mode-dependent function
-  while (TRUE)
-  {
+  while (TRUE) {
     // Call the appropriate function depending upon the current robot mode
-    if (IsDisabled())
-    {
+    if (IsDisabled()) {
       // call DisabledInit() if we are now just entering disabled mode from
       // either a different mode or from power-on
-      if (!m_disabledInitialized)
-      {
+      if (!m_disabledInitialized) {
         DisabledInit();
         m_disabledInitialized = true;
         // reset the initialization flags for the other modes
         m_autonomousInitialized = false;
         m_teleopInitialized = false;
       }
-      if (NextPeriodReady())
-      {
+      if (NextPeriodReady()) {
         FRC_NetworkCommunication_observeUserProgramDisabled();
         DisabledPeriodic();
-        
       }
       DisabledContinuous();
     }
-    else if (IsAutonomous())
-    {
+    else if (IsAutonomous()) {
       // call AutonomousInit() if we are now just entering autonomous mode from
       // either a different mode or from power-on
-      if (!m_autonomousInitialized)
-      {
+      if (!m_autonomousInitialized) {
         AutonomousInit();
         m_autonomousInitialized = true;
         // reset the initialization flags for the other modes
         m_disabledInitialized = false;
         m_teleopInitialized = false;
       }
-      if (NextPeriodReady())
-      {
+      if (NextPeriodReady()) {
         FRC_NetworkCommunication_observeUserProgramDisabled();
         AutonomousPeriodic();
-        
       }
       AutonomousContinuous();
     }
-    else
-    {
+    else {
       // call TeleopInit() if we are now just entering teleop mode from
       // either a different mode or from power-on
-      if (!m_teleopInitialized)
-      {
+      if (!m_teleopInitialized) {
         TeleopInit();
         m_teleopInitialized = true;
         // reset the initialization flags for the other modes
         m_disabledInitialized = false;
         m_autonomousInitialized = false;
       }
-      if (NextPeriodReady())
-      {
+      if (NextPeriodReady()) {
         FRC_NetworkCommunication_observeUserProgramDisabled();
         TeleopPeriodic();
-      
       }
       TeleopContinuous();
     }
     Wait(0.001);
-  }  
+  }
 }
 
 /**
@@ -157,67 +137,55 @@ void CheesyRobot::StartCompetition()
  * @todo Decide what this should do if it slips more than one cycle.
  */
 
-bool CheesyRobot::NextPeriodReady()
-{
-    return m_mainLoopTimer.HasPeriodPassed(m_period);
+bool CheesyRobot::NextPeriodReady() {
+  return m_mainLoopTimer.HasPeriodPassed(m_period);
 }
 
 /**
  * Robot-wide initialization code should go here.
- * 
+ *
  * Users should override this method for default Robot-wide initialization which will
  * be called when the robot is first powered on.  It will be called exactly 1 time.
  */
-void CheesyRobot::RobotInit()
-{
-  //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+void CheesyRobot::RobotInit() {
 }
 
 /**
  * Initialization code for disabled mode should go here.
- * 
+ *
  * Users should override this method for initialization code which will be called each time
  * the robot enters disabled mode.
  */
-void CheesyRobot::DisabledInit()
-{
-  //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+void CheesyRobot::DisabledInit() {
 }
 
 /**
  * Initialization code for autonomous mode should go here.
- * 
+ *
  * Users should override this method for initialization code which will be called each time
  * the robot enters autonomous mode.
  */
-void CheesyRobot::AutonomousInit()
-{
-  //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+void CheesyRobot::AutonomousInit() {
 }
 
 /**
  * Initialization code for teleop mode should go here.
- * 
+ *
  * Users should override this method for initialization code which will be called each time
  * the robot enters teleop mode.
  */
-void CheesyRobot::TeleopInit()
-{
-  //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+void CheesyRobot::TeleopInit() {
 }
 
 /**
  * Periodic code for disabled mode should go here.
- * 
+ *
  * Users should override this method for code which will be called periodically at a regular
  * rate while the robot is in disabled mode.
  */
-void CheesyRobot::DisabledPeriodic()
-{
+void CheesyRobot::DisabledPeriodic() {
   static bool firstRun = true;
-  if (firstRun)
-  {
-    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+  if (firstRun) {
     firstRun = false;
   }
   taskDelay(1);
@@ -229,12 +197,9 @@ void CheesyRobot::DisabledPeriodic()
  * Users should override this method for code which will be called periodically at a regular
  * rate while the robot is in autonomous mode.
  */
-void CheesyRobot::AutonomousPeriodic()
-{
+void CheesyRobot::AutonomousPeriodic() {
   static bool firstRun = true;
-  if (firstRun)
-  {
-    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+  if (firstRun) {
     firstRun = false;
   }
   taskDelay(1);
@@ -246,12 +211,9 @@ void CheesyRobot::AutonomousPeriodic()
  * Users should override this method for code which will be called periodically at a regular
  * rate while the robot is in teleop mode.
  */
-void CheesyRobot::TeleopPeriodic()
-{
+void CheesyRobot::TeleopPeriodic() {
   static bool firstRun = true;
-  if (firstRun)
-  {
-    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+  if (firstRun) {
     firstRun = false;
   }
   taskDelay(1);
@@ -263,12 +225,9 @@ void CheesyRobot::TeleopPeriodic()
  * Users should override this method for code which will be called repeatedly as frequently
  * as possible while the robot is in disabled mode.
  */
-void CheesyRobot::DisabledContinuous()
-{
+void CheesyRobot::DisabledContinuous() {
   static bool firstRun = true;
-  if (firstRun)
-  {
-    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+  if (firstRun) {
     firstRun = false;
   }
   m_ds->WaitForData();
@@ -280,12 +239,9 @@ void CheesyRobot::DisabledContinuous()
  * Users should override this method for code which will be called repeatedly as frequently
  * as possible while the robot is in autonomous mode.
  */
-void CheesyRobot::AutonomousContinuous()
-{
+void CheesyRobot::AutonomousContinuous() {
   static bool firstRun = true;
-  if (firstRun)
-  {
-    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+  if (firstRun) {
     firstRun = false;
   }
   m_ds->WaitForData();
@@ -300,9 +256,7 @@ void CheesyRobot::AutonomousContinuous()
 void CheesyRobot::TeleopContinuous()
 {
   static bool firstRun = true;
-  if (firstRun)
-  {
-    //printf("Default %s() method... Overload me!\n", __FUNCTION__);
+  if (firstRun) {
     firstRun = false;
   }
   m_ds->WaitForData();

@@ -23,12 +23,11 @@ ShootFromBridgeCommand::ShootFromBridgeCommand(Shooter* shooter, Intake* intake,
 }
 
 void ShootFromBridgeCommand::Initialize() {
-   shooter_->Reset();  
+   shooter_->Reset();
    shooter_->SetTargetVelocity(shootSpeed_);
    AutoCommand::Initialize();
    if (intakeDown_) {
        intake_->SetIntakePosition(Intake::INTAKE_DOWN);
-       ///reachedSpeed_ = true;
    }
    lastShotTimer_->Reset();
    lastShotTimer_->Start();
@@ -84,7 +83,7 @@ bool ShootFromBridgeCommand::Run() {
     } else {
        intake_->SetIntakePower(0);
     }
-  } 
+  }
   else if (goBack) {
     shooter_->SetLinearConveyorPower(-1);
     intake_->SetIntakePower(0);
@@ -96,10 +95,9 @@ bool ShootFromBridgeCommand::Run() {
     intake_->SetIntakePower(0);
   }
 
-  bool done = TimeoutExpired() || (shotsFired_ >= shotsToFire_ && 
+  bool done = TimeoutExpired() || (shotsFired_ >= shotsToFire_ &&
       shotSpotterTimer_->Get() > .25);
   if (done) {
-    //shooter_->SetTargetVelocity(0);
     shooter_->SetLinearConveyorPower(0.0);
     intake_->SetIntakePower(0);
   }
@@ -107,6 +105,5 @@ bool ShootFromBridgeCommand::Run() {
 }
 
 ShootFromBridgeCommand::~ShootFromBridgeCommand()  {
-  //printf("destrcutor for shoot command\n");
 }
 

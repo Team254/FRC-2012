@@ -5,14 +5,13 @@
 
 class DelayCommand : public AutoCommand {
 
- public:  
+ public:
   DelayCommand(double timeout);
   void Initialize();
   bool Run();
   ~DelayCommand();
-  
-  
+
 };
 
-#endif 
+#endif
 

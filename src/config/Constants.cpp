@@ -30,7 +30,6 @@ void Constants::LoadFile() {
   std::ifstream constantsFile(kConstantsFile);
   std::map<std::string, std::string> constantsMap;
   if (constantsFile.is_open()) {
-    //printf("Found constants file to load.\n");
     // Store the contents of the constants file in a string-string map.
     while (!constantsFile.eof()) {
       std::string key;
@@ -39,7 +38,6 @@ void Constants::LoadFile() {
       std::string value;
       getline(constantsFile, value);
       constantsMap[key] = value;
-     //printf("Loaded constant %s with value %s.\n", key.c_str(), value.c_str()); 
     }
   constantsFile.close();
 }

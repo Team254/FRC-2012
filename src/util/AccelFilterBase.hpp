@@ -8,25 +8,25 @@
  * remaining and maximum, intended, and current velocity and acceleration.
  */
 class AccelFilterBase {
-  
+
 public:
-  
-  AccelFilterBase(double currPos=0, double currVel=0, double currAcc=0)
+
+  AccelFilterBase(double currPos = 0, double currVel = 0, double currAcc = 0)
   : m_currPos(currPos)
   , m_currVel(currVel)
   , m_currAcc(currAcc)
   {}
   virtual ~AccelFilterBase() {}
-  
+
   // Getter functions
   virtual const double GetCurrPos() const {return m_currPos;}
   virtual const double GetCurrVel() const {return m_currVel;}
   virtual const double GetCurrAcc() const {return m_currAcc;}
-  
+
   // Recalculate the system
   virtual void CalcSystem(double distance_to_target, double v, double goal_v, double max_a, double max_v, double dt) = 0;
+
 protected:
-  
   // default value updater
   virtual void UpdateVals(double acc, double dt) {
     m_currAcc=acc;
@@ -34,7 +34,7 @@ protected:
     m_currPos += m_currVel * dt;
     m_currAcc /= dt;
   }
-  
+
   // current vars
   double m_currPos;
   double m_currVel;

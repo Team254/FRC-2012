@@ -18,7 +18,7 @@ bool TeleopDriver::UpdateDriver() {
   bool wantHighGear = !leftJoystick_->GetRawButton((int)constants_->highGearPort);
   bool quickTurning = rightJoystick_->GetRawButton((int)constants_->quickTurnPort);
   drive_->SetHighGear(wantHighGear);
-  //add the starting position to the deadband just so we never get any stupid crap
+  // Add the starting position to the deadband just so we never get any stupid crap
   double straightPower = -leftJoystick_->GetY();
   double turnPower = rightJoystick_->GetX();
 
@@ -38,7 +38,7 @@ bool TeleopDriver::UpdateDriver() {
   // Drive
   DriverStationLCD::GetInstance()->PrintfLine(DriverStationLCD::kUser_Line1, "l:%0.3f r:%0.3f", straightPower, turnPower);
   drive_->CheesyDrive(straightPower, turnPower, quickTurning);
-  
+
   return true;
 }
 

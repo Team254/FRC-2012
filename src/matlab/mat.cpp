@@ -40,9 +40,6 @@ ss_controller::ss_controller(int inputs, int outputs, int states, controllers co
     default:
       break;
   }
-
-  //A_precomp = A - (L * C) - (B * K);
-  //Br_precomp = B * K;
 }
 
 void ss_controller::reset() {
@@ -53,23 +50,9 @@ ss_controller::~ss_controller() {
 
 void ss_controller::update( matrix *R, struct matrix *Y)
 {
-  //printf("r: %f %f\n", R->data[0], R->data[1]);
-  //printf("xhat: %f %f", X_hat->data[0], X_hat->data[1]);
-  //U = K * (R - X_hat);
   matrix_minus(U_tmp, R, X_hat);
   matrix_mult(U, K, U_tmp);
 
-        /*
-  // If U is outside the hardware range, limit it before it 
-  // gets added to the observer.
-  for (int i = 0; i < number_of_outputs; i ++) {
-    if (U[i] > U_max[i]) {
-      U[i] = U_max[i];
-    } else if (U[i] < U_min[i]) {
-      U[i] = U_min[i];
-    }
-  }
-        */
   for(int i=0; i < num_outputs; i++) {
     double* u_i = U->data+i;
     double u_max = U_max->data[i];
@@ -80,7 +63,7 @@ void ss_controller::update( matrix *R, struct matrix *Y)
       *u_i = u_min;
     }
   }
-  // X_hat = (A - L * C) * X_hat + L * Y + B * U;
+
   matrix_mult(b_u, B, U);
   matrix_mult(l_y, L, Y);
   matrix_mult(l_c, L, C);
