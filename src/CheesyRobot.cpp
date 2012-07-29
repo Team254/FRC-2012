@@ -71,7 +71,6 @@ double CheesyRobot::GetLoopsPerSec() {
 void CheesyRobot::StartCompetition() {
   // first and one-time initialization
   RobotInit();
-  static double t = 0;
   // loop forever, calling the appropriate mode-dependent function
   while (TRUE) {
     // Call the appropriate function depending upon the current robot mode

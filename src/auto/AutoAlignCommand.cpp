@@ -30,7 +30,7 @@ bool AutoAlignCommand::Run(){
 	  resetTimer_->Reset();
   }
 
-  bool ret = autoTurn_->UpdateDriver();
+  autoTurn_->UpdateDriver();
   if (TimeoutExpired()){
 	  drive_->SetLinearPower(0,0);
   }

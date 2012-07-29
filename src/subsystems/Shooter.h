@@ -95,7 +95,7 @@ class Shooter {
 
   static void CallUpdate(void* shooter);
 
-  double SetHardnessOffset(double offset);
+  void SetHardnessOffset(double offset);
 
  private:
   /**

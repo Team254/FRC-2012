@@ -29,8 +29,6 @@
 #include "subsystems/Intake.h"
 #include "subsystems/OperatorControl.h"
 #include "subsystems/Shooter.h"
-#include "subsystems/Pid.h"
-#include "subsystems/PidCommander.h"
 #include "util/Functions.h"
 #include "util/Logger.h"
 #include "util/PidTuner.h"
@@ -524,10 +522,8 @@ void Skyfire::AutonomousPeriodic() {
 }
 
 void Skyfire::TeleopPeriodic() {
-
   GetWatchdog().Feed();
   static bool autoshooting = false;
-  static double robotWidth = .5818436 / .0254;
 
   // Drive stuff up here so we can see if aligning done before shooting
   // Only have Teleop and AutoAlign Drivers right now
@@ -543,7 +539,7 @@ void Skyfire::TeleopPeriodic() {
   oldAutoAlignButton_ = leftJoystick_->GetRawButton((int)constants_->autoAlignPort);
   oldControlLoopsSwitch_ = operatorControl_->GetControlLoopsSwitch();
   // Calculate the outputs for the drivetrain given the inputs.
-  bool autoAlignDone = currDriver_->UpdateDriver();
+  currDriver_->UpdateDriver();
 
   // Update shooter power/manual control
   if (operatorControl_->GetKeyFarButton() && operatorControl_->GetIncreaseButton()) {

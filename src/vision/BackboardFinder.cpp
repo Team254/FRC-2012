@@ -192,27 +192,10 @@ void BackboardFinder::DoVision() {
   // Calculate angle on fieled based on ?
   width_ = top.boundingRect.width;
 
-#if 0
-  int comx2 = 0;
-  printf("num particles: %d\n", particles->size());
-  for (int i = 0; i < particles->size(); i++){
-	bimg->ParticleMeasurement(i, IMAQ_MT_ORIENTATION, &orientation);
-	 bimg->ParticleMeasurement(i, IMAQ_MT_CENTER_OF_MASS_X, &comx2);
-    printf("* i:%d | x:%d y:%f or:%f comx2:%d\n", i , particles->at(i).center_mass_x, particles->at(i).center_mass_y_normalized, orientation, comx2 );
-  }
-  printf("topIndex:%d\ncomxq:%d\nor: %f\n\n", topIndex, comx, orientation_);
-#endif
-
-  static Logger * l = new Logger("/vision.csv");
-
   delete bimg;
-  static double t = 0;
-  double diff = Timer::GetFPGATimestamp() - t;
-  t = Timer::GetFPGATimestamp();
-  lastUpdate_ = t;
+  lastUpdate_ = Timer::GetFPGATimestamp();
 }
 
 bool BackboardFinder::HasFreshTarget() {
   return (Timer::GetFPGATimestamp() - lastUpdate_ < .5); // 500ms
 }
-

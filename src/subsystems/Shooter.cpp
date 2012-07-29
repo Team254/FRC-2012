@@ -77,7 +77,6 @@ void Shooter::SetTargetVelocity(double velocity, hoodPref pref) {
 }
 
 bool Shooter::PIDUpdate() {
-  double dt = timer_->Get();
   timer_->Reset();
 
   double currEncoderPos = shooterEncoder_->GetRaw() / 128.0 * 2 * 3.1415926;
@@ -220,7 +219,6 @@ void Shooter::CallUpdate(void* shooter){
   s->PIDUpdate();
 }
 
-double Shooter::SetHardnessOffset(double offset) {
+void Shooter::SetHardnessOffset(double offset) {
   hardnessOffset_ = offset;
 }
-
