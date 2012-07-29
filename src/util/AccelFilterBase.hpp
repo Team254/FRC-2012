@@ -29,7 +29,7 @@ public:
 protected:
   // default value updater
   virtual void UpdateVals(double acc, double dt) {
-    m_currAcc=acc;
+    m_currAcc = acc;
     m_currVel += m_currAcc;
     m_currPos += m_currVel * dt;
     m_currAcc /= dt;

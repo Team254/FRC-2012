@@ -1,7 +1,6 @@
 #include "util/RelativeGyro.h"
 
-RelativeGyro::RelativeGyro(int port)
-: Gyro(port) {
+RelativeGyro::RelativeGyro(int port) : Gyro(port) {
 }
 
 float RelativeGyro::GetAbsoluteAngle() {

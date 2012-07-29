@@ -111,7 +111,7 @@ void Drive::SetPower(double left, double right) {
 
 double Drive::Linearize(double x) {
   if (fabs(x) < 0.01 ) {
-      x = 0.0;
+    x = 0.0;
   }
   if (x > 0.0) {
     return constants_->linearCoeffA * pow(x, 4) + constants_->linearCoeffB * pow(x, 3) +
@@ -179,8 +179,6 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 	double neg_inertia_power = neg_inertia * neg_inertia_scalar;
 	neg_inertia_accumulator += neg_inertia_power;
 
-
-
 	wheel = wheel + neg_inertia_accumulator;
 	if(neg_inertia_accumulator > 1)
 		neg_inertia_accumulator -= 1;
@@ -234,7 +232,7 @@ void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
 		right_pwm = -1.0;
 	}
 
-	printf("left pwm: %f right pwm: %f\n",left_pwm,right_pwm);
+	printf("left pwm: %f right pwm: %f\n", left_pwm, right_pwm);
   SetLinearPower(left_pwm, right_pwm);
 }
 

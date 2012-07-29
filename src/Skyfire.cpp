@@ -338,7 +338,6 @@ void Skyfire::AutonomousInit() {
   }
 
   dingusSolenoid_->Set(false);
-
 }
 
 void Skyfire::TeleopInit() {
