@@ -26,5 +26,5 @@ bool QueueBallCommand::Run() {
 }
 
 QueueBallCommand::~QueueBallCommand() {
-  
+
 }

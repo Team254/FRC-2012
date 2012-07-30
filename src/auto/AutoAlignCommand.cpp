@@ -23,16 +23,16 @@ void AutoAlignCommand::Initialize() {
 
 bool AutoAlignCommand::Run(){
   if (timer_->Get() < .25)
-	  return false;
+    return false;
 
   if (resetTimer_->Get() > .5) {
-	  autoTurn_->Reset();
-	  resetTimer_->Reset();
+    autoTurn_->Reset();
+    resetTimer_->Reset();
   }
 
   autoTurn_->UpdateDriver();
   if (TimeoutExpired()){
-	  drive_->SetLinearPower(0,0);
+    drive_->SetLinearPower(0,0);
   }
   return TimeoutExpired();
 }

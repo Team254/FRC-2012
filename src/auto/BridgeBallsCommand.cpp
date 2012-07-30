@@ -22,11 +22,11 @@ void BridgeBallsCommand::Initialize() {
 bool BridgeBallsCommand::Run(){
 
   if (runIntake_) {
-	  intake_->SetIntakePower(1);
-	  shooter_->SetLinearConveyorPower(-1);
+    intake_->SetIntakePower(1);
+    shooter_->SetLinearConveyorPower(-1);
   } else {
-	  intake_->SetIntakePower(0);
-	  shooter_->SetLinearConveyorPower(0);
+    intake_->SetIntakePower(0);
+    shooter_->SetLinearConveyorPower(0);
   }
 
 
@@ -36,7 +36,7 @@ bool BridgeBallsCommand::Run(){
   } else if (timer_->Get() > .5) {
     intake_->SetIntakePosition(Intake::INTAKE_DOWN);
   } else {
-	intake_->SetIntakePosition(Intake::INTAKE_UP);
+  intake_->SetIntakePosition(Intake::INTAKE_UP);
   }
 
   // Return condition

@@ -38,10 +38,10 @@ bool ShootFromBridgeCommand::Run() {
   shooter_->SetTargetVelocity(shootSpeed_);
 
   if (timer_->Get() > 6.0 && initialIntakeDown_) {
-  	  intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
+      intake_->SetIntakePosition(Intake::INTAKE_FLOATING);
     }
   else if (timer_->Get() > 4.75 && initialIntakeDown_) {
-	  intake_->SetIntakePosition(Intake::INTAKE_DOWN);
+    intake_->SetIntakePosition(Intake::INTAKE_DOWN);
   }
   else if (timer_->Get() > 2.75 && initialIntakeDown_) {
     intake_->SetIntakePosition(Intake::INTAKE_FLOATING);

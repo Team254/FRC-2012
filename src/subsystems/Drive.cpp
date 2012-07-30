@@ -125,114 +125,114 @@ double Drive::Linearize(double x) {
 }
 
 void Drive::CheesyDrive(double throttle, double wheel, bool quickTurn) {
-	bool isQuickTurn = quickTurn;
-	bool isHighGear = highGear_;
+  bool isQuickTurn = quickTurn;
+  bool isHighGear = highGear_;
 
-	double wheelNonLinearity;
+  double wheelNonLinearity;
 
-	double neg_inertia = wheel - old_wheel_;
-	old_wheel_ = wheel;
+  double neg_inertia = wheel - old_wheel_;
+  old_wheel_ = wheel;
 
-	double M_PI = 3.141592;
+  double M_PI = 3.141592;
 
-	if (isHighGear) {
-		wheelNonLinearity = constants_->turnNonlinHigh;
-		// Apply a sin function that's scaled to make it feel better.
-		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
-		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
-	} else {
-		wheelNonLinearity = constants_->turnNonlinLow;
-		// Apply a sin function that's scaled to make it feel better.
-		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
-		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
-		wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
-	}
+  if (isHighGear) {
+    wheelNonLinearity = constants_->turnNonlinHigh;
+    // Apply a sin function that's scaled to make it feel better.
+    wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
+    wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
+  } else {
+    wheelNonLinearity = constants_->turnNonlinLow;
+    // Apply a sin function that's scaled to make it feel better.
+    wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
+    wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
+    wheel = sin(M_PI / 2.0 * wheelNonLinearity * wheel) / sin(M_PI / 2.0 * wheelNonLinearity);
+  }
 
-	double left_pwm, right_pwm, overPower;
-	float sensitivity = 1.7;
+  double left_pwm, right_pwm, overPower;
+  float sensitivity = 1.7;
 
-	float angular_power;
-	float linear_power;
+  float angular_power;
+  float linear_power;
 
-	// Negative inertia!
-	static double neg_inertia_accumulator = 0.0;
-	double neg_inertia_scalar;
-	if (isHighGear) {
-		neg_inertia_scalar = constants_->negInertiaHigh;
-		sensitivity = constants_->senseHigh;
-	} else {
-		if (wheel * neg_inertia > 0) {
-			neg_inertia_scalar = constants_->negInertiaLowMore;
-		} else {
-			if (fabs(wheel) > 0.65) {
-				neg_inertia_scalar = constants_->negInertiaLowLessExt;
-			} else {
-				neg_inertia_scalar = constants_->negInertiaLowLess;
-			}
-		}
-		sensitivity = constants_->senseLow;
+  // Negative inertia!
+  static double neg_inertia_accumulator = 0.0;
+  double neg_inertia_scalar;
+  if (isHighGear) {
+    neg_inertia_scalar = constants_->negInertiaHigh;
+    sensitivity = constants_->senseHigh;
+  } else {
+    if (wheel * neg_inertia > 0) {
+      neg_inertia_scalar = constants_->negInertiaLowMore;
+    } else {
+      if (fabs(wheel) > 0.65) {
+        neg_inertia_scalar = constants_->negInertiaLowLessExt;
+      } else {
+        neg_inertia_scalar = constants_->negInertiaLowLess;
+      }
+    }
+    sensitivity = constants_->senseLow;
 
-		if (fabs(throttle) > constants_->senseCutoff) {
-			sensitivity = 1 - (1 - sensitivity) / fabs(throttle);
-		}
-	}
-	double neg_inertia_power = neg_inertia * neg_inertia_scalar;
-	neg_inertia_accumulator += neg_inertia_power;
+    if (fabs(throttle) > constants_->senseCutoff) {
+      sensitivity = 1 - (1 - sensitivity) / fabs(throttle);
+    }
+  }
+  double neg_inertia_power = neg_inertia * neg_inertia_scalar;
+  neg_inertia_accumulator += neg_inertia_power;
 
-	wheel = wheel + neg_inertia_accumulator;
-	if(neg_inertia_accumulator > 1)
-		neg_inertia_accumulator -= 1;
-	else if (neg_inertia_accumulator < -1)
-		neg_inertia_accumulator += 1;
-	else
-		neg_inertia_accumulator = 0;
+  wheel = wheel + neg_inertia_accumulator;
+  if(neg_inertia_accumulator > 1)
+    neg_inertia_accumulator -= 1;
+  else if (neg_inertia_accumulator < -1)
+    neg_inertia_accumulator += 1;
+  else
+    neg_inertia_accumulator = 0;
 
-	linear_power = throttle;
+  linear_power = throttle;
 
-	// Quickturn!
-	if (isQuickTurn) {
-		if (fabs(linear_power) < 0.2) {
-			double alpha = constants_->quickStopTimeConstant;
-			quickStopAccumulator_ = (1 - alpha) * quickStopAccumulator_ + alpha * PwmLimit(wheel) * constants_->quickStopStickScalar;
-		}
-		overPower = 1.0;
-		if (isHighGear) {
-			sensitivity = 1.0;
-		} else {
-			sensitivity = 1.0;
-		}
-		angular_power = wheel;
-	} else {
-		overPower = 0.0;
-		angular_power = fabs(throttle) * wheel * sensitivity - quickStopAccumulator_;
-		if (quickStopAccumulator_ > 1) {
-			quickStopAccumulator_ -= 1;
-		} else if (quickStopAccumulator_ < -1) {
-			quickStopAccumulator_ += 1;
-		} else {
-			quickStopAccumulator_ = 0.0;
-		}
-	}
+  // Quickturn!
+  if (isQuickTurn) {
+    if (fabs(linear_power) < 0.2) {
+      double alpha = constants_->quickStopTimeConstant;
+      quickStopAccumulator_ = (1 - alpha) * quickStopAccumulator_ + alpha * PwmLimit(wheel) * constants_->quickStopStickScalar;
+    }
+    overPower = 1.0;
+    if (isHighGear) {
+      sensitivity = 1.0;
+    } else {
+      sensitivity = 1.0;
+    }
+    angular_power = wheel;
+  } else {
+    overPower = 0.0;
+    angular_power = fabs(throttle) * wheel * sensitivity - quickStopAccumulator_;
+    if (quickStopAccumulator_ > 1) {
+      quickStopAccumulator_ -= 1;
+    } else if (quickStopAccumulator_ < -1) {
+      quickStopAccumulator_ += 1;
+    } else {
+      quickStopAccumulator_ = 0.0;
+    }
+  }
 
-	right_pwm = left_pwm = linear_power;
-	left_pwm += angular_power;
-	right_pwm -= angular_power;
+  right_pwm = left_pwm = linear_power;
+  left_pwm += angular_power;
+  right_pwm -= angular_power;
 
-	if (left_pwm > 1.0) {
-		right_pwm -= overPower * (left_pwm - 1.0);
-		left_pwm = 1.0;
-	} else if (right_pwm > 1.0) {
-		left_pwm -= overPower * (right_pwm - 1.0);
-		right_pwm = 1.0;
-	} else if (left_pwm < -1.0) {
-		right_pwm += overPower * (-1.0 - left_pwm);
-		left_pwm = -1.0;
-	} else if (right_pwm < -1.0) {
-		left_pwm += overPower * (-1.0 - right_pwm);
-		right_pwm = -1.0;
-	}
+  if (left_pwm > 1.0) {
+    right_pwm -= overPower * (left_pwm - 1.0);
+    left_pwm = 1.0;
+  } else if (right_pwm > 1.0) {
+    left_pwm -= overPower * (right_pwm - 1.0);
+    right_pwm = 1.0;
+  } else if (left_pwm < -1.0) {
+    right_pwm += overPower * (-1.0 - left_pwm);
+    left_pwm = -1.0;
+  } else if (right_pwm < -1.0) {
+    left_pwm += overPower * (-1.0 - right_pwm);
+    right_pwm = -1.0;
+  }
 
-	printf("left pwm: %f right pwm: %f\n", left_pwm, right_pwm);
+  printf("left pwm: %f right pwm: %f\n", left_pwm, right_pwm);
   SetLinearPower(left_pwm, right_pwm);
 }
 

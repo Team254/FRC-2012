@@ -167,7 +167,7 @@ void Skyfire::DisabledInit() {
 void Skyfire::AutonomousInit() {
 
   if (autonSafetyTimer_->Get() < 5.0 && autonRanOnce_) {
-	  return;
+    return;
   }
   autonRanOnce_ = true;
 
@@ -237,7 +237,7 @@ void Skyfire::AutonomousInit() {
 
     // Shoot 1, go to bridge, gather, then drive back and shoot 3
     case AUTON_1_PLUS_3:
-    	// Intentional fall through!
+      // Intentional fall through!
 
     // Shoot 2, go to bridge, gather 2, then shoot them.
     case AUTON_2_PLUS_2:
@@ -325,9 +325,9 @@ void Skyfire::AutonomousInit() {
       break;
 
     case AUTON_TEST:
-    	autoBaseCmd_ = AUTO_SEQUENTIAL(
+      autoBaseCmd_ = AUTO_SEQUENTIAL(
         new DriveCommand(drivebase_, -100, 14, false, 4.0));
-    	break;
+      break;
 
     default:
       autoBaseCmd_ = NULL;
@@ -544,7 +544,7 @@ void Skyfire::TeleopPeriodic() {
   if (operatorControl_->GetKeyFarButton() && operatorControl_->GetIncreaseButton()) {
     shooterTargetVelocity_ = 75;
   } else if (operatorControl_->GetFenderButton()) {
-	  shooterIncr_ = 0.0;
+    shooterIncr_ = 0.0;
     autoshooting = false;
     shooterTargetVelocity_ = constants_->shooterFenderSpeed;
   } else if (operatorControl_->GetFarFenderButton()) {
@@ -556,19 +556,19 @@ void Skyfire::TeleopPeriodic() {
     autoshooting = false;
     shooterTargetVelocity_ = constants_->shooterKeyCloseSpeed;
   } else if (operatorControl_->GetKeyFarButton()) {
-	  shooterIncr_ = 0.0;
-	  autoshooting = false;
+    shooterIncr_ = 0.0;
+    autoshooting = false;
     shooterTargetVelocity_ = constants_->shooterKeyFarSpeed;
   } else if (operatorControl_->GetIncreaseButton() && !oldIncreaseButton_) {
-	  shooterIncr_ += constants_->shooterSpeedIncrement;
+    shooterIncr_ += constants_->shooterSpeedIncrement;
   } else if (operatorControl_->GetDecreaseButton() && !oldDecreaseButton_) {
-	  shooterIncr_ -= constants_->shooterSpeedIncrement;
+    shooterIncr_ -= constants_->shooterSpeedIncrement;
   }
 
   Shooter::hoodPref pref = Shooter::NO;
   double dist = target_->GetDistance();
   double autoDistanceVel = (((constants_->shooterKeyFarSpeed - constants_->shooterKeyCloseSpeed ) / (190 - 122)) *
-   			        (dist - 122)) + constants_->shooterKeyCloseSpeed;
+                (dist - 122)) + constants_->shooterKeyCloseSpeed;
   if(dist < 111) {
     autoDistanceVel = (((constants_->shooterFarFenderSpeed - constants_->shooterFenderSpeed ) / (95 - 60)) *
                         (dist - 60)) + constants_->shooterFenderSpeed;
@@ -577,7 +577,7 @@ void Skyfire::TeleopPeriodic() {
   if (operatorControl_->GetShootButton()) {
     // In manual shoot mode, run the conveyor and intake to feed the shooter.
     shooter_->SetLinearConveyorPower(1.0);
-   	intake_->SetIntakePower(1.0);
+    intake_->SetIntakePower(1.0);
   } else if (operatorControl_->GetAutoShootButton()) {
     shooter_->SetLinearConveyorPower(1.0);
     intake_->SetIntakePower(0.0);
@@ -594,15 +594,15 @@ void Skyfire::TeleopPeriodic() {
     intake_->SetIntakePower(1.0);
     shooter_->SetLinearConveyorPower(-1.0);
   } else if (reverseConveyor_ > 0) {
-	  shooter_->SetLinearConveyorPower(-1.0);
-	  intake_->SetIntakePower(0.0);
+    shooter_->SetLinearConveyorPower(-1.0);
+    intake_->SetIntakePower(0.0);
   } else {
     shooter_->SetLinearConveyorPower(0.0);
     intake_->SetIntakePower(0.0);
   }
   reverseConveyor_--;
   if (reverseConveyor_ < 0)
-	  reverseConveyor_ = 0;
+    reverseConveyor_ = 0;
 
   if (operatorControl_->GetShooterSwitch()) {
     // Re-load the shooter PID constants whenever the shooter is turned on.
@@ -613,7 +613,7 @@ void Skyfire::TeleopPeriodic() {
       constants_->LoadFile();
     }
     if (autoshooting && target_->SeesTarget()) {
-    	shooterTargetVelocity_ = autoDistanceVel;
+      shooterTargetVelocity_ = autoDistanceVel;
     }
     shooter_->SetTargetVelocity(shooterTargetVelocity_ + shooterIncr_, pref);
   } else {
@@ -632,11 +632,11 @@ void Skyfire::TeleopPeriodic() {
   }
 
   if(operatorControl_->GetAutonSelectButton()) {
-	  if(operatorControl_->GetIncreaseButton()) {
-		  dingusSolenoid_->Set(true);
-	  } else if(operatorControl_->GetDecreaseButton()) {
-		  dingusSolenoid_->Set(false);
-	  }
+    if(operatorControl_->GetIncreaseButton()) {
+      dingusSolenoid_->Set(true);
+    } else if(operatorControl_->GetDecreaseButton()) {
+      dingusSolenoid_->Set(false);
+    }
   }
 
   // Print useful information to the LCD display.
@@ -657,10 +657,10 @@ void Skyfire::TeleopPeriodic() {
   static const double maxSpeed = 10.0;
   // Set the brake in the last 0.25 seconds of the match
   if (timer_->Get() >= 119.75 && fabs(curLeft - prevLeftDist_) / dt < maxSpeed && fabs(curRight - prevRightDist_) / dt < maxSpeed) {
-	  //Dawg does this is set to false for demos doe, for competition make it true
-	  teleopDriver_->AskForBrake(false);
+    //Dawg does this is set to false for demos doe, for competition make it true
+    teleopDriver_->AskForBrake(false);
   } else {
-	  teleopDriver_->AskForBrake(false);
+    teleopDriver_->AskForBrake(false);
   }
   prevLeftDist_ = curLeft;
   prevRightDist_ = curRight;
@@ -669,9 +669,9 @@ void Skyfire::TeleopPeriodic() {
   r++;
   bool light = false;
   if (leftJoystick_->GetRawButton((int)constants_->autoAlignPort) && target_->SeesTarget() && target_->GetAngle() > -.85 && target_->GetAngle() < .85) {
-	  if (lightDelay_->Get() > .125) {
-		  light = ((r % 15) <= 8) ;
-	  }
+    if (lightDelay_->Get() > .125) {
+      light = ((r % 15) <= 8) ;
+    }
   }
   else {
     lightDelay_->Reset();

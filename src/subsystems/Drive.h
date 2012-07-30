@@ -99,7 +99,7 @@ class Drive {
    * Is brake on?
    */
   bool GetBrakeOn();
-  
+
   void SetControlLoopsOn(bool on);
 
  private:
@@ -138,13 +138,13 @@ class Drive {
 
   DriverStationLCD* lcd_;
   Constants* constants_;
-  
+
   double prevAngularPower_;
   bool controlLoops_;
   double old_wheel_;
   bool highGear_;
   double quickStopAccumulator_;
-  
+
 };
 
 #endif  // SUBSYSTEMS_DRIVE_H_

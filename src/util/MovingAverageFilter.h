@@ -11,7 +11,7 @@
  *
  * A larger value of n gives an average that "lags" more, but a smaller value
  * is more sensitive to noise.
- * 
+ *
  * This class simultaneously takes a data point to be filtered and returns the
  * current moving average using the method Update().
  * @author Tom Bottiglieri
@@ -24,13 +24,13 @@ class MovingAverageFilter {
    * @param numTaps the number of data points to apply the average to.
    */
   MovingAverageFilter(int numTaps);
-  
+
   /**
-   * Pushes an input value into the filter and returns the next updated output 
+   * Pushes an input value into the filter and returns the next updated output
    * moving average.
    *
    * If the number of data points entered is less than the number of inputs
-   * measured by the moving average, a partial moving average will return 
+   * measured by the moving average, a partial moving average will return
    * which consists only of the data currently entered.
    * @param newV the value to push into the filter
    * @return the current moving average

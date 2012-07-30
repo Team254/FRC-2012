@@ -53,7 +53,7 @@ void TeleopDriver::Reset() {
 }
 
 void TeleopDriver::AskForBrake(bool on){
-	askForBrake_ = on;
+  askForBrake_ = on;
 }
 
 TeleopDriver::~TeleopDriver() {

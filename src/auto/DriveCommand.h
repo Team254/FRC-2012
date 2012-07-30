@@ -19,7 +19,7 @@ class DriveCommand : public AutoCommand {
   /**
    * Constructor. Accepts drivetrain pointer and goal in terms of distance in inches
    */
-	// coast is defunct - take it out when we refactor
+  // coast is defunct - take it out when we refactor
   DriveCommand(Drive* drive, double distance, double angle, bool usePizza, double timeout, double maxSpeed=240.0, double maxAcceleration=120.0, double maxAlpha=180.0, double maxOmega=120.0);
   /**
    * Clears encoders and gyro
@@ -30,7 +30,7 @@ class DriveCommand : public AutoCommand {
    * Uses PID update values to set motors and reach distance goal with minimum error
    */
   bool Run();
-  
+
   void SetGoals(double distance, double angle);
 
   /**
@@ -40,7 +40,7 @@ class DriveCommand : public AutoCommand {
  private:
   // Drivebase object for motor control and encoder reading functionality
   Drive* drive_;
-  
+
   //Timer for velocity calcs
   Timer* brakeTimer_;
 
@@ -57,7 +57,7 @@ class DriveCommand : public AutoCommand {
   double maxOmega_;
   double turnOffset_;
   double sumStoppedError_;
-  
+
   // State space stuff
   double curA_;
   double curV_;
@@ -70,7 +70,7 @@ class DriveCommand : public AutoCommand {
   ss_controller *ssc_;
   AccelFilterBase* straightFilter_;
   AccelFilterBase* turnFilter_;
-  
+
   // Old
   Pid* leftPid_;
   Pid* rightPid_;

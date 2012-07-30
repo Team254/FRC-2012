@@ -16,7 +16,7 @@ class ShootCommand : public AutoCommand {
   ShootCommand(Shooter* shooter, Intake* intake, bool runIntake,double shootSpeed, int shotsToFire, double timeout, bool doJumble=false);
 
   /**
-   * Initializes 
+   * Initializes
    */
   void Initialize();
 
@@ -24,7 +24,7 @@ class ShootCommand : public AutoCommand {
    * Runs conveyor, and runs intake if specified
    */
   bool Run();
-  
+
   /**
    * Destructor
    */

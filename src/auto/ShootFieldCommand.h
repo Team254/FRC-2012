@@ -10,18 +10,18 @@ class Shooter;
 
 class ShootFieldCommand : public AutoCommand {
 
- public:  
+ public:
   ShootFieldCommand(Shooter* shooter, Intake* intake, bool runIntake,double shootSpeed, int shotsToFire, double timeout);
   void Initialize();
   bool Run();
   ~ShootFieldCommand();
-  
+
  private:
   ShootCommand* cmd_;
   Intake* intake_;
   Timer* jumbleTimer_;
-  
+
 };
 
-#endif 
+#endif
 

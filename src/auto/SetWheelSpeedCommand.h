@@ -6,7 +6,7 @@ class Shooter;
 
 class SetWheelSpeedCommand : public AutoCommand {
 
- public:  
+ public:
   SetWheelSpeedCommand(Shooter* shooter, double speed);
   void Initialize();
   bool Run();
@@ -14,8 +14,8 @@ class SetWheelSpeedCommand : public AutoCommand {
  private:
   Shooter* shooter_;
   double speed_;
-  
+
 };
 
-#endif 
+#endif
 

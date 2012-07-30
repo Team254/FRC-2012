@@ -20,7 +20,7 @@ class BackboardFinder : public VisionProcess {
    * @return offset from target center
    */
   double GetX();
-  
+
   double GetHDiff();
   double GetVDiff();
 
@@ -53,13 +53,13 @@ class BackboardFinder : public VisionProcess {
    * @return true if we have fresh data
    */
   bool HasFreshTarget();
-  
+
   /**
    * Logs camera information
    */
   void LogCamera();
   void SetUseSkew(bool useSkew);
-  
+
  private:
   double x_;
   double distance_;

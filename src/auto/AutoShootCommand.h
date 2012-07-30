@@ -11,19 +11,19 @@ class Constants;
 
 class AutoShootCommand : public AutoCommand {
  public:
-  
-  AutoShootCommand(Shooter* shooter, Intake* intake, BackboardFinder* target, 
-		           bool runIntake, int shotsToFire, double timeout, 
-		           bool intakeDown = false);	
-	
+
+  AutoShootCommand(Shooter* shooter, Intake* intake, BackboardFinder* target,
+               bool runIntake, int shotsToFire, double timeout,
+               bool intakeDown = false);
+
   void Initialize();
-  
+
   bool Run();
-  
+
   ~AutoShootCommand();
-  
+
  private:
-  
+
   Shooter* shooter_;
   Intake* intake_;
   BackboardFinder* target_;
@@ -33,7 +33,7 @@ class AutoShootCommand : public AutoCommand {
   int shotsToFire_;
   bool reachedSpeed_;
   bool intakeDown_;
-  	
+
 };
 
 #endif //AutoShootCommand

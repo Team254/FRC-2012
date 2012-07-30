@@ -14,7 +14,7 @@ class TurnCommand : public AutoCommand {
   TurnCommand(Drive* drive, double angle, double timeout);
 
   /**
-   * Initializes 
+   * Initializes
    */
   void Initialize();
 

@@ -28,18 +28,18 @@ bool AutoTurnDriver::UpdateDriver() {
   }
   drive_->SetHighGear(false);
   if (!foundTarget_ && target_->SeesTarget()) {
-	  // Grab a camera image angle and reset the gyro
-	  drive_->ResetGyro();
-	  delete command_;
-	  command_ = new DriveCommand(drive_, 0.0, (-target_->GetAngle() + offsetAngle_), false, 20.0);
-	  command_->Initialize();
-	  foundTarget_ = true;
+    // Grab a camera image angle and reset the gyro
+    drive_->ResetGyro();
+    delete command_;
+    command_ = new DriveCommand(drive_, 0.0, (-target_->GetAngle() + offsetAngle_), false, 20.0);
+    command_->Initialize();
+    foundTarget_ = true;
   }
   if (foundTarget_) {
-	  return command_->Run();
+    return command_->Run();
   } else {
-	drive_->SetLinearPower(0,0);
-  	return false;
+  drive_->SetLinearPower(0,0);
+    return false;
   }
 }
 

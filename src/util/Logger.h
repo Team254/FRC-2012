@@ -29,7 +29,7 @@ class Logger {
    * Empties the log file of data.
    */
   void ClearLog();
-  
+
   /**
    * Returns the Logger of the entire system.
    *

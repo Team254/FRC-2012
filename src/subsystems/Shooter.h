@@ -22,12 +22,12 @@
 class Shooter {
  public:
 
-	enum hoodPref {
-		UP,
-		DOWN,
-		NO,
-		NUM_PREFS
-	};
+  enum hoodPref {
+    UP,
+    DOWN,
+    NO,
+    NUM_PREFS
+  };
   /**
    * Constructor
    * Accepts the Victors, Encoders, pneumatics, etc. to be used

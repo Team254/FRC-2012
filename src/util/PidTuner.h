@@ -4,7 +4,7 @@
 #include "inetLib.h"
 
 /**
- * Singleton class which connects to the robot and gives PID output. 
+ * Singleton class which connects to the robot and gives PID output.
  */
 class PidTuner {
  public:

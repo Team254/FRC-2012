@@ -39,7 +39,7 @@ bool ShootCommand::Run() {
   bool atSpeed = shooter_->AtTargetVelocity() || lastShotTimer_->Get() > 2.0;
   goBack_--;
   if (goBack_ < 0){
-	  goBack_ = 0;
+    goBack_ = 0;
   }
   if (atSpeed) {
     if (atSpeedCycles_++ > 5) {
@@ -75,7 +75,7 @@ bool ShootCommand::Run() {
       else if (doJumble_ && jumbleTimer_->Get() > .6)
         intake_->SetIntakePower(-1);
       else
-    	intake_->SetIntakePower(1);
+      intake_->SetIntakePower(1);
     } else {
        intake_->SetIntakePower(0);
     }

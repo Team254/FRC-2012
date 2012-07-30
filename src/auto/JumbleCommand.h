@@ -14,7 +14,7 @@ class JumbleCommand : public AutoCommand {
   JumbleCommand(Shooter* shooter, Intake* intake, double timeout);
 
   /**
-   * Initializes 
+   * Initializes
    */
   void Initialize();
 
@@ -22,7 +22,7 @@ class JumbleCommand : public AutoCommand {
    * Runs conveyor, and runs intake if specified
    */
   bool Run();
-  
+
   /**
    * Destructor
    */

@@ -26,7 +26,7 @@ double BackboardFinder::GetX() {
 }
 
 double BackboardFinder::GetHDiff() {
-	return width_;
+  return width_;
 }
 double BackboardFinder::GetVDiff() {
   return vDiff_;
@@ -41,34 +41,34 @@ void BackboardFinder::LogCamera() {
 }
 
 double BackboardFinder::GetDistance() {
-	double w = width_;
-	if (useTopForWidth_) {
-	  w += 7; // difference between target width and side to side distance
-	}
-	return constants_->distanceCoeffA * pow(width_, 6) +
-			constants_->distanceCoeffB * pow(width_, 5) +
-			constants_->distanceCoeffC * pow(width_, 4) +
-			constants_->distanceCoeffD * pow(width_, 3) +
-			constants_->distanceCoeffE * pow(width_, 2) +
-			constants_->distanceCoeffF * width_ + constants_->distanceCoeffG;
+  double w = width_;
+  if (useTopForWidth_) {
+    w += 7; // difference between target width and side to side distance
+  }
+  return constants_->distanceCoeffA * pow(width_, 6) +
+      constants_->distanceCoeffB * pow(width_, 5) +
+      constants_->distanceCoeffC * pow(width_, 4) +
+      constants_->distanceCoeffD * pow(width_, 3) +
+      constants_->distanceCoeffE * pow(width_, 2) +
+      constants_->distanceCoeffF * width_ + constants_->distanceCoeffG;
 }
 
 double BackboardFinder::GetAngle() {
-	//normalized x location (-1 to 1) times the pixels along
-	//that one side = number of pixels off
-	//47/320 = degree/pixel based on fov/horizontal resolution
-	//pixels * degrees / pixels = degrees
-	//printf("get: %f\n", (float) GetX());
-	double offset = Constants::GetInstance()->cameraOffset;
-	double ret = GetX() * 160.0 * 47.0 / 320.0 + offset;
-	if (useSkew_) {
-		ret += (orientation_ * 2.0 / 18.0);
-	}
-	return ret;
+  //normalized x location (-1 to 1) times the pixels along
+  //that one side = number of pixels off
+  //47/320 = degree/pixel based on fov/horizontal resolution
+  //pixels * degrees / pixels = degrees
+  //printf("get: %f\n", (float) GetX());
+  double offset = Constants::GetInstance()->cameraOffset;
+  double ret = GetX() * 160.0 * 47.0 / 320.0 + offset;
+  if (useSkew_) {
+    ret += (orientation_ * 2.0 / 18.0);
+  }
+  return ret;
 }
 
 void BackboardFinder::SetUseSkew(bool useSkew) {
-	useSkew_ = useSkew;
+  useSkew_ = useSkew;
 }
 
 void BackboardFinder::DoVision() {
@@ -154,7 +154,7 @@ void BackboardFinder::DoVision() {
   vector<ParticleAnalysisReport>* particles = new vector<ParticleAnalysisReport>;
   int particleCount = bimg->GetNumberParticles();
   for(int particleIndex = 0; particleIndex < particleCount; particleIndex++) {
-  	particles->push_back(bimg->GetParticleAnalysisReport(particleIndex));
+    particles->push_back(bimg->GetParticleAnalysisReport(particleIndex));
   }
 
   // Find top target
@@ -177,11 +177,11 @@ void BackboardFinder::DoVision() {
     bimg->ParticleMeasurement(topIndex, IMAQ_MT_ORIENTATION, &orientation);
     bimg->ParticleMeasurement(topIndex, IMAQ_MT_CENTER_OF_MASS_X, &comx);
   } else {
-	  orientation = 0;
+    orientation = 0;
   }
 
   if (orientation > 90) {
-	  orientation -= 180;
+    orientation -= 180;
   }
   orientation_ = orientation;
 

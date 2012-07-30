@@ -24,7 +24,7 @@ void Intake::SetIntakePosition(IntakePositions pos) {
   if (pos == INTAKE_DOWN) {
     intakeUpSolenoid_->Set(true);
     intakeDownSolenoid_->Set(true);
-  } else if (pos == INTAKE_UP) {  
+  } else if (pos == INTAKE_UP) {
     intakeUpSolenoid_->Set(false);
     intakeDownSolenoid_->Set(false);
   } else if (pos == INTAKE_FLOATING) {

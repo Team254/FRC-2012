@@ -6,7 +6,7 @@ AutoCommand::AutoCommand() {
 }
 
 void AutoCommand::Initialize() {
-  timer_->Start(); 
+  timer_->Start();
 }
 
 void AutoCommand::SetTimeout(double timeout)

@@ -11,17 +11,17 @@ class AutoTurnDriver;
 class AutoAlignCommand : public AutoCommand {
 
  public:
-  
+
   AutoAlignCommand(Drive* drive, AutoTurnDriver* autoTurn, BackboardFinder* target, double offset, double timeout, bool useSkew=true);
-  
+
   void Initialize();
-  
+
   bool Run();
-  
+
   ~AutoAlignCommand();
-  
+
  private:
-  
+
   Drive* drive_;
   AutoTurnDriver* autoTurn_;
   double offset_;
@@ -30,5 +30,5 @@ class AutoAlignCommand : public AutoCommand {
   Timer* resetTimer_;
 };
 
-#endif 
+#endif
 

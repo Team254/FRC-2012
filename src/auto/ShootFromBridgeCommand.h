@@ -16,7 +16,7 @@ class ShootFromBridgeCommand : public AutoCommand {
   ShootFromBridgeCommand(Shooter* shooter, Intake* intake, bool runIntake,double shootSpeed, int shotsToFire, double timeout, bool intakeDown = false);
 
   /**
-   * Initializes 
+   * Initializes
    */
   void Initialize();
 
@@ -24,7 +24,7 @@ class ShootFromBridgeCommand : public AutoCommand {
    * Runs conveyor, and runs intake if specified
    */
   bool Run();
-  
+
   /**
    * Destructor
    */
