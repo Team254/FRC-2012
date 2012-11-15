@@ -4,7 +4,8 @@
 #include "WPILib.h"
 
 /**
- * IFI Talon Speed Controller
+ * Cross the Road Electronics
+ * Talon Speed Controller
  */
 class Talon : public SafePWM, public SpeedController, public PIDOutput
 {
