@@ -32,8 +32,8 @@ Drive::Drive(Talon* leftTalonA, Talon* leftTalonB, Talon* rightTalonA, Talon* ri
 }
 
 void Drive::SetLinearPower(double left, double right) {
-  double linearLeft=Linearize(left);
-  double linearRight=Linearize(right);
+  double linearLeft = left;
+  double linearRight = right;
   linearLeft = (linearLeft > 1.0) ? 1.0 : (linearLeft < -1.0) ? -1.0 : linearLeft;
   linearRight = (linearRight > 1.0) ? 1.0 : (linearRight < -1.0) ? -1.0 : linearRight;
   SetPower(linearLeft, linearRight);
