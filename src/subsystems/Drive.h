@@ -2,6 +2,7 @@
 #define SUBSYSTEMS_DRIVE_H_
 
 #include "WPILib.h"
+#include "util/Talon.h"
 
 #include "config/Constants.h"
 
@@ -17,9 +18,9 @@ class Drive {
  public:
   /**
    * Constructor
-   * Accepts the Victors and Encoders to get and set values
+   * Accepts the Talons and Encoders to get and set values
    */
-  Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
+  Drive(Talon* leftTalonA, Talon* leftTalonB, Talon* rightTalonA, Talon* rightTalonB,
         Solenoid* shiftSolenoid, Solenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid, Encoder* leftEncoder,
         Encoder* rightEncoder, Gyro* gyro, DigitalInput* bumpSensor);
 
@@ -111,17 +112,17 @@ class Drive {
   void SetPower(double left, double right);
 
   /**
-   * Linearizes an Victor input pwm based on the pre-calculated linearization polynomial
+   * Linearizes an Talon input pwm based on the pre-calculated linearization polynomial
    * @param pwm the desired pwm
    * @return the de-linearized victor pwm output
    */
   double Linearize(double x);
 
   // Victors
-  Victor* leftDriveMotorA_;
-  Victor* leftDriveMotorB_;
-  Victor* rightDriveMotorA_;
-  Victor* rightDriveMotorB_;
+  Talon* leftDriveMotorA_;
+  Talon* leftDriveMotorB_;
+  Talon* rightDriveMotorA_;
+  Talon* rightDriveMotorB_;
 
   // Sensors
   Encoder* leftDriveEncoder_;

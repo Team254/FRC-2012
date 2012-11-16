@@ -4,14 +4,14 @@
 
 #include "util/PidTuner.h"
 
-Drive::Drive(Victor* leftVictorA, Victor* leftVictorB, Victor* rightVictorA, Victor* rightVictorB,
+Drive::Drive(Talon* leftTalonA, Talon* leftTalonB, Talon* rightTalonA, Talon* rightTalonB,
        Solenoid* shiftSolenoid, Solenoid* pizzaWheelSolenoid, DoubleSolenoid* brakeSolenoid,  Encoder* leftEncoder,
        Encoder* rightEncoder, Gyro* gyro, DigitalInput* bumpSensor) {
   constants_ = Constants::GetInstance();
-  leftDriveMotorA_ = leftVictorA;
-  leftDriveMotorB_ = leftVictorB;
-  rightDriveMotorA_ = rightVictorA;
-  rightDriveMotorB_ = rightVictorB;
+  leftDriveMotorA_ = leftTalonA;
+  leftDriveMotorB_ = leftTalonB;
+  rightDriveMotorA_ = rightTalonA;
+  rightDriveMotorB_ = rightTalonB;
   shiftSolenoid_ = shiftSolenoid;
   pizzaWheelSolenoid_ = pizzaWheelSolenoid;
   brakeSolenoid_ = brakeSolenoid;

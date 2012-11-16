@@ -47,10 +47,11 @@ Skyfire::Skyfire() {
   constants_ = Constants::GetInstance();
 
   // Motors
-  leftDriveMotorA_ = new Victor((int)constants_->leftDrivePwmA);
-  leftDriveMotorB_ = new Victor((int)constants_->leftDrivePwmB);
-  rightDriveMotorA_ = new Victor((int)constants_->rightDrivePwmA);
-  rightDriveMotorB_ = new Victor((int)constants_->rightDrivePwmB);
+  // Note: drive motors used to be Victors
+  leftDriveMotorA_ = new Talon((int)constants_->leftDrivePwmA);
+  leftDriveMotorB_ = new Talon((int)constants_->leftDrivePwmB);
+  rightDriveMotorA_ = new Talon((int)constants_->rightDrivePwmA);
+  rightDriveMotorB_ = new Talon((int)constants_->rightDrivePwmB);
   intakeMotor1_ = new Victor((int)constants_->intakePwm1);
   intakeMotor2_ = new Victor((int)constants_->intakePwm2);
   intakeMotor3_ = new Victor((int)constants_->intakePwm3);

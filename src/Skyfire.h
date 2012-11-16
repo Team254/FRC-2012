@@ -3,6 +3,7 @@
 
 #include "WPILib.h"
 #include "CheesyRobot.h"
+#include "util/Talon.h"
 
 class AutoTurnDriver;
 class BackboardFinder;
@@ -91,10 +92,11 @@ class Skyfire : public CheesyRobot {
   OperatorControl* operatorControl_;
 
   // Motors
-  Victor* leftDriveMotorA_;
-  Victor* leftDriveMotorB_;
-  Victor* rightDriveMotorA_;
-  Victor* rightDriveMotorB_;
+  // Note: drive motors used to be Victors
+  Talon* leftDriveMotorA_;
+  Talon* leftDriveMotorB_;
+  Talon* rightDriveMotorA_;
+  Talon* rightDriveMotorB_;
   Victor* intakeMotor1_;
   Victor* intakeMotor2_;
   Victor* intakeMotor3_;
