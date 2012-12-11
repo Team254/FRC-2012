@@ -5,7 +5,7 @@ var app = express.createServer()
     , io = require('socket.io').listen(app)
     , fs = require('fs')
 
-app.listen(8080);
+app.listen(8081);
 app.use("/js", express.static(__dirname + '/js'));
 app.use("/style", express.static(__dirname + '/style'));
 app.use("/images", express.static(__dirname + '/images'));
