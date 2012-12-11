@@ -2,7 +2,8 @@ min_graph = 0;
 max_graph = 0;
 options = {
   series: { shadowSize: 0 }, // drawing is faster without shadows
-  xaxis: { show: false }
+  xaxis: { show: false },
+  legend: { show: true }
 };
 
 $(function () {
@@ -49,7 +50,9 @@ $(function () {
       min_graph = min;
       max_graph = max;
 
-      var res = [resS, resV,resC]; //console.log(res);
+      var res = [{label: "S", data: resS},
+                 {label: "V", data: resV},
+                 {label: "C", data: resC}]; //console.log(res);
       return res;
     }
     // setup plot
@@ -67,49 +70,47 @@ $(function () {
     makeplot();
     $(window).resize(makeplot);
 
-   function push(newS, newV, newC) {
-        var min 
-        if (dataSetpoint.length > 0)
-            dataSetpoint = dataSetpoint.slice(1);
+    function push(newS, newV, newC) {
+      var min 
+      if (dataSetpoint.length > 0)
+          dataSetpoint = dataSetpoint.slice(1);
 
-           if (newS < lowest) {
-             lowest = newS;
+      if (newS < lowest) {
+          lowest = newS;
+      }
+      if (newS > highest) {
+          highest = newS;
+      }
+      while (dataSetpoint.length < maxPoints) {
+          var y = newS
+          dataSetpoint.push(y);
+      }
 
-           }
-           if (newS > highest) {
-             highest = newS;
-           }
-        while (dataSetpoint.length < maxPoints) {
-            var y = newS
-            dataSetpoint.push(y);
-        }
+      if (dataValue.length > 0)
+          dataValue = dataValue.slice(1);
 
-        if (dataValue.length > 0)
-            dataValue = dataValue.slice(1);
+      while (dataValue.length < maxPoints) {
+          var y = newV
+          dataValue.push(y);
+      }
 
-        while (dataValue.length < maxPoints) {
-            var y = newV
-            dataValue.push(y);
-        }
+      if (dataControl.length > 0)
+          dataControl = dataControl.slice(1);
 
-        if (dataControl.length > 0)
-            dataControl = dataControl.slice(1);
+      while (dataControl.length < maxPoints) {
+          //var y = (newC * ((max_graph-5 - (min_graph+5))/2)) + ((max_graph-5 - (min_graph+5))/2) ;
+          var y = newC;
+           dataControl.push(y);
+      }
 
-        while (dataControl.length < maxPoints) {
-            //var y = (newC * ((max_graph-5 - (min_graph+5))/2)) + ((max_graph-5 - (min_graph+5))/2) ;
-            var y = newC;
-            dataControl.push(y);
-        }
-   
-        plot.setupGrid();
-        plot.setData(getData());
-        plot.draw();
+      plot.setupGrid();
+      plot.setData(getData());
+      plot.draw();
     }
 
-   var socket = io.connect('http://localhost');
+    var socket = io.connect('http://localhost');
     socket.on('update', function (dataIn) {
       push(dataIn["S"], dataIn["V"],dataIn["C"]);
     });
 
 });
-
